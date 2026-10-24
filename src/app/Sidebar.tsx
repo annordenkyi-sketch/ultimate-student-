@@ -5,6 +5,7 @@ import {
   Home as HomeIcon,
   LifeBuoy,
   Map as MapIcon,
+  Megaphone,
   Building2,
   Users,
   type LucideIcon,
@@ -20,6 +21,7 @@ interface NavItem {
 
 const PRIMARY: NavItem[] = [
   { to: "/", label: "Home", icon: HomeIcon, end: true },
+  { to: "/announcements", label: "Announcements", icon: Megaphone },
   { to: "/section/academic", label: "Academic", icon: GraduationCap },
   { to: "/section/navigation", label: "Campus map", icon: MapIcon },
   { to: "/section/accommodation", label: "Accommodation", icon: Building2 },

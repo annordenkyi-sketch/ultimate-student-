@@ -11,6 +11,7 @@ import { TypeStep } from "@/features/onboarding/TypeStep";
 import { LivingStep } from "@/features/onboarding/LivingStep";
 import { DoneStep } from "@/features/onboarding/DoneStep";
 import { HomePage } from "@/features/home/HomePage";
+import { AnnouncementsPage } from "@/features/announcements/AnnouncementsPage";
 import { SearchPage } from "@/features/search/SearchPage";
 import { SectionsPage } from "@/features/sections/SectionsPage";
 import { AcademicPage } from "@/features/academic/AcademicPage";
@@ -45,6 +46,8 @@ export const App = () => (
       }
     >
       <Route path="/" element={<HomePage />} />
+      <Route path="/announcements" element={<AnnouncementsPage />} />
+      <Route path="/announcements/:id" element={<AnnouncementsPage />} />
       <Route path="/search" element={<SearchPage />} />
       <Route path="/sections" element={<SectionsPage />} />
       <Route path="/section/academic" element={<AcademicPage />} />

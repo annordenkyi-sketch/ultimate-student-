@@ -70,11 +70,20 @@ export type ActionKind =
   | "save-opportunity"
   | "apply";
 
+export type AnnouncementCategory =
+  | "academic"
+  | "hostels"
+  | "events"
+  | "services"
+  | "general";
+
 export interface Announcement {
   id: string;
   title: string;
   body: string;
   date: string; // ISO
+  source?: string;
+  category?: AnnouncementCategory;
   audience: {
     studentTypes?: StudentType[];
     living?: LivingSituation[];

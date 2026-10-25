@@ -15,14 +15,26 @@ export type StudentType =
 
 export type LivingSituation = "on-campus" | "off-campus";
 
+export interface NotificationPrefs {
+  announcements: boolean;
+  events: boolean;
+  savedUpdates: boolean;
+}
+
 export interface Profile {
   id: string;
   name: string;
   identifier: string; // email or student ID
+  avatar?: string; // data URL
+  phone?: string;
+  programme?: string;
+  level?: string;
   studentType: StudentType;
   isInternational: boolean;
   living: LivingSituation;
+  hostel?: string;
   interests: string[]; // e.g. ["Debate Club", "Internships"]
+  notificationPrefs?: NotificationPrefs;
   createdAt: string;
 }
 

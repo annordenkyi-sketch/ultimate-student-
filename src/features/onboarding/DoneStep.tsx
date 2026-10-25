@@ -323,7 +323,13 @@ export const DoneStep = () => {
       studentType: draft.studentType,
       isInternational: draft.isInternational,
       living: draft.living,
+      hostel: draft.hostel,
       interests: draft.interests,
+      notificationPrefs: {
+        announcements: true,
+        events: true,
+        savedUpdates: true,
+      },
       createdAt: new Date().toISOString(),
     });
     setTimeout(() => navigate("/", { replace: true }), 300);

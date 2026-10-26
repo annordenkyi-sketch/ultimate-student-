@@ -2,8 +2,6 @@ import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import {
   Activity,
-  ArrowLeft,
-  ArrowRight,
   Bell,
   Bookmark,
   CalendarClock,
@@ -18,14 +16,7 @@ import { useNotifications } from "@/hooks/useNotifications";
 import { useSaved } from "@/hooks/useSaved";
 import { useAnnouncementReads } from "@/hooks/useAnnouncementReads";
 import { dataService } from "@/data/service";
-import type { Announcement, EventItem, SectionItem } from "@/data/types";
-import {
-  FEATURE_IMAGES,
-  SECTION_IMAGES,
-  unsplash,
-  unsplashSrcSet,
-  type UnsplashImage,
-} from "@/lib/images";
+import type { Announcement } from "@/data/types";
 import { SearchBar } from "@/components/SearchBar";
 import { FadeIn } from "@/components/Motion";
 import { EventsBlock } from "./EventsBlock";
@@ -122,166 +113,6 @@ const GreetingHeader = ({ firstName }: { firstName: string }) => (
     <p className="mt-2 text-sm text-muted">{formatToday()}</p>
   </header>
 );
-
-/* ───────────────────────────── Featured hero (rotating) ───────────────────────────── */
-
-interface HeroSlide {
-  key: string;
-  eyebrow: string;
-  title: string;
-  body: string;
-  overlay: string;
-  cta: string;
-  to: string;
-  photo: UnsplashImage;
-}
-
-const FeaturedHero = ({
-  event,
-  opportunity,
-  announcement,
-}: {
-  event: EventItem | null;
-  opportunity: SectionItem | null;
-  announcement: Announcement | null;
-}) => {
-  const slides: HeroSlide[] = [];
-
-  if (event) {
-    slides.push({
-      key: `event-${event.id}`,
-      eyebrow: "This week on campus",
-      title: event.title,
-      body: `${new Date(event.date).toLocaleDateString(undefined, {
-        weekday: "short",
-        day: "numeric",
-        month: "short",
-      })} · ${event.location}`,
-      overlay: "Campus",
-      cta: "View event",
-      to: event.sectionItemId
-        ? `/section/social/${event.sectionItemId}`
-        : "/section/social",
-      photo: FEATURE_IMAGES.interestMusic,
-    });
-  }
-
-  if (opportunity) {
-    slides.push({
-      key: `opp-${opportunity.id}`,
-      eyebrow: "New opportunity",
-      title: opportunity.title,
-      body: opportunity.summary,
-      overlay: "Open",
-      cta: "See details",
-      to: `/section/opportunities/${opportunity.id}`,
-      photo: SECTION_IMAGES.opportunities,
-    });
-  }
-
-  if (announcement) {
-    slides.push({
-      key: `ann-${announcement.id}`,
-      eyebrow: "From the campus",
-      title: announcement.title,
-      body: announcement.body,
-      overlay: "Notice",
-      cta: "Read more",
-      to: "/announcements",
-      photo: FEATURE_IMAGES.campusGreeting,
-    });
-  }
-
-  const [i, setI] = useState(0);
-  const hasSlides = slides.length > 0;
-  const slide = hasSlides ? slides[i % slides.length] : null;
-
-  if (!slide) return null;
-
-  const prev = () => setI((n) => (n - 1 + slides.length) % slides.length);
-  const next = () => setI((n) => (n + 1) % slides.length);
-
-  return (
-    <section aria-label="Featured" className="relative">
-      <div className="relative overflow-hidden rounded-2xl border border-line bg-white">
-        <div className="relative aspect-[16/10] md:aspect-[21/9]">
-          <img
-            key={slide.key}
-            src={unsplash(slide.photo.photoId, 1600, 70)}
-            srcSet={unsplashSrcSet(slide.photo.photoId)}
-            sizes="(min-width: 1024px) 1200px, 100vw"
-            alt=""
-            className="h-full w-full object-cover"
-            loading="lazy"
-            decoding="async"
-          />
-
-          {/* Dark gradient for text contrast */}
-          <div
-            aria-hidden="true"
-            className="absolute inset-0 bg-gradient-to-r from-ink/70 via-ink/35 to-ink/10"
-          />
-
-          {/* Oversized translucent word overlay */}
-          <span
-            aria-hidden="true"
-            className="pointer-events-none absolute inset-x-0 top-2 select-none text-center font-bold tracking-tight text-white/25"
-            style={{
-              fontSize: "clamp(96px, 18vw, 280px)",
-              lineHeight: 0.9,
-              letterSpacing: "-0.04em",
-            }}
-          >
-            {slide.overlay}
-          </span>
-
-          {/* Caption bottom-left */}
-          <div className="absolute inset-x-0 bottom-0 flex items-end justify-between gap-4 p-5 md:p-8">
-            <div className="max-w-xl">
-              <p className="text-[11px] font-semibold uppercase tracking-widest text-accent-200">
-                {slide.eyebrow}
-              </p>
-              <h2 className="mt-1 line-clamp-2 text-xl font-bold leading-tight text-white md:text-2xl">
-                {slide.title}
-              </h2>
-              <p className="mt-1 line-clamp-2 text-xs text-white/85 md:text-sm">
-                {slide.body}
-              </p>
-              <Link
-                to={slide.to}
-                className="mt-3 inline-flex items-center gap-1 rounded-full bg-white px-4 py-1.5 text-xs font-semibold text-ink shadow-sm transition hover:bg-paper"
-              >
-                {slide.cta}
-                <ArrowRight className="h-3 w-3" aria-hidden="true" />
-              </Link>
-            </div>
-
-            {slides.length > 1 && (
-              <div className="flex gap-2">
-                <button
-                  type="button"
-                  onClick={prev}
-                  aria-label="Previous"
-                  className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-white/90 text-ink shadow-sm transition hover:bg-white"
-                >
-                  <ArrowLeft className="h-4 w-4" aria-hidden="true" />
-                </button>
-                <button
-                  type="button"
-                  onClick={next}
-                  aria-label="Next"
-                  className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-white/90 text-ink shadow-sm transition hover:bg-white"
-                >
-                  <ArrowRight className="h-4 w-4" aria-hidden="true" />
-                </button>
-              </div>
-            )}
-          </div>
-        </div>
-      </div>
-    </section>
-  );
-};
 
 /* ───────────────────────────── Highlight cards ───────────────────────────── */
 
@@ -568,22 +399,17 @@ export const HomePage = () => {
 
   const [eventsCount, setEventsCount] = useState(0);
   const [announcements, setAnnouncements] = useState<Announcement[]>([]);
-  const [featuredEvent, setFeaturedEvent] = useState<EventItem | null>(null);
-  const [featuredOpp, setFeaturedOpp] = useState<SectionItem | null>(null);
 
   useEffect(() => {
     let cancelled = false;
     (async () => {
-      const [events, anns, opps] = await Promise.all([
+      const [events, anns] = await Promise.all([
         dataService.getEventsThisWeek(),
         dataService.getAnnouncements(profile),
-        dataService.getSection("opportunities"),
       ]);
       if (cancelled) return;
       setEventsCount(events.length);
       setAnnouncements(anns);
-      setFeaturedEvent(events[0] ?? null);
-      setFeaturedOpp(opps[0] ?? null);
     })();
     return () => {
       cancelled = true;
@@ -594,12 +420,6 @@ export const HomePage = () => {
     () => announcements.filter((a) => !isRead(a.id)).length,
     [announcements, isRead],
   );
-  const latestAnn = useMemo(() => {
-    const sorted = [...announcements].sort(
-      (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime(),
-    );
-    return sorted[0] ?? null;
-  }, [announcements]);
 
   const stats: Stat[] = [
     {
@@ -638,26 +458,18 @@ export const HomePage = () => {
         </FadeIn>
 
         <FadeIn delay={0.05}>
-          <FeaturedHero
-            event={featuredEvent}
-            opportunity={featuredOpp}
-            announcement={latestAnn}
-          />
-        </FadeIn>
-
-        <FadeIn delay={0.1}>
           <HighlightCards campusEventsCount={eventsCount} />
         </FadeIn>
 
-        <FadeIn delay={0.15}>
+        <FadeIn delay={0.1}>
           <AtAGlance stats={stats} />
         </FadeIn>
 
-        <FadeIn delay={0.2}>
+        <FadeIn delay={0.15}>
           <AnnouncementsPanel />
         </FadeIn>
 
-        <FadeIn delay={0.25}>
+        <FadeIn delay={0.2}>
           <div className="grid gap-6 lg:grid-cols-2">
             <EventsBlock />
             <SavedBlock />

@@ -73,7 +73,7 @@ const MosaicColumn = ({ photos, heights, direction, duration, className }: Colum
               alt=""
               loading={i < 3 ? "eager" : "lazy"}
               decoding="async"
-              className="w-full shrink-0 rounded-2xl bg-slate-800 object-cover"
+              className="w-full shrink-0 rounded-2xl bg-ink object-cover"
               style={{ height: h }}
             />
           );

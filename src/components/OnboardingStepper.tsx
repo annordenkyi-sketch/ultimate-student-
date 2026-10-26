@@ -21,7 +21,7 @@ export const OnboardingStepper = ({ steps, current }: Props) => (
                 ? "bg-brand-600 text-white"
                 : isDone
                   ? "bg-brand-600 text-white"
-                  : "bg-slate-200 text-slate-500"
+                  : "bg-line text-muted"
             }`}
             aria-current={isActive ? "step" : undefined}
           >
@@ -36,7 +36,7 @@ export const OnboardingStepper = ({ steps, current }: Props) => (
             <span
               aria-hidden="true"
               className={`h-0.5 flex-1 rounded-full ${
-                isDone ? "bg-brand-500" : "bg-slate-200"
+                isDone ? "bg-brand-500" : "bg-line"
               }`}
             />
           )}

@@ -41,7 +41,7 @@ export const SECTIONS: SectionMeta[] = [
     shortLabel: "Accommodation",
     description: "Hostels, facilities, nearby services, reviews",
     icon: HomeIcon,
-    accent: "bg-amber-100 text-amber-800",
+    accent: "bg-accent-100 text-accent-700",
   },
   {
     id: "services",

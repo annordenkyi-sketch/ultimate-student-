@@ -66,12 +66,12 @@ export const OnboardingLayout = () => {
     <Ctx.Provider value={value}>
       <div className="flex min-h-screen flex-col bg-white">
         {/* Shared header */}
-        <header className="sticky top-0 z-30 grid grid-cols-3 items-center border-b border-slate-200 bg-white/95 px-4 py-3 backdrop-blur md:px-6">
+        <header className="sticky top-0 z-30 grid grid-cols-3 items-center border-b border-line bg-white/95 px-4 py-3 backdrop-blur md:px-6">
           <button
             type="button"
             onClick={onBack}
             aria-label="Go back"
-            className="justify-self-start inline-flex items-center gap-1 rounded-md p-1 text-sm font-medium text-slate-700 transition hover:text-slate-900 motion-safe:active:scale-[0.97]"
+            className="justify-self-start inline-flex items-center gap-1 rounded-md p-1 text-sm font-medium text-ink transition hover:text-ink motion-safe:active:scale-[0.97]"
           >
             <ArrowLeft className="h-4 w-4" aria-hidden="true" />
             Back
@@ -79,7 +79,7 @@ export const OnboardingLayout = () => {
 
           <Link
             to="/welcome"
-            className="justify-self-center inline-flex items-center gap-1.5 rounded-full bg-amber-100 px-3 py-1 text-[11px] font-semibold uppercase tracking-wider text-amber-900 ring-1 ring-amber-200"
+            className="justify-self-center inline-flex items-center gap-1.5 rounded-full bg-accent-100 px-3 py-1 text-[11px] font-semibold uppercase tracking-wider text-accent-800 ring-1 ring-accent-200"
           >
             <GraduationCap className="h-3.5 w-3.5" aria-hidden="true" />
             Ultimate Student

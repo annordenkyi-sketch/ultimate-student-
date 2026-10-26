@@ -14,8 +14,8 @@ const base =
 
 const variants: Record<Variant, string> = {
   primary: "bg-brand-600 text-white hover:bg-brand-700",
-  secondary: "bg-slate-100 text-slate-900 hover:bg-slate-200",
-  ghost: "text-slate-700 hover:bg-slate-100",
+  secondary: "bg-paper text-ink hover:bg-line",
+  ghost: "text-ink hover:bg-paper",
 };
 
 export const ActionButton = ({

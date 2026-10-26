@@ -3,7 +3,7 @@ import { CheckCircle2, Info, XCircle } from "lucide-react";
 import { useToast, type Toast } from "@/hooks/useToast";
 
 const toneStyles: Record<NonNullable<Toast["tone"]>, string> = {
-  info: "bg-slate-900 text-white",
+  info: "bg-ink text-white",
   success: "bg-emerald-600 text-white",
   error: "bg-rose-600 text-white",
 };

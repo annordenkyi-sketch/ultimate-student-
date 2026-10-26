@@ -65,8 +65,8 @@ export const SectionListPage = () => {
   return (
     <div className="pb-4">
       <header className="mb-4">
-        <h1 className="text-2xl font-bold text-slate-900">{meta.label}</h1>
-        <p className="mt-1 text-sm text-slate-500">{meta.description}.</p>
+        <h1 className="text-2xl font-bold text-ink">{meta.label}</h1>
+        <p className="mt-1 text-sm text-muted">{meta.description}.</p>
       </header>
 
       <div className="mb-4 space-y-3">
@@ -75,7 +75,7 @@ export const SectionListPage = () => {
         </label>
         <div className="relative">
           <Search
-            className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400"
+            className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted"
             aria-hidden="true"
           />
           <input
@@ -84,7 +84,7 @@ export const SectionListPage = () => {
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder={placeholder}
-            className="w-full rounded-xl border border-slate-200 bg-white py-2.5 pl-9 pr-3 text-sm text-slate-900 placeholder:text-slate-400 focus:border-brand-500"
+            className="w-full rounded-xl border border-line bg-white py-2.5 pl-9 pr-3 text-sm text-ink placeholder:text-muted focus:border-brand-500"
           />
         </div>
 
@@ -96,12 +96,12 @@ export const SectionListPage = () => {
       {items == null && <LoadingState rows={5} />}
 
       {items && filtered.length === 0 && (
-        <div className="rounded-xl border border-slate-200 bg-white p-5 text-sm text-slate-600">
+        <div className="rounded-xl border border-line bg-white p-5 text-sm text-muted">
           {query.trim() ? (
             <>
               <p>
                 No results for{" "}
-                <strong className="text-slate-900">"{query}"</strong> in{" "}
+                <strong className="text-ink">"{query}"</strong> in{" "}
                 {meta.label}.
               </p>
               <Link
@@ -112,7 +112,7 @@ export const SectionListPage = () => {
               </Link>
             </>
           ) : (
-            <p className="text-slate-500">
+            <p className="text-muted">
               Nothing matches that filter. Try another tag.
             </p>
           )}

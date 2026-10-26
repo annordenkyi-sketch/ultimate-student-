@@ -7,7 +7,7 @@ export const ShortcutsBlock = () => (
     <div className="mb-3 flex items-baseline justify-between">
       <h2
         id="shortcuts-heading"
-        className="text-sm font-semibold text-slate-900"
+        className="text-sm font-semibold text-ink"
       >
         Sections
       </h2>
@@ -30,14 +30,14 @@ export const ShortcutsBlock = () => (
           <StaggerChild key={s.id}>
             <Link
               to={`/section/${s.id}`}
-              className="flex h-full flex-col items-start gap-2 rounded-xl border border-slate-200 bg-white p-3 transition hover:border-slate-300 hover:bg-slate-50"
+              className="flex h-full flex-col items-start gap-2 rounded-xl border border-line bg-white p-3 transition hover:border-line hover:bg-paper"
             >
               <span
                 className={`flex h-9 w-9 items-center justify-center rounded-lg ${s.accent}`}
               >
                 <Icon className="h-4 w-4" aria-hidden="true" />
               </span>
-              <span className="text-sm font-semibold text-slate-900">
+              <span className="text-sm font-semibold text-ink">
                 {s.shortLabel}
               </span>
             </Link>

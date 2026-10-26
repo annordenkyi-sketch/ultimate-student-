@@ -34,7 +34,7 @@ export const DeadlinesBlock = () => {
       <div className="mb-3 flex items-end justify-between">
         <h2
           id="deadlines-heading"
-          className="text-sm font-semibold text-slate-900 display"
+          className="text-sm font-semibold text-ink display"
         >
           Upcoming deadlines
         </h2>

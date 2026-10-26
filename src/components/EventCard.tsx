@@ -15,20 +15,20 @@ export const EventCard = ({ event, linkTo }: Props) => {
         <CalendarDays className="h-3 w-3" aria-hidden="true" />
         Event
       </span>
-      <span className="block text-[15px] font-semibold leading-snug text-slate-900">
+      <span className="block text-[15px] font-semibold leading-snug text-ink">
         {event.title}
       </span>
-      <span className="mt-2 block text-xs text-slate-500">
+      <span className="mt-2 block text-xs text-muted">
         {formatDateTime(event.date)}
       </span>
-      <span className="mt-0.5 flex items-center gap-1 text-xs text-slate-500">
+      <span className="mt-0.5 flex items-center gap-1 text-xs text-muted">
         <MapPin className="h-3 w-3" aria-hidden="true" />
         {event.location}
       </span>
     </>
   );
   const className =
-    "flex h-full flex-col rounded-2xl border border-slate-200 bg-white p-4 shadow-card transition hover:border-brand-200 hover:shadow-lift";
+    "flex h-full flex-col rounded-2xl border border-line bg-white p-4 shadow-card transition hover:border-brand-200 hover:shadow-lift";
   if (linkTo) {
     return (
       <Link to={linkTo} className={className}>

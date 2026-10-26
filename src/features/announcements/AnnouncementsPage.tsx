@@ -31,10 +31,10 @@ const TAB_CATEGORY: Partial<Record<Tab, AnnouncementCategory>> = {
 
 const CATEGORY_TINT: Record<AnnouncementCategory, string> = {
   academic: "bg-brand-100 text-brand-700",
-  hostels: "bg-amber-100 text-amber-800",
+  hostels: "bg-accent-100 text-accent-700",
   events: "bg-sky-100 text-sky-700",
   services: "bg-rose-100 text-rose-700",
-  general: "bg-slate-100 text-slate-700",
+  general: "bg-paper text-ink",
 };
 
 const CATEGORY_LABEL: Record<AnnouncementCategory, string> = {
@@ -72,28 +72,28 @@ const AnnouncementRow = ({ a, isActive, isUnread, query, onClick }: RowProps) =>
       onClick={onClick}
       aria-pressed={isActive}
       className={`flex w-full items-start gap-3 p-4 text-left transition ${
-        isActive ? "bg-brand-50" : "hover:bg-slate-50"
+        isActive ? "bg-brand-50" : "hover:bg-paper"
       }`}
     >
       <span
         aria-hidden="true"
         className={`mt-1.5 h-2 w-2 shrink-0 rounded-full ${
-          isUnread ? "bg-brand-600" : "bg-slate-300"
+          isUnread ? "bg-brand-600" : "bg-line"
         }`}
       />
       <div className="min-w-0 flex-1">
         <div className="flex items-baseline justify-between gap-3">
-          <p className="truncate text-sm font-semibold text-slate-900">
+          <p className="truncate text-sm font-semibold text-ink">
             <Highlight text={a.title} query={query} />
           </p>
-          <p className="shrink-0 text-[11px] text-slate-400">
+          <p className="shrink-0 text-[11px] text-muted">
             {new Date(a.date).toLocaleDateString(undefined, {
               day: "numeric",
               month: "short",
             })}
           </p>
         </div>
-        <div className="mt-0.5 flex flex-wrap items-center gap-x-2 gap-y-0.5 text-xs text-slate-500">
+        <div className="mt-0.5 flex flex-wrap items-center gap-x-2 gap-y-0.5 text-xs text-muted">
           {a.source && (
             <span className="truncate">
               <Highlight text={a.source} query={query} />
@@ -107,7 +107,7 @@ const AnnouncementRow = ({ a, isActive, isUnread, query, onClick }: RowProps) =>
             </span>
           )}
         </div>
-        <p className="mt-1 line-clamp-2 text-xs text-slate-500">
+        <p className="mt-1 line-clamp-2 text-xs text-muted">
           <Highlight text={a.body} query={query} />
         </p>
       </div>
@@ -126,16 +126,16 @@ const DetailPanel = ({
 }) => (
   <article className="flex h-full flex-col">
     {/* Mobile-only back */}
-    <header className="flex items-center gap-2 border-b border-slate-100 p-4 lg:hidden">
+    <header className="flex items-center gap-2 border-b border-line/60 p-4 lg:hidden">
       <button
         type="button"
         onClick={onBack}
         aria-label="Back to announcements"
-        className="inline-flex h-8 w-8 items-center justify-center rounded-md text-slate-500 hover:bg-slate-100"
+        className="inline-flex h-8 w-8 items-center justify-center rounded-md text-muted hover:bg-paper"
       >
         <ChevronLeft className="h-4 w-4" aria-hidden="true" />
       </button>
-      <p className="text-sm font-semibold text-slate-900">Announcement</p>
+      <p className="text-sm font-semibold text-ink">Announcement</p>
     </header>
 
     <div className="flex-1 overflow-y-auto p-5">
@@ -146,13 +146,13 @@ const DetailPanel = ({
           {CATEGORY_LABEL[announcement.category]}
         </span>
       )}
-      <h2 className="mt-3 text-xl font-bold text-slate-900">
+      <h2 className="mt-3 text-xl font-bold text-ink">
         {announcement.title}
       </h2>
-      <p className="mt-1 text-xs text-slate-500">
+      <p className="mt-1 text-xs text-muted">
         {announcement.source && (
           <>
-            <span className="font-medium text-slate-700">
+            <span className="font-medium text-ink">
               {announcement.source}
             </span>
             {" · "}
@@ -160,7 +160,7 @@ const DetailPanel = ({
         )}
         {formatDate(announcement.date)}
       </p>
-      <div className="mt-5 whitespace-pre-wrap text-sm leading-relaxed text-slate-700">
+      <div className="mt-5 whitespace-pre-wrap text-sm leading-relaxed text-ink">
         {announcement.body}
       </div>
     </div>
@@ -246,10 +246,10 @@ export const AnnouncementsPage = () => {
             <ArrowLeft className="h-3 w-3" aria-hidden="true" />
             Back to Home
           </Link>
-          <h1 className="mt-1 text-2xl font-bold text-slate-900">
+          <h1 className="mt-1 text-2xl font-bold text-ink">
             Announcements
           </h1>
-          <p className="mt-1 text-sm text-slate-500">
+          <p className="mt-1 text-sm text-muted">
             {unreadCount} unread · {all?.length ?? 0} total
           </p>
         </div>
@@ -257,7 +257,7 @@ export const AnnouncementsPage = () => {
           type="button"
           onClick={onMarkAll}
           disabled={unreadCount === 0}
-          className="inline-flex shrink-0 items-center gap-1.5 rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-700 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50"
+          className="inline-flex shrink-0 items-center gap-1.5 rounded-xl border border-line bg-white px-3 py-2 text-xs font-semibold text-ink transition hover:bg-paper disabled:cursor-not-allowed disabled:opacity-50"
         >
           <CheckCheck className="h-3.5 w-3.5" aria-hidden="true" />
           Mark all as read
@@ -268,7 +268,7 @@ export const AnnouncementsPage = () => {
       <div className="mb-4 space-y-3">
         <div className="relative">
           <Search
-            className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400"
+            className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted"
             aria-hidden="true"
           />
           <input
@@ -277,7 +277,7 @@ export const AnnouncementsPage = () => {
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Search announcements…"
             aria-label="Search announcements"
-            className="w-full rounded-xl border border-slate-200 bg-white py-2.5 pl-9 pr-3 text-sm text-slate-900 placeholder:text-slate-400 focus:border-brand-500"
+            className="w-full rounded-xl border border-line bg-white py-2.5 pl-9 pr-3 text-sm text-ink placeholder:text-muted focus:border-brand-500"
           />
         </div>
 
@@ -298,7 +298,7 @@ export const AnnouncementsPage = () => {
                 className={`shrink-0 rounded-full border px-3 py-1 text-xs font-medium transition ${
                   isActive
                     ? "border-brand-600 bg-brand-600 text-white"
-                    : "border-slate-200 bg-white text-slate-700 hover:border-slate-300 hover:bg-slate-50"
+                    : "border-line bg-white text-ink hover:border-line hover:bg-paper"
                 }`}
               >
                 {t}
@@ -316,21 +316,21 @@ export const AnnouncementsPage = () => {
         <section
           className={`${
             detailViewVisible ? "hidden lg:block" : "block"
-          } rounded-xl border border-slate-200 bg-white`}
+          } rounded-xl border border-line bg-white`}
           aria-label="Announcements list"
         >
           {all == null ? (
-            <ul className="divide-y divide-slate-100">
+            <ul className="divide-y divide-line/60">
               {[0, 1, 2, 3, 4].map((i) => (
-                <li key={i} className="h-20 animate-pulse bg-slate-50/60" />
+                <li key={i} className="h-20 animate-pulse bg-paper/60" />
               ))}
             </ul>
           ) : filtered.length === 0 ? (
-            <div className="p-6 text-center text-sm text-slate-500">
+            <div className="p-6 text-center text-sm text-muted">
               {query.trim() ? (
                 <>
                   No results for{" "}
-                  <strong className="text-slate-900">"{query}"</strong>.
+                  <strong className="text-ink">"{query}"</strong>.
                 </>
               ) : all.length === 0 ? (
                 "No announcements yet."
@@ -339,7 +339,7 @@ export const AnnouncementsPage = () => {
               )}
             </div>
           ) : (
-            <ul className="divide-y divide-slate-100">
+            <ul className="divide-y divide-line/60">
               {filtered.map((a) => (
                 <AnnouncementRow
                   key={a.id}
@@ -358,12 +358,12 @@ export const AnnouncementsPage = () => {
           <aside
             className={`${
               detailViewVisible ? "block" : "hidden lg:block"
-            } overflow-hidden rounded-xl border border-slate-200 bg-white lg:min-h-[400px]`}
+            } overflow-hidden rounded-xl border border-line bg-white lg:min-h-[400px]`}
           >
             <DetailPanel announcement={active} onBack={closeOne} />
           </aside>
         ) : (
-          <aside className="hidden rounded-xl border border-dashed border-slate-200 bg-white p-6 text-center text-sm text-slate-500 lg:flex lg:items-center lg:justify-center">
+          <aside className="hidden rounded-xl border border-dashed border-line bg-white p-6 text-center text-sm text-muted lg:flex lg:items-center lg:justify-center">
             Select an announcement to read the full text.
           </aside>
         )}

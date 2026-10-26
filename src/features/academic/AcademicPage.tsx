@@ -189,7 +189,7 @@ const Collapsible = ({
       <div className="flex items-center justify-between">
         <h2
           id={`${id}-title`}
-          className="text-base font-semibold text-slate-900"
+          className="text-base font-semibold text-ink"
         >
           {title}
         </h2>
@@ -198,7 +198,7 @@ const Collapsible = ({
           onClick={() => setOpen((v) => !v)}
           aria-expanded={open}
           aria-controls={contentId}
-          className="inline-flex h-8 w-8 items-center justify-center rounded-md text-slate-500 transition hover:bg-slate-100 hover:text-slate-900 lg:hidden"
+          className="inline-flex h-8 w-8 items-center justify-center rounded-md text-muted transition hover:bg-paper hover:text-ink lg:hidden"
         >
           <ChevronDown
             className={`h-4 w-4 transition-transform ${
@@ -256,7 +256,7 @@ const ComingUp = () => {
     <section aria-labelledby="coming-up-title">
       <h2
         id="coming-up-title"
-        className="mb-3 text-sm font-semibold text-slate-500"
+        className="mb-3 text-sm font-semibold text-muted"
       >
         Coming up
       </h2>
@@ -267,12 +267,12 @@ const ComingUp = () => {
           return (
             <li
               key={item.id}
-              className="min-w-[220px] shrink-0 snap-start rounded-xl border border-slate-200 bg-white p-4 shadow-sm lg:min-w-0"
+              className="min-w-[220px] shrink-0 snap-start rounded-xl border border-line bg-white p-4 shadow-sm lg:min-w-0"
             >
               <div className="flex items-start justify-between gap-2">
                 <AlarmClock
                   className={`h-4 w-4 shrink-0 ${
-                    urgent ? "text-rose-600" : "text-slate-400"
+                    urgent ? "text-rose-600" : "text-muted"
                   }`}
                   aria-hidden="true"
                 />
@@ -281,15 +281,15 @@ const ComingUp = () => {
                     Due soon
                   </span>
                 ) : (
-                  <span className="text-[11px] font-medium text-slate-400">
+                  <span className="text-[11px] font-medium text-muted">
                     {formatFullDate(item.dateIso)}
                   </span>
                 )}
               </div>
-              <p className="mt-2 text-sm font-semibold text-slate-900">
+              <p className="mt-2 text-sm font-semibold text-ink">
                 {item.title}
               </p>
-              <p className="mt-1 text-xs text-slate-500">
+              <p className="mt-1 text-xs text-muted">
                 {d === 0
                   ? "Today"
                   : d === 1
@@ -378,15 +378,15 @@ const Calendar = () => {
   };
 
   return (
-    <div className="rounded-xl border border-slate-200 bg-white p-4">
+    <div className="rounded-xl border border-line bg-white p-4">
       <div className="mb-3 flex items-center justify-between">
-        <p className="text-sm font-semibold text-slate-900">{monthName}</p>
+        <p className="text-sm font-semibold text-ink">{monthName}</p>
         <div className="flex items-center gap-1">
           <button
             type="button"
             onClick={() => shift(-1)}
             aria-label="Previous month"
-            className="inline-flex h-8 w-8 items-center justify-center rounded-md text-slate-500 transition hover:bg-slate-100 hover:text-slate-900"
+            className="inline-flex h-8 w-8 items-center justify-center rounded-md text-muted transition hover:bg-paper hover:text-ink"
           >
             <ChevronLeft className="h-4 w-4" aria-hidden="true" />
           </button>
@@ -394,7 +394,7 @@ const Calendar = () => {
             type="button"
             onClick={() => shift(1)}
             aria-label="Next month"
-            className="inline-flex h-8 w-8 items-center justify-center rounded-md text-slate-500 transition hover:bg-slate-100 hover:text-slate-900"
+            className="inline-flex h-8 w-8 items-center justify-center rounded-md text-muted transition hover:bg-paper hover:text-ink"
           >
             <ChevronRight className="h-4 w-4" aria-hidden="true" />
           </button>
@@ -402,7 +402,7 @@ const Calendar = () => {
       </div>
 
       {/* Weekday row */}
-      <div className="grid grid-cols-7 text-center text-[11px] font-medium uppercase tracking-wider text-slate-400">
+      <div className="grid grid-cols-7 text-center text-[11px] font-medium uppercase tracking-wider text-muted">
         {WEEKDAYS.map((d) => (
           <div key={d} className="py-1.5">
             {d}
@@ -428,12 +428,12 @@ const Calendar = () => {
               aria-pressed={isSelected}
               className={`relative flex aspect-square items-center justify-center rounded-md text-sm transition ${
                 !cell.current
-                  ? "text-slate-300"
+                  ? "text-muted"
                   : isSelected
                     ? "bg-brand-50 text-brand-800"
                     : isToday
                       ? "font-semibold text-brand-700"
-                      : "text-slate-700 hover:bg-slate-100"
+                      : "text-ink hover:bg-paper"
               } ${events.length === 0 ? "cursor-default" : "cursor-pointer"}`}
             >
               {cell.date}
@@ -449,23 +449,23 @@ const Calendar = () => {
       </div>
 
       {/* Day events */}
-      <div className="mt-3 border-t border-slate-100 pt-3">
+      <div className="mt-3 border-t border-line/60 pt-3">
         {selectedIso === null ? (
-          <p className="text-xs text-slate-500">
+          <p className="text-xs text-muted">
             Click a highlighted date to see what's on.
           </p>
         ) : dayEvents.length === 0 ? (
-          <p className="text-xs text-slate-500">Nothing on this day.</p>
+          <p className="text-xs text-muted">Nothing on this day.</p>
         ) : (
           <>
-            <p className="text-xs font-medium text-slate-500">
+            <p className="text-xs font-medium text-muted">
               {formatFullDate(selectedIso)}
             </p>
             <ul className="mt-2 space-y-1.5">
               {dayEvents.map((e) => (
                 <li
                   key={e.id}
-                  className="flex items-start gap-2 text-sm text-slate-700"
+                  className="flex items-start gap-2 text-sm text-ink"
                 >
                   <span
                     aria-hidden="true"
@@ -491,19 +491,19 @@ const Calendar = () => {
 /* ───────────────────────────── Courses ───────────────────────────── */
 
 const CoursesList = () => (
-  <ul className="divide-y divide-slate-100 overflow-hidden rounded-xl border border-slate-200 bg-white">
+  <ul className="divide-y divide-line/60 overflow-hidden rounded-xl border border-line bg-white">
     {COURSES.map((c) => (
       <li key={c.code} className="p-4">
         <div className="flex items-baseline justify-between gap-3">
-          <p className="text-sm font-semibold text-slate-900">
-            <span className="mr-1 inline-block rounded bg-slate-100 px-1.5 py-0.5 font-mono text-xs text-slate-700">
+          <p className="text-sm font-semibold text-ink">
+            <span className="mr-1 inline-block rounded bg-paper px-1.5 py-0.5 font-mono text-xs text-ink">
               {c.code}
             </span>
             {c.name}
           </p>
-          <p className="shrink-0 text-xs text-slate-500">{c.schedule}</p>
+          <p className="shrink-0 text-xs text-muted">{c.schedule}</p>
         </div>
-        <p className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-slate-500">
+        <p className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted">
           <span className="inline-flex items-center gap-1">
             <User className="h-3 w-3" aria-hidden="true" />
             {c.lecturer}
@@ -523,14 +523,14 @@ const CoursesList = () => (
 const RegistrationGuide = () => {
   const nextIndex = STEPS.findIndex((s) => !s.done);
   return (
-    <ol className="rounded-xl border border-slate-200 bg-white">
+    <ol className="rounded-xl border border-line bg-white">
       {STEPS.map((step, i) => {
         const isNext = i === nextIndex;
         return (
           <li
             key={step.label}
             className={`flex items-start gap-3 px-4 py-3 ${
-              i < STEPS.length - 1 ? "border-b border-slate-100" : ""
+              i < STEPS.length - 1 ? "border-b border-line/60" : ""
             }`}
           >
             <span
@@ -539,7 +539,7 @@ const RegistrationGuide = () => {
                   ? "bg-emerald-100 text-emerald-700"
                   : isNext
                     ? "bg-brand-600 text-white"
-                    : "bg-slate-100 text-slate-500"
+                    : "bg-paper text-muted"
               }`}
             >
               {step.done ? "✓" : i + 1}
@@ -548,8 +548,8 @@ const RegistrationGuide = () => {
               <p
                 className={`text-sm ${
                   step.done
-                    ? "text-slate-500 line-through"
-                    : "text-slate-900"
+                    ? "text-muted line-through"
+                    : "text-ink"
                 }`}
               >
                 {step.label}
@@ -573,19 +573,19 @@ const RegistrationGuide = () => {
 /* ───────────────────────────── Exams ───────────────────────────── */
 
 const ExamList = () => (
-  <ul className="divide-y divide-slate-100 overflow-hidden rounded-xl border border-slate-200 bg-white">
+  <ul className="divide-y divide-line/60 overflow-hidden rounded-xl border border-line bg-white">
     {EXAMS.map((e) => (
       <li key={e.course} className="p-4">
         <div className="flex items-baseline justify-between gap-3">
-          <p className="text-sm font-semibold text-slate-900">{e.course}</p>
-          <p className="shrink-0 text-xs font-medium text-slate-700">
+          <p className="text-sm font-semibold text-ink">{e.course}</p>
+          <p className="shrink-0 text-xs font-medium text-ink">
             {new Date(e.dateIso).toLocaleDateString(undefined, {
               day: "numeric",
               month: "short",
             })}
           </p>
         </div>
-        <p className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-slate-500">
+        <p className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted">
           <span className="inline-flex items-center gap-1">
             <Clock className="h-3 w-3" aria-hidden="true" />
             {formatTime(e.dateIso)} · {e.duration}
@@ -607,24 +607,24 @@ const Contacts = () => (
     {CONTACTS.map((c) => (
       <li
         key={c.department}
-        className="rounded-xl border border-slate-200 bg-white p-4"
+        className="rounded-xl border border-line bg-white p-4"
       >
-        <p className="text-sm font-semibold text-slate-900">{c.department}</p>
-        <p className="mt-0.5 flex items-center gap-1 text-xs text-slate-500">
+        <p className="text-sm font-semibold text-ink">{c.department}</p>
+        <p className="mt-0.5 flex items-center gap-1 text-xs text-muted">
           <MapPin className="h-3 w-3" aria-hidden="true" />
           {c.office}
         </p>
         <div className="mt-3 flex flex-wrap gap-2">
           <a
             href={`tel:${c.phone.replace(/\s/g, "")}`}
-            className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 transition hover:bg-slate-50"
+            className="inline-flex items-center gap-1.5 rounded-lg border border-line bg-white px-3 py-1.5 text-xs font-semibold text-ink transition hover:bg-paper"
           >
             <Phone className="h-3 w-3" aria-hidden="true" />
             Call
           </a>
           <a
             href={`mailto:${c.email}`}
-            className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 transition hover:bg-slate-50"
+            className="inline-flex items-center gap-1.5 rounded-lg border border-line bg-white px-3 py-1.5 text-xs font-semibold text-ink transition hover:bg-paper"
           >
             <Mail className="h-3 w-3" aria-hidden="true" />
             Email
@@ -710,8 +710,8 @@ const runSearch = (q: string): Hit[] => {
 const typeTint: Record<Hit["type"], string> = {
   Deadline: "bg-rose-100 text-rose-700",
   Exam: "bg-brand-100 text-brand-700",
-  Course: "bg-slate-100 text-slate-700",
-  Step: "bg-amber-100 text-amber-700",
+  Course: "bg-paper text-ink",
+  Step: "bg-accent-100 text-accent-600",
   Contact: "bg-emerald-100 text-emerald-700",
 };
 
@@ -720,10 +720,10 @@ const SearchResults = ({ query }: { query: string }) => {
 
   if (hits.length === 0) {
     return (
-      <div className="rounded-xl border border-slate-200 bg-white p-5 text-sm text-slate-600">
+      <div className="rounded-xl border border-line bg-white p-5 text-sm text-muted">
         <p>
           No results for{" "}
-          <strong className="text-slate-900">"{query}"</strong> in Academic.
+          <strong className="text-ink">"{query}"</strong> in Academic.
         </p>
         <Link
           to={`/search?q=${encodeURIComponent(query)}`}
@@ -736,7 +736,7 @@ const SearchResults = ({ query }: { query: string }) => {
   }
 
   return (
-    <ul className="divide-y divide-slate-100 overflow-hidden rounded-xl border border-slate-200 bg-white">
+    <ul className="divide-y divide-line/60 overflow-hidden rounded-xl border border-line bg-white">
       {hits.map((h) => (
         <li key={h.key} className="flex items-start gap-3 p-3">
           <span
@@ -745,11 +745,11 @@ const SearchResults = ({ query }: { query: string }) => {
             {h.type}
           </span>
           <div className="min-w-0 flex-1">
-            <p className="text-sm font-semibold text-slate-900">
+            <p className="text-sm font-semibold text-ink">
               <Highlight text={h.title} query={query} />
             </p>
             {h.detail && (
-              <p className="text-xs text-slate-500">
+              <p className="text-xs text-muted">
                 <Highlight text={h.detail} query={query} />
               </p>
             )}
@@ -789,12 +789,12 @@ export const AcademicPage = () => {
     <div className="pb-4">
       {/* Header */}
       <header className="mb-4">
-        <div className="flex items-center gap-2 text-xs font-semibold text-slate-500">
+        <div className="flex items-center gap-2 text-xs font-semibold text-muted">
           <GraduationCap className="h-3.5 w-3.5" aria-hidden="true" />
           Academic
         </div>
-        <h1 className="mt-1 text-2xl font-bold text-slate-900">Academic</h1>
-        <p className="mt-1 text-sm text-slate-500">
+        <h1 className="mt-1 text-2xl font-bold text-ink">Academic</h1>
+        <p className="mt-1 text-sm text-muted">
           Your deadlines, courses, registration and exams.
         </p>
       </header>
@@ -806,7 +806,7 @@ export const AcademicPage = () => {
         </label>
         <div className="relative">
           <Search
-            className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400"
+            className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted"
             aria-hidden="true"
           />
           <input
@@ -815,7 +815,7 @@ export const AcademicPage = () => {
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Search deadlines, courses, exams…"
-            className="w-full rounded-xl border border-slate-200 bg-white py-2.5 pl-9 pr-3 text-sm text-slate-900 placeholder:text-slate-400 focus:border-brand-500"
+            className="w-full rounded-xl border border-line bg-white py-2.5 pl-9 pr-3 text-sm text-ink placeholder:text-muted focus:border-brand-500"
           />
         </div>
       </div>

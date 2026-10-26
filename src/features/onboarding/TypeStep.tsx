@@ -88,17 +88,17 @@ const ROTATION_INTERVAL_MS = 4000;
 /* ───────────────────────── Phone mockup ───────────────────────── */
 
 const PhoneMockup = () => (
-  <div className="w-[200px] rounded-[32px] bg-slate-900 p-2 shadow-2xl ring-1 ring-slate-800">
-    <div className="overflow-hidden rounded-[26px] bg-slate-50 p-2.5">
-      <div className="mb-2 flex items-center justify-between text-[8px] font-semibold text-slate-500">
+  <div className="w-[200px] rounded-[32px] bg-ink p-2 shadow-2xl ring-1 ring-ink/60">
+    <div className="overflow-hidden rounded-[26px] bg-paper p-2.5">
+      <div className="mb-2 flex items-center justify-between text-[8px] font-semibold text-muted">
         <span>9:41</span>
         <span className="inline-flex items-center gap-1">
-          <span className="h-1.5 w-1.5 rounded-full bg-slate-400" />
-          <span className="inline-block h-2 w-3 rounded-sm border border-slate-400" />
+          <span className="h-1.5 w-1.5 rounded-full bg-muted" />
+          <span className="inline-block h-2 w-3 rounded-sm border border-muted" />
         </span>
       </div>
       <div className="rounded-xl bg-gradient-to-br from-brand-600 to-brand-800 p-2.5 text-white">
-        <span className="inline-flex items-center gap-1 rounded-full bg-amber-200/20 px-1.5 py-0.5 text-[6px] font-semibold uppercase tracking-wider text-amber-100 ring-1 ring-amber-200/40">
+        <span className="inline-flex items-center gap-1 rounded-full bg-accent-200/20 px-1.5 py-0.5 text-[6px] font-semibold uppercase tracking-wider text-accent-100 ring-1 ring-accent-200/40">
           <GraduationCap className="h-2 w-2" aria-hidden="true" />
           Ultimate Student
         </span>
@@ -113,39 +113,39 @@ const PhoneMockup = () => (
           <p className="text-[7px] font-semibold uppercase tracking-wide text-brand-700">
             Announcement
           </p>
-          <p className="text-[8px] font-semibold leading-tight text-slate-900">
+          <p className="text-[8px] font-semibold leading-tight text-ink">
             Welcome week schedule
           </p>
         </div>
       </div>
-      <div className="mt-1 flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white p-1.5">
+      <div className="mt-1 flex items-center gap-1.5 rounded-lg border border-line bg-white p-1.5">
         <span className="flex h-4 w-4 shrink-0 items-center justify-center rounded bg-rose-100 text-rose-700">
           <AlarmClock className="h-2.5 w-2.5" aria-hidden="true" />
         </span>
         <div>
-          <p className="text-[8px] font-semibold leading-tight text-slate-900">
+          <p className="text-[8px] font-semibold leading-tight text-ink">
             Registration
           </p>
-          <p className="text-[7px] text-slate-500">In 2 days</p>
+          <p className="text-[7px] text-muted">In 2 days</p>
         </div>
       </div>
-      <div className="mt-1 flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white p-1.5">
+      <div className="mt-1 flex items-center gap-1.5 rounded-lg border border-line bg-white p-1.5">
         <span className="flex h-4 w-4 shrink-0 items-center justify-center rounded bg-sky-100 text-sky-700">
           <CalendarDays className="h-2.5 w-2.5" aria-hidden="true" />
         </span>
         <div>
-          <p className="text-[8px] font-semibold leading-tight text-slate-900">
+          <p className="text-[8px] font-semibold leading-tight text-ink">
             Fresher's party
           </p>
-          <p className="text-[7px] text-slate-500">Great Hall · Sat</p>
+          <p className="text-[7px] text-muted">Great Hall · Sat</p>
         </div>
       </div>
-      <div className="mt-2 flex items-center justify-around border-t border-slate-200 pt-1.5">
+      <div className="mt-2 flex items-center justify-around border-t border-line pt-1.5">
         {[0, 1, 2, 3, 4].map((i) => (
           <span
             key={i}
             className={`h-1 w-5 rounded-full ${
-              i === 0 ? "bg-brand-600" : "bg-slate-200"
+              i === 0 ? "bg-brand-600" : "bg-line"
             }`}
           />
         ))}
@@ -213,8 +213,8 @@ const Slideshow = ({
       aria-hidden="true"
       className={
         variant === "desktop"
-          ? "absolute inset-0 bg-gradient-to-br from-slate-950/75 via-slate-950/50 to-brand-900/55"
-          : "absolute inset-0 bg-gradient-to-b from-slate-950/40 via-slate-950/15 to-white"
+          ? "absolute inset-0 bg-gradient-to-br from-ink/75 via-ink/50 to-brand-900/55"
+          : "absolute inset-0 bg-gradient-to-b from-ink/40 via-ink/15 to-white"
       }
     />
 
@@ -233,7 +233,7 @@ const Slideshow = ({
           transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
           className="inline-flex items-center gap-2 rounded-full bg-white/15 px-3 py-1.5 text-xs font-semibold text-white shadow-lg shadow-slate-950/30 ring-1 ring-white/25 backdrop-blur-md"
         >
-          <span className="inline-block h-1.5 w-1.5 rounded-full bg-amber-300" />
+          <span className="inline-block h-1.5 w-1.5 rounded-full bg-accent-300" />
           {CAPTIONS[activeKey]}
         </motion.div>
       </AnimatePresence>
@@ -243,7 +243,7 @@ const Slideshow = ({
     <div
       role="tablist"
       aria-label="Image slideshow"
-      className={`absolute left-1/2 flex -translate-x-1/2 items-center gap-1.5 rounded-full bg-slate-950/40 px-2.5 py-1.5 backdrop-blur-md ${
+      className={`absolute left-1/2 flex -translate-x-1/2 items-center gap-1.5 rounded-full bg-ink/40 px-2.5 py-1.5 backdrop-blur-md ${
         variant === "desktop" ? "bottom-10" : "bottom-4"
       }`}
     >
@@ -295,7 +295,7 @@ const PhotoCard = ({
       className={`flex flex-col overflow-hidden rounded-2xl border shadow-card transition peer-focus-visible:ring-2 peer-focus-visible:ring-brand-500 peer-focus-visible:ring-offset-2 ${
         isSelected
           ? "border-brand-500 bg-brand-50 ring-2 ring-brand-200"
-          : "border-slate-200 bg-white hover:border-slate-300 hover:shadow-lift"
+          : "border-line bg-white hover:border-line hover:shadow-lift"
       }`}
       whileHover={reduce ? undefined : { y: -2 }}
       whileTap={reduce ? undefined : { scale: 0.985 }}
@@ -316,17 +316,17 @@ const PhotoCard = ({
           />
           <div
             aria-hidden="true"
-            className="pointer-events-none absolute inset-0 hidden md:block md:bg-gradient-to-t md:from-slate-950/30 md:to-transparent"
+            className="pointer-events-none absolute inset-0 hidden md:block md:bg-gradient-to-t md:from-ink/30 md:to-transparent"
           />
         </div>
 
         {/* Content */}
         <div className="flex flex-1 items-center justify-between gap-2 py-3 pr-3 md:items-start md:p-4">
           <div className="min-w-0">
-            <p className="text-sm font-semibold text-slate-900 md:text-[15px]">
+            <p className="text-sm font-semibold text-ink md:text-[15px]">
               {option.title}
             </p>
-            <p className="mt-0.5 text-xs leading-relaxed text-slate-500">
+            <p className="mt-0.5 text-xs leading-relaxed text-muted">
               {option.description}
             </p>
           </div>
@@ -355,7 +355,7 @@ const PhotoCard = ({
                 <span
                   key="empty"
                   aria-hidden="true"
-                  className="h-5 w-5 rounded-full border-2 border-slate-300"
+                  className="h-5 w-5 rounded-full border-2 border-line"
                 />
               )}
             </AnimatePresence>
@@ -378,7 +378,7 @@ const PhotoCard = ({
             }
           >
             <div className="border-t border-brand-200/70 px-4 py-3">
-              <p className="text-xs leading-relaxed text-slate-700 md:text-[13px]">
+              <p className="text-xs leading-relaxed text-ink md:text-[13px]">
                 {CONTEXT_LINES[option.id]}
               </p>
             </div>
@@ -469,7 +469,7 @@ export const TypeStep = () => {
             </h2>
           </FadeIn>
           <FadeIn delay={0.2}>
-            <p className="mt-3 max-w-xs text-sm text-slate-200">
+            <p className="mt-3 max-w-xs text-sm text-paper">
               We'll shape the app around your year, programme and plans.
             </p>
           </FadeIn>
@@ -497,10 +497,10 @@ export const TypeStep = () => {
           className="mx-auto w-full max-w-2xl px-5 pb-32 pt-5 md:px-10 md:py-12 md:pb-14"
         >
           <FadeIn delay={0.08} y={12}>
-            <h1 className="text-2xl font-bold text-slate-900 display md:text-3xl">
+            <h1 className="text-2xl font-bold text-ink display md:text-3xl">
               Which best describes you?
             </h1>
-            <p className="mt-1 text-sm text-slate-500">
+            <p className="mt-1 text-sm text-muted">
               We'll personalise your app around this.
             </p>
           </FadeIn>
@@ -537,14 +537,14 @@ export const TypeStep = () => {
               className={`inline-flex items-center gap-2 rounded-full border-2 px-4 py-2.5 text-sm font-semibold transition motion-safe:active:scale-[0.97] ${
                 draft.isInternational
                   ? "border-brand-500 bg-brand-50 text-brand-800 shadow-sm"
-                  : "border-slate-200 bg-white text-slate-700 hover:border-slate-300"
+                  : "border-line bg-white text-ink hover:border-line"
               }`}
             >
               <span
                 className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full transition ${
                   draft.isInternational
                     ? "bg-brand-600 text-white"
-                    : "bg-slate-100 text-slate-500"
+                    : "bg-paper text-muted"
                 }`}
                 aria-hidden="true"
               >
@@ -563,7 +563,7 @@ export const TypeStep = () => {
             <button
               type="button"
               onClick={() => navigate(-1)}
-              className="inline-flex items-center gap-1 rounded-md px-2 py-2 text-sm font-semibold text-slate-600 transition hover:text-slate-900 motion-safe:active:scale-[0.97]"
+              className="inline-flex items-center gap-1 rounded-md px-2 py-2 text-sm font-semibold text-muted transition hover:text-ink motion-safe:active:scale-[0.97]"
             >
               <ArrowLeft className="h-4 w-4" aria-hidden="true" />
               Back
@@ -602,7 +602,7 @@ export const TypeStep = () => {
 
         {/* Mobile sticky Continue */}
         <div
-          className="fixed inset-x-0 bottom-0 z-20 border-t border-slate-200 bg-white px-5 py-3 shadow-[0_-6px_20px_-10px_rgba(15,23,42,0.15)] md:hidden"
+          className="fixed inset-x-0 bottom-0 z-20 border-t border-line bg-white px-5 py-3 shadow-[0_-6px_20px_-10px_rgba(15,23,42,0.15)] md:hidden"
           style={{ paddingBottom: "calc(0.75rem + env(safe-area-inset-bottom))" }}
         >
           <motion.div

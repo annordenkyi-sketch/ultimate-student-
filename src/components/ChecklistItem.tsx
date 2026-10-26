@@ -11,18 +11,18 @@ interface Props {
 export const ChecklistItemRow = ({ task, onToggle, resolveLink }: Props) => {
   const link = task.helpItemId && resolveLink ? resolveLink(task.helpItemId) : null;
   return (
-    <li className="flex items-start gap-3 rounded-xl border border-slate-200 bg-white p-3 shadow-sm">
+    <li className="flex items-start gap-3 rounded-xl border border-line bg-white p-3 shadow-sm">
       <input
         id={`chk-${task.id}`}
         type="checkbox"
         checked={task.done}
         onChange={() => onToggle(task.id)}
-        className="mt-0.5 h-4 w-4 shrink-0 rounded border-slate-300 text-brand-600 focus:ring-brand-500"
+        className="mt-0.5 h-4 w-4 shrink-0 rounded border-line text-brand-600 focus:ring-brand-500"
       />
       <label
         htmlFor={`chk-${task.id}`}
         className={`min-w-0 flex-1 text-sm ${
-          task.done ? "text-slate-400 line-through" : "text-slate-900"
+          task.done ? "text-muted line-through" : "text-ink"
         }`}
       >
         {task.title}

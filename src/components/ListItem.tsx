@@ -34,7 +34,7 @@ export const ListItem = ({
   return (
     <Link
       to={`/section/${item.section}/${item.id}`}
-      className="flex items-start gap-3 rounded-2xl border border-slate-200 bg-white p-3.5 shadow-card transition hover:border-brand-200 hover:shadow-lift"
+      className="flex items-start gap-3 rounded-2xl border border-line bg-white p-3.5 shadow-card transition hover:border-brand-200 hover:shadow-lift"
     >
       <span
         className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-xl ${meta.accent}`}
@@ -43,14 +43,14 @@ export const ListItem = ({
       </span>
       <span className="min-w-0 flex-1">
         {showSection && (
-          <span className="mb-0.5 block text-[11px] font-semibold uppercase tracking-wide text-slate-400">
+          <span className="mb-0.5 block text-[11px] font-semibold uppercase tracking-wide text-muted">
             {meta.shortLabel}
           </span>
         )}
-        <span className="block text-[15px] font-semibold text-slate-900">
+        <span className="block text-[15px] font-semibold text-ink">
           <Highlight text={item.title} query={highlightQuery} />
         </span>
-        <span className="line-clamp-2 text-xs leading-relaxed text-slate-500">
+        <span className="line-clamp-2 text-xs leading-relaxed text-muted">
           <Highlight text={item.summary} query={highlightQuery} />
         </span>
         <span className="mt-1.5 flex flex-wrap gap-1">
@@ -68,7 +68,7 @@ export const ListItem = ({
           className={`rounded-lg p-1.5 transition ${
             saved
               ? "text-brand-600"
-              : "text-slate-400 hover:bg-slate-100 hover:text-slate-700"
+              : "text-muted hover:bg-paper hover:text-ink"
           }`}
         >
           <Bookmark
@@ -77,7 +77,7 @@ export const ListItem = ({
             aria-hidden="true"
           />
         </button>
-        <ChevronRight className="h-4 w-4 text-slate-400" aria-hidden="true" />
+        <ChevronRight className="h-4 w-4 text-muted" aria-hidden="true" />
       </span>
     </Link>
   );

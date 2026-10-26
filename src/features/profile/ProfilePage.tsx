@@ -97,10 +97,10 @@ const SectionShell = ({
 }: SectionShellProps) => (
   <section
     id={`section-${id}`}
-    className="rounded-xl border border-slate-200 bg-white"
+    className="rounded-xl border border-line bg-white"
   >
-    <header className="flex items-center justify-between border-b border-slate-100 px-5 py-3">
-      <h2 className="text-sm font-semibold text-slate-900">{title}</h2>
+    <header className="flex items-center justify-between border-b border-line/60 px-5 py-3">
+      <h2 className="text-sm font-semibold text-ink">{title}</h2>
       {canEdit && (
         <button
           type="button"
@@ -131,15 +131,15 @@ const Field = ({
   children: React.ReactNode;
 }) => (
   <div>
-    <p className="text-[11px] font-semibold uppercase tracking-wider text-slate-500">
+    <p className="text-[11px] font-semibold uppercase tracking-wider text-muted">
       {label}
     </p>
-    <div className="mt-0.5 text-sm text-slate-900">{children ?? "—"}</div>
+    <div className="mt-0.5 text-sm text-ink">{children ?? "—"}</div>
   </div>
 );
 
 const inputClass =
-  "w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:border-brand-500";
+  "w-full rounded-xl border border-line bg-white px-3 py-2 text-sm text-ink placeholder:text-muted focus:border-brand-500";
 
 const SaveBar = ({
   canSave,
@@ -154,7 +154,7 @@ const SaveBar = ({
     <button
       type="button"
       onClick={onCancel}
-      className="rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50"
+      className="rounded-xl border border-line bg-white px-4 py-2 text-sm font-semibold text-ink hover:bg-paper"
     >
       Cancel
     </button>
@@ -202,7 +202,7 @@ const ProfileHeader = ({
   };
 
   return (
-    <section className="rounded-xl border border-slate-200 bg-white p-5">
+    <section className="rounded-xl border border-line bg-white p-5">
       <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div className="flex items-center gap-4">
           {/* Avatar */}
@@ -222,7 +222,7 @@ const ProfileHeader = ({
               type="button"
               onClick={() => fileRef.current?.click()}
               aria-label="Change profile picture"
-              className="absolute -right-1 -bottom-1 inline-flex h-7 w-7 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-700 shadow-sm transition hover:bg-slate-50"
+              className="absolute -right-1 -bottom-1 inline-flex h-7 w-7 items-center justify-center rounded-full border border-line bg-white text-ink shadow-sm transition hover:bg-paper"
             >
               <Camera className="h-3.5 w-3.5" aria-hidden="true" />
             </button>
@@ -236,7 +236,7 @@ const ProfileHeader = ({
           </div>
 
           <div className="min-w-0">
-            <h1 className="truncate text-xl font-bold text-slate-900">
+            <h1 className="truncate text-xl font-bold text-ink">
               {profile.name}
             </h1>
           </div>
@@ -250,7 +250,7 @@ const ProfileHeader = ({
                 updateProfile({ avatar: undefined });
                 showToast("Picture removed", "success");
               }}
-              className="inline-flex items-center gap-1.5 rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50"
+              className="inline-flex items-center gap-1.5 rounded-xl border border-line bg-white px-3 py-2 text-xs font-semibold text-ink hover:bg-paper"
             >
               Remove photo
             </button>
@@ -335,7 +335,7 @@ const PersonalDetails = ({
       {isEditing ? (
         <form onSubmit={onSave} noValidate className="space-y-4">
           <div>
-            <label htmlFor="pd-name" className="text-sm font-medium text-slate-800">
+            <label htmlFor="pd-name" className="text-sm font-medium text-ink">
               Full name
             </label>
             <input
@@ -349,7 +349,7 @@ const PersonalDetails = ({
             )}
           </div>
           <div>
-            <label htmlFor="pd-id" className="text-sm font-medium text-slate-800">
+            <label htmlFor="pd-id" className="text-sm font-medium text-ink">
               Email or university ID
             </label>
             <input
@@ -365,8 +365,8 @@ const PersonalDetails = ({
             )}
           </div>
           <div>
-            <label htmlFor="pd-phone" className="text-sm font-medium text-slate-800">
-              Phone number <span className="text-slate-400">(optional)</span>
+            <label htmlFor="pd-phone" className="text-sm font-medium text-ink">
+              Phone number <span className="text-muted">(optional)</span>
             </label>
             <input
               id="pd-phone"
@@ -388,12 +388,12 @@ const PersonalDetails = ({
             {profile.phone ? (
               <a
                 href={`tel:${profile.phone.replace(/\s/g, "")}`}
-                className="text-slate-900 hover:text-brand-700"
+                className="text-ink hover:text-brand-700"
               >
                 {profile.phone}
               </a>
             ) : (
-              <span className="text-slate-400">Not set</span>
+              <span className="text-muted">Not set</span>
             )}
           </Field>
         </div>
@@ -464,7 +464,7 @@ const StudentDetails = ({
       {isEditing ? (
         <form onSubmit={onSave} noValidate className="space-y-4">
           <div>
-            <p className="text-sm font-medium text-slate-800">Student type</p>
+            <p className="text-sm font-medium text-ink">Student type</p>
             <fieldset className="mt-2 flex flex-wrap gap-2">
               <legend className="sr-only">Student type</legend>
               {TYPE_OPTIONS.map((t) => {
@@ -475,7 +475,7 @@ const StudentDetails = ({
                     className={`inline-flex cursor-pointer items-center gap-1.5 rounded-full border px-3 py-1 text-xs font-medium transition ${
                       active
                         ? "border-brand-600 bg-brand-600 text-white"
-                        : "border-slate-200 bg-white text-slate-700 hover:border-slate-300"
+                        : "border-line bg-white text-ink hover:border-line"
                     }`}
                   >
                     <input
@@ -497,7 +497,7 @@ const StudentDetails = ({
 
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <div>
-              <label htmlFor="sd-programme" className="text-sm font-medium text-slate-800">
+              <label htmlFor="sd-programme" className="text-sm font-medium text-ink">
                 Programme / department
               </label>
               <input
@@ -511,7 +511,7 @@ const StudentDetails = ({
               />
             </div>
             <div>
-              <label htmlFor="sd-level" className="text-sm font-medium text-slate-800">
+              <label htmlFor="sd-level" className="text-sm font-medium text-ink">
                 Level / year
               </label>
               <select
@@ -530,20 +530,20 @@ const StudentDetails = ({
             </div>
           </div>
 
-          <label className="flex cursor-pointer items-start gap-2 text-sm text-slate-700">
+          <label className="flex cursor-pointer items-start gap-2 text-sm text-ink">
             <input
               type="checkbox"
               checked={draft.isInternational}
               onChange={(e) =>
                 setDraft({ ...draft, isInternational: e.target.checked })
               }
-              className="mt-0.5 h-4 w-4 rounded border-slate-300 text-brand-600 focus:ring-brand-500"
+              className="mt-0.5 h-4 w-4 rounded border-line text-brand-600 focus:ring-brand-500"
             />
             <span>
-              <span className="font-medium text-slate-900">
+              <span className="font-medium text-ink">
                 I'm an international student
               </span>
-              <span className="block text-xs text-slate-500">
+              <span className="block text-xs text-muted">
                 Studying from outside Ghana — unlocks visa and ISO content.
               </span>
             </span>
@@ -555,10 +555,10 @@ const StudentDetails = ({
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <Field label="Student type">{TYPE_LABEL[profile.studentType]}</Field>
           <Field label="Programme">
-            {profile.programme ?? <span className="text-slate-400">Not set</span>}
+            {profile.programme ?? <span className="text-muted">Not set</span>}
           </Field>
           <Field label="Level">
-            {profile.level ?? <span className="text-slate-400">Not set</span>}
+            {profile.level ?? <span className="text-muted">Not set</span>}
           </Field>
           <Field label="International">
             {profile.isInternational ? "Yes" : "No"}
@@ -620,7 +620,7 @@ const LivingSection = ({
       {isEditing ? (
         <form onSubmit={onSave} noValidate className="space-y-4">
           <fieldset>
-            <legend className="text-sm font-medium text-slate-800">
+            <legend className="text-sm font-medium text-ink">
               Where do you live?
             </legend>
             <div className="mt-2 flex gap-2">
@@ -632,7 +632,7 @@ const LivingSection = ({
                     className={`inline-flex cursor-pointer items-center gap-1.5 rounded-full border px-3 py-1 text-xs font-medium transition ${
                       active
                         ? "border-brand-600 bg-brand-600 text-white"
-                        : "border-slate-200 bg-white text-slate-700 hover:border-slate-300"
+                        : "border-line bg-white text-ink hover:border-line"
                     }`}
                   >
                     <input
@@ -652,9 +652,9 @@ const LivingSection = ({
 
           {draft.living === "on-campus" && (
             <div>
-              <label htmlFor="lv-hostel" className="text-sm font-medium text-slate-800">
+              <label htmlFor="lv-hostel" className="text-sm font-medium text-ink">
                 Hall or hostel{" "}
-                <span className="text-slate-400">(optional)</span>
+                <span className="text-muted">(optional)</span>
               </label>
               <select
                 id="lv-hostel"
@@ -682,7 +682,7 @@ const LivingSection = ({
             {LIVING_LABEL[profile.living]}
           </Field>
           <Field label="Hall or hostel">
-            {profile.hostel ?? <span className="text-slate-400">Not set</span>}
+            {profile.hostel ?? <span className="text-muted">Not set</span>}
           </Field>
         </div>
       )}
@@ -737,7 +737,7 @@ const InterestsSection = ({
     >
       {isEditing ? (
         <>
-          <p className="text-xs text-slate-500">
+          <p className="text-xs text-muted">
             Pick as many as you like. We'll use these to tailor events and
             opportunities on your Home.
           </p>
@@ -758,7 +758,7 @@ const InterestsSection = ({
                   className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-sm font-medium transition ${
                     active
                       ? "border-brand-600 bg-brand-600 text-white"
-                      : "border-slate-200 bg-white text-slate-700 hover:border-slate-300"
+                      : "border-line bg-white text-ink hover:border-line"
                   }`}
                 >
                   <Icon className="h-3.5 w-3.5" aria-hidden="true" />
@@ -767,13 +767,13 @@ const InterestsSection = ({
               );
             })}
           </div>
-          <p className="mt-3 text-xs font-medium text-slate-500">
+          <p className="mt-3 text-xs font-medium text-muted">
             {draft.length} selected
           </p>
           <SaveBar canSave={dirty} onSave={onSave} onCancel={onToggle} />
         </>
       ) : profile.interests.length === 0 ? (
-        <p className="text-sm text-slate-500">
+        <p className="text-sm text-muted">
           No interests yet. Add some to personalise Home.
         </p>
       ) : (
@@ -781,7 +781,7 @@ const InterestsSection = ({
           {profile.interests.map((label) => (
             <span
               key={label}
-              className="inline-flex items-center gap-1 rounded-full bg-slate-100 px-2.5 py-1 text-xs font-medium text-slate-700"
+              className="inline-flex items-center gap-1 rounded-full bg-paper px-2.5 py-1 text-xs font-medium text-ink"
             >
               <Sparkles className="h-3 w-3 text-brand-500" aria-hidden="true" />
               {label}
@@ -840,8 +840,8 @@ const NotificationsSection = ({
   }) => (
     <label className="flex cursor-pointer items-start gap-3 py-3">
       <div className="min-w-0 flex-1">
-        <p className="text-sm font-medium text-slate-900">{label}</p>
-        <p className="text-xs text-slate-500">{desc}</p>
+        <p className="text-sm font-medium text-ink">{label}</p>
+        <p className="text-xs text-muted">{desc}</p>
       </div>
       <input
         type="checkbox"
@@ -853,7 +853,7 @@ const NotificationsSection = ({
       <span
         aria-hidden="true"
         className={`relative inline-flex h-6 w-11 shrink-0 items-center rounded-full transition ${
-          value ? "bg-brand-600" : "bg-slate-300"
+          value ? "bg-brand-600" : "bg-line"
         } ${isEditing ? "" : "opacity-70"}`}
       >
         <span
@@ -874,7 +874,7 @@ const NotificationsSection = ({
       isEditing={isEditing}
       onToggle={onToggle}
     >
-      <div className="divide-y divide-slate-100">
+      <div className="divide-y divide-line/60">
         <Row
           label="Announcements"
           desc="Deadlines, hall notices and important updates"
@@ -939,27 +939,27 @@ const AccountSection = () => {
   return (
     <section
       id="section-account"
-      className="rounded-xl border border-slate-200 bg-white"
+      className="rounded-xl border border-line bg-white"
     >
-      <header className="border-b border-slate-100 px-5 py-3">
-        <h2 className="text-sm font-semibold text-slate-900">Account</h2>
+      <header className="border-b border-line/60 px-5 py-3">
+        <h2 className="text-sm font-semibold text-ink">Account</h2>
       </header>
-      <div className="divide-y divide-slate-100">
+      <div className="divide-y divide-line/60">
         {/* Change password */}
         <div className="px-5 py-4">
           <div className="flex items-center justify-between gap-3">
             <div>
-              <p className="text-sm font-medium text-slate-900">
+              <p className="text-sm font-medium text-ink">
                 Change password
               </p>
-              <p className="text-xs text-slate-500">
+              <p className="text-xs text-muted">
                 Pick a new password of at least 8 characters.
               </p>
             </div>
             <button
               type="button"
               onClick={() => setShowPwForm((v) => !v)}
-              className="inline-flex items-center gap-1.5 rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50"
+              className="inline-flex items-center gap-1.5 rounded-xl border border-line bg-white px-3 py-2 text-xs font-semibold text-ink hover:bg-paper"
             >
               <KeyRound className="h-3.5 w-3.5" aria-hidden="true" />
               {showPwForm ? "Close" : "Change"}
@@ -969,7 +969,7 @@ const AccountSection = () => {
           {showPwForm && (
             <form onSubmit={onChangePassword} className="mt-4 space-y-3">
               <div>
-                <label htmlFor="pw-current" className="text-xs font-medium text-slate-800">
+                <label htmlFor="pw-current" className="text-xs font-medium text-ink">
                   Current password
                 </label>
                 <input
@@ -981,7 +981,7 @@ const AccountSection = () => {
                 />
               </div>
               <div>
-                <label htmlFor="pw-next" className="text-xs font-medium text-slate-800">
+                <label htmlFor="pw-next" className="text-xs font-medium text-ink">
                   New password
                 </label>
                 <input
@@ -998,7 +998,7 @@ const AccountSection = () => {
                 )}
               </div>
               <div>
-                <label htmlFor="pw-confirm" className="text-xs font-medium text-slate-800">
+                <label htmlFor="pw-confirm" className="text-xs font-medium text-ink">
                   Confirm new password
                 </label>
                 <input
@@ -1033,15 +1033,15 @@ const AccountSection = () => {
         {/* Log out */}
         <div className="flex items-center justify-between gap-3 px-5 py-4">
           <div>
-            <p className="text-sm font-medium text-slate-900">Log out</p>
-            <p className="text-xs text-slate-500">
+            <p className="text-sm font-medium text-ink">Log out</p>
+            <p className="text-xs text-muted">
               Sign out and clear the profile from this device.
             </p>
           </div>
           <button
             type="button"
             onClick={onLogOut}
-            className="inline-flex items-center gap-1.5 rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50"
+            className="inline-flex items-center gap-1.5 rounded-xl border border-line bg-white px-3 py-2 text-xs font-semibold text-ink hover:bg-paper"
           >
             <LogOut className="h-3.5 w-3.5" aria-hidden="true" />
             Log out
@@ -1053,7 +1053,7 @@ const AccountSection = () => {
           <div className="flex items-center justify-between gap-3">
             <div>
               <p className="text-sm font-medium text-rose-700">Delete account</p>
-              <p className="text-xs text-slate-500">
+              <p className="text-xs text-muted">
                 Removes your profile from this device. This can't be undone.
               </p>
             </div>
@@ -1092,7 +1092,7 @@ const AccountSection = () => {
                   <button
                     type="button"
                     onClick={() => setConfirmDelete(false)}
-                    className="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50"
+                    className="rounded-lg border border-line bg-white px-3 py-1.5 text-xs font-semibold text-ink hover:bg-paper"
                   >
                     Cancel
                   </button>

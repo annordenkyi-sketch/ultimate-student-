@@ -9,7 +9,7 @@ export const LoadingState = ({ rows = 3, label = "Loading" }: Props) => (
     {Array.from({ length: rows }).map((_, i) => (
       <div
         key={i}
-        className="h-16 animate-pulse rounded-xl bg-slate-100"
+        className="h-16 animate-pulse rounded-xl bg-paper"
       />
     ))}
   </div>

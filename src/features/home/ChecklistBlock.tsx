@@ -13,7 +13,7 @@ export const ChecklistBlock = () => {
     <section aria-labelledby="checklist-heading" className="px-5 py-4">
       <h2
         id="checklist-heading"
-        className="mb-3 text-sm font-semibold text-slate-900 display"
+        className="mb-3 text-sm font-semibold text-ink display"
       >
         Orientation checklist
       </h2>

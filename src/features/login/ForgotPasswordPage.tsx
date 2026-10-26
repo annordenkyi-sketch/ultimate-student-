@@ -45,13 +45,13 @@ export const ForgotPasswordPage = () => {
       initial={{ opacity: 0, x: 24 }}
       animate={{ opacity: 1, x: 0 }}
       transition={{ duration: 0.32, ease: [0.22, 1, 0.36, 1] }}
-      className="min-h-screen bg-slate-50"
+      className="min-h-screen bg-paper"
     >
       <div className="mx-auto max-w-md px-6 pb-10 pt-6">
         <Link
           to="/login"
           aria-label="Back to log in"
-          className="inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-white p-2 pr-3 text-sm font-medium text-slate-700 shadow-sm transition hover:border-slate-300 hover:bg-slate-100 motion-safe:active:scale-[0.97]"
+          className="inline-flex items-center gap-1.5 rounded-full border border-line bg-white p-2 pr-3 text-sm font-medium text-ink shadow-sm transition hover:border-line hover:bg-paper motion-safe:active:scale-[0.97]"
         >
           <ArrowLeft className="h-4 w-4" aria-hidden="true" />
           Back to log in
@@ -62,10 +62,10 @@ export const ForgotPasswordPage = () => {
             <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-brand-100 text-brand-700">
               <MailCheck className="h-5 w-5" aria-hidden="true" />
             </div>
-            <h1 className="mt-4 text-2xl font-bold text-slate-900 display">
+            <h1 className="mt-4 text-2xl font-bold text-ink display">
               Reset your password
             </h1>
-            <p className="mt-2 text-sm text-slate-600">
+            <p className="mt-2 text-sm text-muted">
               Enter your university email and we&apos;ll send you a link to
               choose a new password.
             </p>
@@ -73,17 +73,17 @@ export const ForgotPasswordPage = () => {
             <form
               onSubmit={onSubmit}
               noValidate
-              className="mt-6 rounded-2xl border border-slate-200 bg-white p-5 shadow-card"
+              className="mt-6 rounded-2xl border border-line bg-white p-5 shadow-card"
             >
               <label
                 htmlFor="reset-email"
-                className="text-sm font-medium text-slate-800"
+                className="text-sm font-medium text-ink"
               >
                 University email
               </label>
               <div className="relative mt-1.5">
                 <AtSign
-                  className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400"
+                  className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted"
                   aria-hidden="true"
                 />
                 <input
@@ -98,10 +98,10 @@ export const ForgotPasswordPage = () => {
                   placeholder="you@uni.edu.gh"
                   aria-invalid={error ? true : undefined}
                   aria-describedby={error ? "reset-error" : undefined}
-                  className={`w-full rounded-xl border bg-white py-2.5 pl-9 pr-3 text-sm text-slate-900 placeholder:text-slate-400 ${
+                  className={`w-full rounded-xl border bg-white py-2.5 pl-9 pr-3 text-sm text-ink placeholder:text-muted ${
                     error
                       ? "border-rose-400 focus:border-rose-500"
-                      : "border-slate-200 focus:border-brand-500"
+                      : "border-line focus:border-brand-500"
                   }`}
                 />
               </div>
@@ -138,7 +138,7 @@ export const ForgotPasswordPage = () => {
               </p>
             </div>
 
-            <p className="mt-5 text-center text-sm text-slate-600">
+            <p className="mt-5 text-center text-sm text-muted">
               Didn&apos;t get it?{" "}
               <button
                 type="button"

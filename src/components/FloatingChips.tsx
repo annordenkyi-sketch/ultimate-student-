@@ -87,7 +87,7 @@ export const FloatingChips = () => {
             },
           }}
         >
-          <Icon className="h-3 w-3 text-amber-200" aria-hidden="true" />
+          <Icon className="h-3 w-3 text-accent-200" aria-hidden="true" />
           {label}
         </motion.span>
       ))}

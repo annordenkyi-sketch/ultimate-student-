@@ -19,7 +19,7 @@ export const FilterBar = ({ tags, active, onChange }: Props) => {
         className={`shrink-0 rounded-full px-3 py-1 text-xs font-medium ${
           active === null
             ? "bg-brand-600 text-white"
-            : "bg-slate-100 text-slate-700 hover:bg-slate-200"
+            : "bg-paper text-ink hover:bg-line"
         }`}
       >
         All
@@ -33,7 +33,7 @@ export const FilterBar = ({ tags, active, onChange }: Props) => {
           className={`shrink-0 rounded-full px-3 py-1 text-xs font-medium ${
             active === tag
               ? "bg-brand-600 text-white"
-              : "bg-slate-100 text-slate-700 hover:bg-slate-200"
+              : "bg-paper text-ink hover:bg-line"
           }`}
         >
           {tag}

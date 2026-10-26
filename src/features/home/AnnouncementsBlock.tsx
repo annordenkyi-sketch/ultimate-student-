@@ -27,7 +27,7 @@ export const AnnouncementsBlock = () => {
     <section aria-labelledby="announcements-heading" className="px-5 py-4">
       <h2
         id="announcements-heading"
-        className="mb-3 text-sm font-semibold text-slate-900 display"
+        className="mb-3 text-sm font-semibold text-ink display"
       >
         Announcements for you
       </h2>

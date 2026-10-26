@@ -26,22 +26,22 @@ export const LegalPage = () => {
 
   return (
     <div className="min-h-screen bg-white">
-      <header className="border-b border-slate-200 px-6 py-4">
-        <div className="mx-auto flex max-w-2xl items-center gap-1.5 text-sm font-semibold text-slate-700">
+      <header className="border-b border-line px-6 py-4">
+        <div className="mx-auto flex max-w-2xl items-center gap-1.5 text-sm font-semibold text-ink">
           <GraduationCap className="h-4 w-4 text-brand-600" aria-hidden="true" />
           Ultimate Student
         </div>
       </header>
       <main className="mx-auto max-w-2xl px-6 py-10">
-        <h1 className="text-3xl font-bold text-slate-900 display">
+        <h1 className="text-3xl font-bold text-ink display">
           {content.title}
         </h1>
-        <div className="prose prose-slate mt-6 space-y-4 text-sm leading-relaxed text-slate-700">
+        <div className="prose prose-slate mt-6 space-y-4 text-sm leading-relaxed text-ink">
           {content.body.map((p, i) => (
             <p key={i}>{p}</p>
           ))}
         </div>
-        <p className="mt-10 text-xs text-slate-400">
+        <p className="mt-10 text-xs text-muted">
           Last updated 2026-10-22 — placeholder content, not a legal document.
         </p>
       </main>

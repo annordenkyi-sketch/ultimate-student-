@@ -52,9 +52,9 @@ export const SearchPage = () => {
         )}
         {q && groups && total > 0 && (
           <div className="space-y-6 px-4 py-4">
-            <p className="text-xs text-slate-500">
+            <p className="text-xs text-muted">
               {total} result{total === 1 ? "" : "s"} for{" "}
-              <strong className="text-slate-700">"{q}"</strong>
+              <strong className="text-ink">"{q}"</strong>
             </p>
             {groups.map((g) => {
               const meta = sectionById(g.section);
@@ -65,7 +65,7 @@ export const SearchPage = () => {
                 >
                   <h2
                     id={`sg-${g.section}`}
-                    className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-500"
+                    className="mb-2 text-xs font-semibold uppercase tracking-wide text-muted"
                   >
                     {meta.label}
                   </h2>

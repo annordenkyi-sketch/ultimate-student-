@@ -99,12 +99,12 @@ export const DetailsLayout = ({ item }: Props) => {
         </p>
         <h1
           id="details-title"
-          className="mt-1 text-xl font-bold text-slate-900"
+          className="mt-1 text-xl font-bold text-ink"
         >
           {item.title}
         </h1>
         {item.subtitle && (
-          <p className="mt-1 text-sm text-slate-700">{item.subtitle}</p>
+          <p className="mt-1 text-sm text-ink">{item.subtitle}</p>
         )}
         {item.tags.length > 0 && (
           <div className="mt-2 flex flex-wrap gap-1">
@@ -119,16 +119,16 @@ export const DetailsLayout = ({ item }: Props) => {
       <section className="px-4 py-4" aria-labelledby="info-heading">
         <h2
           id="info-heading"
-          className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-500"
+          className="mb-2 text-xs font-semibold uppercase tracking-wide text-muted"
         >
           About
         </h2>
-        <p className="text-sm text-slate-700">{item.summary}</p>
+        <p className="text-sm text-ink">{item.summary}</p>
         {item.details && (
-          <p className="mt-2 text-sm text-slate-600">{item.details}</p>
+          <p className="mt-2 text-sm text-muted">{item.details}</p>
         )}
         {item.deadline && (
-          <p className="mt-3 rounded-lg bg-amber-50 px-3 py-2 text-xs text-amber-800">
+          <p className="mt-3 rounded-lg bg-accent-50 px-3 py-2 text-xs text-accent-700">
             <strong>Deadline:</strong> {formatDateTime(item.deadline)}
           </p>
         )}
@@ -144,16 +144,16 @@ export const DetailsLayout = ({ item }: Props) => {
         <section className="px-4 py-4" aria-labelledby="location-heading">
           <h2
             id="location-heading"
-            className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-500"
+            className="mb-2 text-xs font-semibold uppercase tracking-wide text-muted"
           >
             Location
           </h2>
-          <div className="flex items-start gap-2 rounded-xl border border-slate-200 bg-white p-3">
+          <div className="flex items-start gap-2 rounded-xl border border-line bg-white p-3">
             <MapPin
-              className="mt-0.5 h-4 w-4 shrink-0 text-slate-500"
+              className="mt-0.5 h-4 w-4 shrink-0 text-muted"
               aria-hidden="true"
             />
-            <p className="text-sm text-slate-700">{item.location.label}</p>
+            <p className="text-sm text-ink">{item.location.label}</p>
           </div>
         </section>
       )}
@@ -163,18 +163,18 @@ export const DetailsLayout = ({ item }: Props) => {
         <section className="px-4 py-4" aria-labelledby="contact-heading">
           <h2
             id="contact-heading"
-            className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-500"
+            className="mb-2 text-xs font-semibold uppercase tracking-wide text-muted"
           >
             Contact
           </h2>
-          <ul className="divide-y divide-slate-200 overflow-hidden rounded-xl border border-slate-200 bg-white">
+          <ul className="divide-y divide-line overflow-hidden rounded-xl border border-line bg-white">
             {item.contact.phone && (
               <li>
                 <a
                   href={`tel:${item.contact.phone.replace(/\s/g, "")}`}
-                  className="flex items-center gap-3 p-3 text-sm text-slate-700 hover:bg-slate-50"
+                  className="flex items-center gap-3 p-3 text-sm text-ink hover:bg-paper"
                 >
-                  <Phone className="h-4 w-4 text-slate-500" aria-hidden="true" />
+                  <Phone className="h-4 w-4 text-muted" aria-hidden="true" />
                   {item.contact.phone}
                 </a>
               </li>
@@ -183,9 +183,9 @@ export const DetailsLayout = ({ item }: Props) => {
               <li>
                 <a
                   href={`mailto:${item.contact.email}`}
-                  className="flex items-center gap-3 p-3 text-sm text-slate-700 hover:bg-slate-50"
+                  className="flex items-center gap-3 p-3 text-sm text-ink hover:bg-paper"
                 >
-                  <Mail className="h-4 w-4 text-slate-500" aria-hidden="true" />
+                  <Mail className="h-4 w-4 text-muted" aria-hidden="true" />
                   {item.contact.email}
                 </a>
               </li>
@@ -196,10 +196,10 @@ export const DetailsLayout = ({ item }: Props) => {
                   href={item.contact.website}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center gap-3 p-3 text-sm text-slate-700 hover:bg-slate-50"
+                  className="flex items-center gap-3 p-3 text-sm text-ink hover:bg-paper"
                 >
                   <Globe
-                    className="h-4 w-4 text-slate-500"
+                    className="h-4 w-4 text-muted"
                     aria-hidden="true"
                   />
                   {item.contact.website}
@@ -207,8 +207,8 @@ export const DetailsLayout = ({ item }: Props) => {
               </li>
             )}
             {item.contact.office && (
-              <li className="flex items-center gap-3 p-3 text-sm text-slate-700">
-                <MapPin className="h-4 w-4 text-slate-500" aria-hidden="true" />
+              <li className="flex items-center gap-3 p-3 text-sm text-ink">
+                <MapPin className="h-4 w-4 text-muted" aria-hidden="true" />
                 {item.contact.office}
               </li>
             )}
@@ -217,7 +217,7 @@ export const DetailsLayout = ({ item }: Props) => {
       )}
 
       {/* Sticky action bar */}
-      <div className="fixed inset-x-0 bottom-16 z-20 border-t border-slate-200 bg-white">
+      <div className="fixed inset-x-0 bottom-16 z-20 border-t border-line bg-white">
         <div className="mx-auto flex max-w-[var(--app-max)] items-center gap-2 px-4 py-3">
           <ActionButton
             variant="secondary"

@@ -17,11 +17,11 @@ export const AnnouncementCard = ({ announcement }: Props) => (
     <div className="min-w-0 flex-1">
       <h3
         id={`ann-${announcement.id}`}
-        className="text-[15px] font-semibold text-slate-900"
+        className="text-[15px] font-semibold text-ink"
       >
         {announcement.title}
       </h3>
-      <p className="mt-0.5 text-xs leading-relaxed text-slate-600">
+      <p className="mt-0.5 text-xs leading-relaxed text-muted">
         {announcement.body}
       </p>
       <p className="mt-1 text-[11px] font-medium text-brand-700">

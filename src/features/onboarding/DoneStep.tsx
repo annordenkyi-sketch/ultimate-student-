@@ -63,7 +63,7 @@ const buildConfetti = (): ConfettiParticle[] => {
   const colors = [
     "bg-brand-600",
     "bg-brand-400",
-    "bg-amber-300",
+    "bg-accent-300",
     "bg-emerald-400",
     "bg-rose-400",
   ];
@@ -179,10 +179,10 @@ const SummaryRow = ({ icon: Icon, label, value, editTo }: SummaryRowProps) => (
       <Icon className="h-4 w-4" aria-hidden="true" />
     </span>
     <div className="min-w-0 flex-1">
-      <p className="text-[11px] font-semibold uppercase tracking-wide text-slate-500">
+      <p className="text-[11px] font-semibold uppercase tracking-wide text-muted">
         {label}
       </p>
-      <div className="mt-0.5 text-sm font-semibold text-slate-900">{value}</div>
+      <div className="mt-0.5 text-sm font-semibold text-ink">{value}</div>
     </div>
     <Link
       to={editTo}
@@ -336,7 +336,7 @@ export const DoneStep = () => {
   };
 
   return (
-    <div className="relative min-h-[calc(100vh-72px)] bg-slate-50">
+    <div className="relative min-h-[calc(100vh-72px)] bg-paper">
       {/* Softly faded student photo */}
       <div aria-hidden="true" className="absolute inset-0 overflow-hidden">
         <img
@@ -355,13 +355,13 @@ export const DoneStep = () => {
           <SuccessCheck reduce={reduce} />
 
           <FadeIn delay={0.6}>
-            <h1 className="mt-6 text-center text-[32px] font-bold leading-tight text-slate-900 display md:text-4xl">
+            <h1 className="mt-6 text-center text-[32px] font-bold leading-tight text-ink display md:text-4xl">
               You're all set,{" "}
               <span className="text-brand-700">{firstName}</span>!
             </h1>
           </FadeIn>
           <FadeIn delay={0.7}>
-            <p className="mx-auto mt-2 max-w-sm text-center text-sm text-slate-600 md:text-base">
+            <p className="mx-auto mt-2 max-w-sm text-center text-sm text-muted md:text-base">
               Your campus, sorted. Here's what we've set up for you.
             </p>
           </FadeIn>
@@ -371,17 +371,17 @@ export const DoneStep = () => {
         <FadeIn delay={0.8} className="mt-10">
           <section
             aria-labelledby="your-profile"
-            className="rounded-2xl border border-slate-200 bg-white p-5 shadow-card"
+            className="rounded-2xl border border-line bg-white p-5 shadow-card"
           >
             <div className="flex items-baseline justify-between">
               <h2
                 id="your-profile"
-                className="text-xs font-semibold uppercase tracking-wide text-slate-500"
+                className="text-xs font-semibold uppercase tracking-wide text-muted"
               >
                 Your profile
               </h2>
             </div>
-            <ul className="mt-2 divide-y divide-slate-100">
+            <ul className="mt-2 divide-y divide-line/60">
               <SummaryRow
                 icon={GraduationCap}
                 label="Student type"
@@ -399,12 +399,12 @@ export const DoneStep = () => {
                   <Sparkles className="h-4 w-4" aria-hidden="true" />
                 </span>
                 <div className="min-w-0 flex-1">
-                  <p className="text-[11px] font-semibold uppercase tracking-wide text-slate-500">
+                  <p className="text-[11px] font-semibold uppercase tracking-wide text-muted">
                     Interests
                   </p>
                   <div className="mt-1.5 flex flex-wrap gap-1.5">
                     {draft.interests.length === 0 ? (
-                      <span className="text-sm text-slate-400">
+                      <span className="text-sm text-muted">
                         None picked
                       </span>
                     ) : (
@@ -414,7 +414,7 @@ export const DoneStep = () => {
                         return (
                           <span
                             key={label}
-                            className="inline-flex items-center gap-1.5 rounded-full bg-slate-100 py-0.5 pl-0.5 pr-2.5 text-xs font-semibold text-slate-700"
+                            className="inline-flex items-center gap-1.5 rounded-full bg-paper py-0.5 pl-0.5 pr-2.5 text-xs font-semibold text-ink"
                           >
                             <img
                               src={unsplash(opt.photo.photoId, 100, 60)}
@@ -449,7 +449,7 @@ export const DoneStep = () => {
           <FadeIn delay={0.9}>
             <h2
               id="peek-heading"
-              className="text-xs font-semibold uppercase tracking-wide text-slate-500"
+              className="text-xs font-semibold uppercase tracking-wide text-muted"
             >
               Ready for you on Home
             </h2>
@@ -462,7 +462,7 @@ export const DoneStep = () => {
                   <motion.div
                     key={`skeleton-${i}`}
                     aria-hidden="true"
-                    className="h-16 animate-pulse rounded-xl bg-slate-100"
+                    className="h-16 animate-pulse rounded-xl bg-paper"
                     initial={{ opacity: 0, y: 8 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{
@@ -499,15 +499,15 @@ export const DoneStep = () => {
 
         {/* Reminders */}
         <FadeIn delay={1.2} className="mt-6">
-          <label className="flex cursor-pointer items-start gap-3 rounded-2xl border border-slate-200 bg-white p-4 shadow-card transition hover:border-slate-300">
-            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-amber-100 text-amber-700">
+          <label className="flex cursor-pointer items-start gap-3 rounded-2xl border border-line bg-white p-4 shadow-card transition hover:border-line">
+            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-accent-100 text-accent-600">
               <BellRing className="h-4 w-4" aria-hidden="true" />
             </span>
             <div className="min-w-0 flex-1">
-              <p className="text-sm font-semibold text-slate-900">
+              <p className="text-sm font-semibold text-ink">
                 Turn on reminders for deadlines and events
               </p>
-              <p className="mt-0.5 text-xs text-slate-500">
+              <p className="mt-0.5 text-xs text-muted">
                 We'll nudge you a day or two before anything matters.
               </p>
             </div>
@@ -521,7 +521,7 @@ export const DoneStep = () => {
             <span
               aria-hidden="true"
               className={`relative inline-flex h-6 w-11 shrink-0 items-center rounded-full transition peer-focus-visible:ring-2 peer-focus-visible:ring-brand-500 peer-focus-visible:ring-offset-2 ${
-                remindersOn ? "bg-brand-600" : "bg-slate-300"
+                remindersOn ? "bg-brand-600" : "bg-line"
               }`}
             >
               <span
@@ -548,7 +548,7 @@ export const DoneStep = () => {
 
       {/* Mobile sticky CTA */}
       <div
-        className="fixed inset-x-0 bottom-0 z-20 border-t border-slate-200 bg-white px-5 py-3 shadow-[0_-6px_20px_-10px_rgba(15,23,42,0.15)] md:hidden"
+        className="fixed inset-x-0 bottom-0 z-20 border-t border-line bg-white px-5 py-3 shadow-[0_-6px_20px_-10px_rgba(15,23,42,0.15)] md:hidden"
         style={{ paddingBottom: "calc(0.75rem + env(safe-area-inset-bottom))" }}
       >
         <ActionButton
@@ -567,7 +567,7 @@ export const DoneStep = () => {
 /* ───────────────────────────── Peek sub-cards ───────────────────────────── */
 
 const DeadlinePeek = ({ deadline }: { deadline: Deadline }) => (
-  <div className="flex items-center gap-3 rounded-xl border border-slate-200 bg-white p-3 shadow-sm">
+  <div className="flex items-center gap-3 rounded-xl border border-line bg-white p-3 shadow-sm">
     <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-rose-100 text-rose-700">
       <AlarmClock className="h-4 w-4" aria-hidden="true" />
     </span>
@@ -575,10 +575,10 @@ const DeadlinePeek = ({ deadline }: { deadline: Deadline }) => (
       <p className="text-[11px] font-semibold uppercase tracking-wide text-rose-700">
         Deadline
       </p>
-      <p className="truncate text-sm font-semibold text-slate-900">
+      <p className="truncate text-sm font-semibold text-ink">
         {deadline.title}
       </p>
-      <p className="text-xs text-slate-500">
+      <p className="text-xs text-muted">
         {formatDate(deadline.date)} · {relativeDays(deadline.date)}
       </p>
     </div>
@@ -586,7 +586,7 @@ const DeadlinePeek = ({ deadline }: { deadline: Deadline }) => (
 );
 
 const EventPeek = ({ event }: { event: EventItem }) => (
-  <div className="flex items-center gap-3 rounded-xl border border-slate-200 bg-white p-3 shadow-sm">
+  <div className="flex items-center gap-3 rounded-xl border border-line bg-white p-3 shadow-sm">
     <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-sky-100 text-sky-700">
       <CalendarDays className="h-4 w-4" aria-hidden="true" />
     </span>
@@ -594,10 +594,10 @@ const EventPeek = ({ event }: { event: EventItem }) => (
       <p className="text-[11px] font-semibold uppercase tracking-wide text-sky-700">
         This week
       </p>
-      <p className="truncate text-sm font-semibold text-slate-900">
+      <p className="truncate text-sm font-semibold text-ink">
         {event.title}
       </p>
-      <p className="text-xs text-slate-500">
+      <p className="text-xs text-muted">
         {formatDate(event.date)} · {event.location}
       </p>
     </div>
@@ -605,7 +605,7 @@ const EventPeek = ({ event }: { event: EventItem }) => (
 );
 
 const ServicePeek = ({ item }: { item: SectionItem }) => (
-  <div className="flex items-center gap-3 rounded-xl border border-slate-200 bg-white p-3 shadow-sm">
+  <div className="flex items-center gap-3 rounded-xl border border-line bg-white p-3 shadow-sm">
     <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-brand-100 text-brand-700">
       <HomeIcon className="h-4 w-4" aria-hidden="true" />
     </span>
@@ -613,10 +613,10 @@ const ServicePeek = ({ item }: { item: SectionItem }) => (
       <p className="text-[11px] font-semibold uppercase tracking-wide text-brand-700">
         {item.section === "accommodation" ? "Your hostel" : "On campus"}
       </p>
-      <p className="truncate text-sm font-semibold text-slate-900">
+      <p className="truncate text-sm font-semibold text-ink">
         {item.title}
       </p>
-      <p className="line-clamp-1 text-xs text-slate-500">{item.summary}</p>
+      <p className="line-clamp-1 text-xs text-muted">{item.summary}</p>
     </div>
   </div>
 );

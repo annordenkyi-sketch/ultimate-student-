@@ -53,9 +53,9 @@ const scorePassword = (pw: string): number => {
 };
 
 const STRENGTH_META: Array<{ label: string; color: string; width: string }> = [
-  { label: "", color: "bg-slate-200", width: "w-0" },
+  { label: "", color: "bg-line", width: "w-0" },
   { label: "Weak", color: "bg-rose-500", width: "w-1/4" },
-  { label: "Okay", color: "bg-amber-500", width: "w-2/4" },
+  { label: "Okay", color: "bg-accent-500", width: "w-2/4" },
   { label: "Good", color: "bg-brand-500", width: "w-3/4" },
   { label: "Strong", color: "bg-emerald-500", width: "w-full" },
 ];
@@ -171,7 +171,7 @@ export const AccountStep = () => {
         />
         <div
           aria-hidden="true"
-          className="absolute inset-0 bg-gradient-to-br from-slate-950/75 via-slate-950/55 to-brand-900/50"
+          className="absolute inset-0 bg-gradient-to-br from-ink/75 via-ink/55 to-brand-900/50"
         />
         <div className="relative flex h-full flex-col justify-end p-10 text-white">
           <FadeIn delay={0.1} y={16}>
@@ -180,7 +180,7 @@ export const AccountStep = () => {
             </h2>
           </FadeIn>
           <FadeIn delay={0.2}>
-            <p className="mt-3 max-w-sm text-sm text-slate-200">
+            <p className="mt-3 max-w-sm text-sm text-paper">
               One account unlocks classes, hostels, events and more.
             </p>
           </FadeIn>
@@ -210,7 +210,7 @@ export const AccountStep = () => {
           />
           <div
             aria-hidden="true"
-            className="absolute inset-0 bg-gradient-to-b from-slate-950/35 via-slate-950/10 to-white"
+            className="absolute inset-0 bg-gradient-to-b from-ink/35 via-ink/10 to-white"
           />
         </div>
 
@@ -221,10 +221,10 @@ export const AccountStep = () => {
           className="mx-auto w-full max-w-md px-5 pb-32 pt-5 md:px-8 md:py-10 md:pb-10"
         >
           <FadeIn delay={0.08} y={12}>
-            <h1 className="text-2xl font-bold text-slate-900 display md:text-3xl">
+            <h1 className="text-2xl font-bold text-ink display md:text-3xl">
               Create your account
             </h1>
-            <p className="mt-1 text-sm text-slate-500">
+            <p className="mt-1 text-sm text-muted">
               It takes less than a minute.
             </p>
           </FadeIn>
@@ -287,7 +287,7 @@ export const AccountStep = () => {
                     onClick={() => setShowPassword((v) => !v)}
                     aria-label={showPassword ? "Hide password" : "Show password"}
                     aria-pressed={showPassword}
-                    className="rounded-md p-1.5 text-slate-500 hover:bg-slate-100 hover:text-slate-700"
+                    className="rounded-md p-1.5 text-muted hover:bg-paper hover:text-ink"
                   >
                     {showPassword ? (
                       <EyeOff className="h-4 w-4" aria-hidden="true" />
@@ -300,12 +300,12 @@ export const AccountStep = () => {
               {/* Strength indicator */}
               {draft.password && (
                 <div className="mt-2" aria-live="polite">
-                  <div className="h-1.5 w-full overflow-hidden rounded-full bg-slate-100">
+                  <div className="h-1.5 w-full overflow-hidden rounded-full bg-paper">
                     <div
                       className={`h-full ${strengthMeta.color} ${strengthMeta.width} transition-all duration-300`}
                     />
                   </div>
-                  <p className="mt-1 text-[11px] font-medium text-slate-500">
+                  <p className="mt-1 text-[11px] font-medium text-muted">
                     {strengthMeta.label || "Keep going…"}
                   </p>
                 </div>
@@ -330,7 +330,7 @@ export const AccountStep = () => {
                   onClick={() => setShowConfirm((v) => !v)}
                   aria-label={showConfirm ? "Hide password" : "Show password"}
                   aria-pressed={showConfirm}
-                  className="rounded-md p-1.5 text-slate-500 hover:bg-slate-100 hover:text-slate-700"
+                  className="rounded-md p-1.5 text-muted hover:bg-paper hover:text-ink"
                 >
                   {showConfirm ? (
                     <EyeOff className="h-4 w-4" aria-hidden="true" />
@@ -343,7 +343,7 @@ export const AccountStep = () => {
 
             {/* Terms */}
             <div>
-              <label className="flex cursor-pointer items-start gap-2.5 text-sm text-slate-700">
+              <label className="flex cursor-pointer items-start gap-2.5 text-sm text-ink">
                 <input
                   type="checkbox"
                   checked={draft.termsAccepted}
@@ -351,7 +351,7 @@ export const AccountStep = () => {
                     setDraft({ termsAccepted: e.target.checked });
                     markTouched("terms");
                   }}
-                  className="mt-0.5 h-4 w-4 shrink-0 rounded border-slate-300 text-brand-600 focus:ring-brand-500"
+                  className="mt-0.5 h-4 w-4 shrink-0 rounded border-line text-brand-600 focus:ring-brand-500"
                 />
                 <span>
                   I agree to the{" "}
@@ -399,7 +399,7 @@ export const AccountStep = () => {
 
         {/* Mobile sticky Continue */}
         <div
-          className="fixed inset-x-0 bottom-0 z-20 border-t border-slate-200 bg-white px-5 py-3 shadow-[0_-6px_20px_-10px_rgba(15,23,42,0.15)] md:hidden"
+          className="fixed inset-x-0 bottom-0 z-20 border-t border-line bg-white px-5 py-3 shadow-[0_-6px_20px_-10px_rgba(15,23,42,0.15)] md:hidden"
           style={{ paddingBottom: "calc(0.75rem + env(safe-area-inset-bottom))" }}
         >
           <ActionButton
@@ -449,12 +449,12 @@ const Field = ({
   trailing,
 }: FieldProps) => (
   <div>
-    <label htmlFor={id} className="text-sm font-medium text-slate-800">
+    <label htmlFor={id} className="text-sm font-medium text-ink">
       {label}
     </label>
     <div className="relative mt-1.5">
       <Icon
-        className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400"
+        className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted"
         aria-hidden="true"
       />
       <input
@@ -470,10 +470,10 @@ const Field = ({
         aria-describedby={error ? `${id}-error` : undefined}
         className={`block min-h-[44px] w-full rounded-xl border bg-white py-2.5 pl-9 ${
           trailing ? "pr-11" : "pr-3"
-        } text-sm text-slate-900 placeholder:text-slate-400 ${
+        } text-sm text-ink placeholder:text-muted ${
           error
             ? "border-rose-400 focus:border-rose-500"
-            : "border-slate-200 focus:border-brand-500"
+            : "border-line focus:border-brand-500"
         }`}
       />
       {trailing && (

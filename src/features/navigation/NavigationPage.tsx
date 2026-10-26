@@ -139,7 +139,7 @@ const Highlight = ({ text, query }: { text: string; query: string }) => {
     <>
       {parts.map((p, i) =>
         i % 2 === 1 ? (
-          <mark key={i} className="rounded bg-amber-200 px-0.5 text-slate-900">
+          <mark key={i} className="rounded bg-accent-200 px-0.5 text-ink">
             {p}
           </mark>
         ) : (
@@ -173,7 +173,7 @@ const CampusMap = ({ places, selectedId, onSelect }: CampusMapProps) => {
   const w = 500;
   const h = 300;
   return (
-    <div className="relative aspect-[5/3] w-full overflow-hidden rounded-xl border border-slate-200 bg-emerald-50 lg:aspect-auto lg:h-[520px]">
+    <div className="relative aspect-[5/3] w-full overflow-hidden rounded-xl border border-line bg-emerald-50 lg:aspect-auto lg:h-[520px]">
       <svg
         viewBox={`0 0 ${w} ${h}`}
         preserveAspectRatio="xMidYMid slice"
@@ -215,7 +215,7 @@ const CampusMap = ({ places, selectedId, onSelect }: CampusMapProps) => {
         })}
       </svg>
 
-      <p className="pointer-events-none absolute bottom-2 left-3 text-[10px] text-slate-500">
+      <p className="pointer-events-none absolute bottom-2 left-3 text-[10px] text-muted">
         Illustrative campus map · not to scale
       </p>
     </div>
@@ -244,23 +244,23 @@ const SelectedCard = ({
     : null;
 
   return (
-    <article className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
-      <p className="text-[11px] font-semibold uppercase tracking-wider text-slate-500">
+    <article className="rounded-xl border border-line bg-white p-4 shadow-sm">
+      <p className="text-[11px] font-semibold uppercase tracking-wider text-muted">
         Explore your campus
       </p>
-      <h2 className="mt-1 text-xl font-bold text-slate-900">{item.title}</h2>
+      <h2 className="mt-1 text-xl font-bold text-ink">{item.title}</h2>
       {item.subtitle && (
-        <p className="text-sm text-slate-500">{item.subtitle}</p>
+        <p className="text-sm text-muted">{item.subtitle}</p>
       )}
 
-      <p className="mt-3 flex items-center gap-2 text-sm text-slate-700">
-        <Clock className="h-4 w-4 text-slate-500" aria-hidden="true" />
+      <p className="mt-3 flex items-center gap-2 text-sm text-ink">
+        <Clock className="h-4 w-4 text-muted" aria-hidden="true" />
         {meters !== null ? (
           <>
             {formatDistance(meters)} · {walkMinutes(meters)} min walk
           </>
         ) : (
-          <span className="text-slate-500">
+          <span className="text-muted">
             Turn on location to see walking times
           </span>
         )}
@@ -276,10 +276,10 @@ const SelectedCard = ({
       </button>
 
       {(meta.hours || item.contact?.phone) && (
-        <dl className="mt-4 space-y-2 border-t border-slate-100 pt-3 text-xs text-slate-600">
+        <dl className="mt-4 space-y-2 border-t border-line/60 pt-3 text-xs text-muted">
           {meta.hours && (
             <div className="flex items-start gap-2">
-              <Clock className="mt-0.5 h-3.5 w-3.5 shrink-0 text-slate-400" aria-hidden="true" />
+              <Clock className="mt-0.5 h-3.5 w-3.5 shrink-0 text-muted" aria-hidden="true" />
               <div>
                 <dt className="sr-only">Opening hours</dt>
                 <dd>{meta.hours}</dd>
@@ -288,13 +288,13 @@ const SelectedCard = ({
           )}
           {item.contact?.phone && (
             <div className="flex items-start gap-2">
-              <Phone className="mt-0.5 h-3.5 w-3.5 shrink-0 text-slate-400" aria-hidden="true" />
+              <Phone className="mt-0.5 h-3.5 w-3.5 shrink-0 text-muted" aria-hidden="true" />
               <div>
                 <dt className="sr-only">Phone</dt>
                 <dd>
                   <a
                     href={`tel:${item.contact.phone.replace(/\s/g, "")}`}
-                    className="font-medium text-slate-700 hover:text-brand-700"
+                    className="font-medium text-ink hover:text-brand-700"
                   >
                     {item.contact.phone}
                   </a>
@@ -338,13 +338,13 @@ const PlacesList = ({
     userLocation !== null && locationStatus === "granted";
   return (
     <section>
-      <h3 className="mb-2 text-sm font-semibold text-slate-900">
+      <h3 className="mb-2 text-sm font-semibold text-ink">
         Places on campus
       </h3>
       {places.length === 0 ? (
-        <div className="rounded-xl border border-slate-200 bg-white p-4 text-sm text-slate-500">
+        <div className="rounded-xl border border-line bg-white p-4 text-sm text-muted">
           No results for{" "}
-          <strong className="text-slate-700">"{query}"</strong> in Campus map.
+          <strong className="text-ink">"{query}"</strong> in Campus map.
           <Link
             to={`/search?q=${encodeURIComponent(query)}`}
             className="mt-1 block text-xs font-semibold text-brand-700 hover:text-brand-800"
@@ -353,7 +353,7 @@ const PlacesList = ({
           </Link>
         </div>
       ) : (
-        <ul className="divide-y divide-slate-100 overflow-hidden rounded-xl border border-slate-200 bg-white">
+        <ul className="divide-y divide-line/60 overflow-hidden rounded-xl border border-line bg-white">
           {places.map((p) => {
             const m = META[p.id];
             const isSelected = selectedId === p.id;
@@ -368,36 +368,36 @@ const PlacesList = ({
                   onClick={() => onSelect(p.id)}
                   aria-pressed={isSelected}
                   className={`flex w-full items-center gap-3 p-3 text-left transition ${
-                    isSelected ? "bg-brand-50" : "hover:bg-slate-50"
+                    isSelected ? "bg-brand-50" : "hover:bg-paper"
                   }`}
                 >
                   <span
                     className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg ${
                       isSelected
                         ? "bg-brand-100 text-brand-700"
-                        : "bg-slate-100 text-slate-600"
+                        : "bg-paper text-muted"
                     }`}
                   >
                     <MapPin className="h-4 w-4" aria-hidden="true" />
                   </span>
                   <span className="min-w-0 flex-1">
-                    <span className="block truncate text-sm font-semibold text-slate-900">
+                    <span className="block truncate text-sm font-semibold text-ink">
                       <Highlight text={p.title} query={query} />
                     </span>
                     {meters !== null ? (
-                      <span className="block truncate text-xs text-slate-500">
+                      <span className="block truncate text-xs text-muted">
                         {formatDistance(meters)} · {walkMinutes(meters)} min walk
                       </span>
                     ) : (
                       p.location?.label && (
-                        <span className="block truncate text-xs text-slate-500">
+                        <span className="block truncate text-xs text-muted">
                           {p.location.label}
                         </span>
                       )
                     )}
                   </span>
                   <ChevronRight
-                    className="h-4 w-4 shrink-0 text-slate-400"
+                    className="h-4 w-4 shrink-0 text-muted"
                     aria-hidden="true"
                   />
                 </button>
@@ -430,12 +430,12 @@ const LocationBanner = ({
   const showButton = status !== "unavailable";
 
   return (
-    <div className="mb-4 flex items-start justify-between gap-3 rounded-xl border border-slate-200 bg-white p-3 shadow-sm">
+    <div className="mb-4 flex items-start justify-between gap-3 rounded-xl border border-line bg-white p-3 shadow-sm">
       <div className="flex items-start gap-3">
         <span className="mt-0.5 inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-brand-100 text-brand-700">
           <Locate className="h-4 w-4" aria-hidden="true" />
         </span>
-        <p className="text-sm text-slate-700">{title}</p>
+        <p className="text-sm text-ink">{title}</p>
       </div>
       {showButton && (
         <button
@@ -568,8 +568,8 @@ export const NavigationPage = () => {
   return (
     <div>
       <header className="mb-4">
-        <h1 className="text-2xl font-bold text-slate-900">Campus map</h1>
-        <p className="mt-1 text-sm text-slate-500">
+        <h1 className="text-2xl font-bold text-ink">Campus map</h1>
+        <p className="mt-1 text-sm text-muted">
           Find buildings, halls, offices, ATMs and clinics on campus.
         </p>
       </header>
@@ -582,7 +582,7 @@ export const NavigationPage = () => {
         </label>
         <div className="relative">
           <Search
-            className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400"
+            className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted"
             aria-hidden="true"
           />
           <input
@@ -591,7 +591,7 @@ export const NavigationPage = () => {
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Search places on campus…"
-            className="w-full rounded-xl border border-slate-200 bg-white py-2.5 pl-9 pr-3 text-sm text-slate-900 placeholder:text-slate-400 focus:border-brand-500"
+            className="w-full rounded-xl border border-line bg-white py-2.5 pl-9 pr-3 text-sm text-ink placeholder:text-muted focus:border-brand-500"
           />
         </div>
 
@@ -612,7 +612,7 @@ export const NavigationPage = () => {
                   className={`shrink-0 rounded-full border px-3 py-1 text-xs font-medium transition ${
                     isActive
                       ? "border-brand-600 bg-brand-600 text-white"
-                      : "border-slate-200 bg-white text-slate-700 hover:border-slate-300 hover:bg-slate-50"
+                      : "border-line bg-white text-ink hover:border-line hover:bg-paper"
                   }`}
                 >
                   {c}
@@ -625,7 +625,7 @@ export const NavigationPage = () => {
           <div
             role="group"
             aria-label="Sort places"
-            className="shrink-0 overflow-hidden rounded-full border border-slate-200 bg-white text-xs font-medium"
+            className="shrink-0 overflow-hidden rounded-full border border-line bg-white text-xs font-medium"
           >
             <button
               type="button"
@@ -634,8 +634,8 @@ export const NavigationPage = () => {
               aria-pressed={sort === "nearest" && canSortByNearest}
               className={`px-3 py-1 transition ${
                 sort === "nearest" && canSortByNearest
-                  ? "bg-slate-900 text-white"
-                  : "text-slate-700 hover:bg-slate-50 disabled:cursor-not-allowed disabled:text-slate-300"
+                  ? "bg-ink text-white"
+                  : "text-ink hover:bg-paper disabled:cursor-not-allowed disabled:text-muted"
               }`}
             >
               Nearest
@@ -644,10 +644,10 @@ export const NavigationPage = () => {
               type="button"
               onClick={() => setSort("alpha")}
               aria-pressed={sort === "alpha" || !canSortByNearest}
-              className={`border-l border-slate-200 px-3 py-1 transition ${
+              className={`border-l border-line px-3 py-1 transition ${
                 sort === "alpha" || !canSortByNearest
-                  ? "bg-slate-900 text-white"
-                  : "text-slate-700 hover:bg-slate-50"
+                  ? "bg-ink text-white"
+                  : "text-ink hover:bg-paper"
               }`}
             >
               A–Z

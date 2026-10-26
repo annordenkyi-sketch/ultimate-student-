@@ -64,14 +64,14 @@ export const SavedPage = () => {
       <div
         role="tablist"
         aria-label="Saved views"
-        className="mx-4 mb-2 flex overflow-hidden rounded-xl bg-slate-100 p-1 text-sm"
+        className="mx-4 mb-2 flex overflow-hidden rounded-xl bg-paper p-1 text-sm"
       >
         <button
           role="tab"
           aria-selected={tab === "saved"}
           onClick={() => setTab("saved")}
           className={`flex-1 rounded-lg px-3 py-1.5 font-medium transition ${
-            tab === "saved" ? "bg-white text-slate-900 shadow-sm" : "text-slate-600"
+            tab === "saved" ? "bg-white text-ink shadow-sm" : "text-muted"
           }`}
         >
           Items
@@ -82,8 +82,8 @@ export const SavedPage = () => {
           onClick={() => setTab("checklist")}
           className={`flex-1 rounded-lg px-3 py-1.5 font-medium transition ${
             tab === "checklist"
-              ? "bg-white text-slate-900 shadow-sm"
-              : "text-slate-600"
+              ? "bg-white text-ink shadow-sm"
+              : "text-muted"
           }`}
         >
           Checklist
@@ -112,12 +112,12 @@ export const SavedPage = () => {
 
       {tab === "checklist" && (
         <div className="px-4 pb-6">
-          <div className="mb-3 rounded-xl border border-slate-200 bg-white p-3 shadow-sm">
-            <p className="text-sm font-semibold text-slate-900">
+          <div className="mb-3 rounded-xl border border-line bg-white p-3 shadow-sm">
+            <p className="text-sm font-semibold text-ink">
               {progress.done} of {progress.total} done
             </p>
             <div
-              className="mt-2 h-2 overflow-hidden rounded-full bg-slate-100"
+              className="mt-2 h-2 overflow-hidden rounded-full bg-paper"
               role="progressbar"
               aria-valuenow={pct}
               aria-valuemin={0}

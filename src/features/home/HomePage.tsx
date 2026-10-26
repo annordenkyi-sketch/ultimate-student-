@@ -219,7 +219,7 @@ const FeaturedHero = ({
           {/* Dark gradient for text contrast */}
           <div
             aria-hidden="true"
-            className="absolute inset-0 bg-gradient-to-r from-slate-950/70 via-slate-950/35 to-slate-950/10"
+            className="absolute inset-0 bg-gradient-to-r from-ink/70 via-ink/35 to-ink/10"
           />
 
           {/* Oversized translucent word overlay */}

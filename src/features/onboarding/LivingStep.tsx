@@ -49,7 +49,7 @@ const LIVING_TILES: LivingTile[] = [
     id: "off-campus",
     title: "Off campus",
     icon: Building2,
-    gradient: "from-amber-500 to-amber-700",
+    gradient: "from-accent-500 to-accent-700",
   },
 ];
 
@@ -118,7 +118,7 @@ const FloatingBackdrop = ({ reduce }: { reduce: boolean | null }) => (
       return (
         <motion.span
           key={i}
-          className={`absolute text-slate-200/70 ${f.className}`}
+          className={`absolute text-paper/70 ${f.className}`}
           initial={{ opacity: 0, y: 10 }}
           animate={
             reduce
@@ -186,14 +186,14 @@ const InterestsGrid = ({
     <p
       aria-live="polite"
       className={`mt-6 text-sm font-medium ${
-        canContinueB ? "text-brand-700" : "text-slate-500"
+        canContinueB ? "text-brand-700" : "text-muted"
       }`}
     >
       {selectedCount} selected
       {!canContinueB && (
         <>
           {" · "}
-          <span className="text-slate-400">
+          <span className="text-muted">
             pick {MIN_INTERESTS - selectedCount} more
           </span>
         </>
@@ -228,13 +228,13 @@ const InterestTile = ({
       className={`group relative block aspect-square w-full overflow-hidden rounded-2xl text-left ring-offset-2 transition ${
         isSelected
           ? "shadow-[0_0_28px_rgba(79,70,229,0.35)] ring-[3px] ring-brand-500"
-          : "ring-1 ring-slate-200 hover:ring-slate-300"
+          : "ring-1 ring-line hover:ring-line"
       }`}
     >
       {/* Blurred placeholder shown until the image loads */}
       <div
         aria-hidden="true"
-        className={`absolute inset-0 bg-gradient-to-br from-slate-200 via-slate-100 to-slate-300 ${
+        className={`absolute inset-0 bg-gradient-to-br from-line via-paper to-line ${
           loaded ? "opacity-0" : "animate-pulse"
         }`}
       />
@@ -263,7 +263,7 @@ const InterestTile = ({
       {/* Dark gradient for text contrast */}
       <div
         aria-hidden="true"
-        className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-slate-950/15 to-transparent"
+        className="absolute inset-0 bg-gradient-to-t from-ink/80 via-ink/15 to-transparent"
       />
 
       {/* Icon chip top-left */}
@@ -379,7 +379,7 @@ export const LivingStep = () => {
   };
 
   return (
-    <div className="relative min-h-[calc(100vh-120px)] bg-slate-50">
+    <div className="relative min-h-[calc(100vh-120px)] bg-paper">
       <FloatingBackdrop reduce={reduce} />
 
       {/* Column — narrow for Part A, full-width for Part B */}
@@ -390,23 +390,23 @@ export const LivingStep = () => {
       >
         {/* Mini part indicator */}
         <FadeIn>
-          <div className="mb-8 flex items-center gap-3 text-xs font-semibold text-slate-500">
+          <div className="mb-8 flex items-center gap-3 text-xs font-semibold text-muted">
             <div className="flex items-center gap-1.5">
               <span
                 className={`h-2 w-2 rounded-full transition ${
                   part === "A" || draft.living
                     ? "bg-brand-600"
-                    : "bg-slate-300"
+                    : "bg-line"
                 }`}
               />
               <span
                 className={`h-px w-6 transition ${
-                  part === "B" ? "bg-brand-500" : "bg-slate-200"
+                  part === "B" ? "bg-brand-500" : "bg-line"
                 }`}
               />
               <span
                 className={`h-2 w-2 rounded-full transition ${
-                  part === "B" ? "bg-brand-600" : "bg-slate-300"
+                  part === "B" ? "bg-brand-600" : "bg-line"
                 }`}
               />
             </div>
@@ -434,7 +434,7 @@ export const LivingStep = () => {
             >
               <h1
                 id="partA-heading"
-                className="text-3xl font-bold leading-tight text-slate-900 display md:text-4xl"
+                className="text-3xl font-bold leading-tight text-ink display md:text-4xl"
               >
                 Where do you live?
               </h1>
@@ -464,7 +464,7 @@ export const LivingStep = () => {
                             className={`relative min-h-[160px] overflow-hidden rounded-3xl border-2 p-6 text-left transition peer-focus-visible:ring-2 peer-focus-visible:ring-brand-500 peer-focus-visible:ring-offset-2 ${
                               isSelected
                                 ? "border-brand-500 bg-brand-50 shadow-lift"
-                                : "border-slate-200 bg-white hover:border-slate-300 hover:shadow-lift"
+                                : "border-line bg-white hover:border-line hover:shadow-lift"
                             }`}
                             whileHover={reduce ? undefined : { y: -3 }}
                             whileTap={reduce ? undefined : { scale: 0.98 }}
@@ -481,7 +481,7 @@ export const LivingStep = () => {
                                 aria-hidden="true"
                               />
                             </span>
-                            <h3 className="text-xl font-bold text-slate-900 display">
+                            <h3 className="text-xl font-bold text-ink display">
                               {tile.title}
                             </h3>
 
@@ -528,13 +528,13 @@ export const LivingStep = () => {
                     transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
                     className="overflow-hidden"
                   >
-                    <div className="mt-6 rounded-2xl border border-slate-200 bg-white p-4 shadow-card">
+                    <div className="mt-6 rounded-2xl border border-line bg-white p-4 shadow-card">
                       <label
                         htmlFor="hostel"
-                        className="flex items-baseline justify-between text-sm font-medium text-slate-800"
+                        className="flex items-baseline justify-between text-sm font-medium text-ink"
                       >
                         <span>Which hall or hostel?</span>
-                        <span className="text-xs font-normal text-slate-400">
+                        <span className="text-xs font-normal text-muted">
                           Optional
                         </span>
                       </label>
@@ -544,7 +544,7 @@ export const LivingStep = () => {
                         onChange={(e) =>
                           setDraft({ hostel: e.target.value || undefined })
                         }
-                        className="mt-2 block min-h-[44px] w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-900 focus:border-brand-500"
+                        className="mt-2 block min-h-[44px] w-full rounded-xl border border-line bg-white px-3 py-2.5 text-sm text-ink focus:border-brand-500"
                       >
                         <option value="">Not sure yet</option>
                         {ON_CAMPUS_HALLS.map((h) => (
@@ -583,11 +583,11 @@ export const LivingStep = () => {
             >
               <h1
                 id="partB-heading"
-                className="text-3xl font-bold leading-tight text-slate-900 display md:text-4xl"
+                className="text-3xl font-bold leading-tight text-ink display md:text-4xl"
               >
                 What are you into?
               </h1>
-              <p className="mt-2 text-sm text-slate-500 md:text-base">
+              <p className="mt-2 text-sm text-muted md:text-base">
                 Pick at least {MIN_INTERESTS}. We'll show you events and
                 opportunities to match.
               </p>
@@ -607,7 +607,7 @@ export const LivingStep = () => {
 
       {/* Sticky footer — always visible on both breakpoints */}
       <div
-        className="fixed inset-x-0 bottom-0 z-20 border-t border-slate-200 bg-white shadow-[0_-6px_20px_-10px_rgba(15,23,42,0.15)]"
+        className="fixed inset-x-0 bottom-0 z-20 border-t border-line bg-white shadow-[0_-6px_20px_-10px_rgba(15,23,42,0.15)]"
         style={{
           paddingBottom: "env(safe-area-inset-bottom)",
         }}
@@ -616,7 +616,7 @@ export const LivingStep = () => {
           <button
             type="button"
             onClick={onBack}
-            className="inline-flex items-center gap-1 rounded-md px-2 py-2 text-sm font-semibold text-slate-600 hover:text-slate-900 motion-safe:active:scale-[0.97]"
+            className="inline-flex items-center gap-1 rounded-md px-2 py-2 text-sm font-semibold text-muted hover:text-ink motion-safe:active:scale-[0.97]"
           >
             <ArrowLeft className="h-4 w-4" aria-hidden="true" />
             Back

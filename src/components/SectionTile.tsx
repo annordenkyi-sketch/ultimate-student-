@@ -17,7 +17,7 @@ export const SectionTile = ({ meta }: Props) => {
       <Link
         to={`/section/${meta.id}`}
         aria-label={`${meta.label} — ${meta.description}`}
-        className="relative block h-32 overflow-hidden rounded-2xl shadow-card ring-1 ring-slate-200 hover:shadow-lift focus-visible:ring-2 focus-visible:ring-brand-500"
+        className="relative block h-32 overflow-hidden rounded-2xl shadow-card ring-1 ring-line hover:shadow-lift focus-visible:ring-2 focus-visible:ring-brand-500"
       >
         {/* Gradient fallback behind the image */}
         <div
@@ -36,7 +36,7 @@ export const SectionTile = ({ meta }: Props) => {
         {/* Dark overlay for text contrast */}
         <div
           aria-hidden="true"
-          className="absolute inset-0 bg-gradient-to-t from-slate-900/80 via-slate-900/30 to-transparent"
+          className="absolute inset-0 bg-gradient-to-t from-ink/80 via-ink/30 to-transparent"
         />
         <div className="relative flex h-full flex-col justify-end p-3 text-white">
           <span className="flex items-center gap-1.5">

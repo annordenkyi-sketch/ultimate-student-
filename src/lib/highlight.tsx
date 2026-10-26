@@ -15,7 +15,7 @@ export const Highlight = ({ text, query }: Props) => {
     <>
       {parts.map((p, i) =>
         i % 2 === 1 ? (
-          <mark key={i} className="rounded bg-amber-200 px-0.5 text-slate-900">
+          <mark key={i} className="rounded bg-accent-200 px-0.5 text-ink">
             {p}
           </mark>
         ) : (

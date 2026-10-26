@@ -132,7 +132,7 @@ const HeroMosaic = () => {
           alt={picks[0].alt}
           loading="eager"
           decoding="async"
-          className="col-span-3 row-span-4 h-full w-full rounded-3xl bg-slate-800 object-cover"
+          className="col-span-3 row-span-4 h-full w-full rounded-3xl bg-ink object-cover"
         />
         {/* Top right tile */}
         <motion.img
@@ -145,7 +145,7 @@ const HeroMosaic = () => {
           alt={picks[1].alt}
           loading="eager"
           decoding="async"
-          className="col-span-3 row-span-3 h-full w-full rounded-3xl bg-slate-800 object-cover"
+          className="col-span-3 row-span-3 h-full w-full rounded-3xl bg-ink object-cover"
         />
         {/* Bottom right tile */}
         <motion.img
@@ -158,7 +158,7 @@ const HeroMosaic = () => {
           alt={picks[2].alt}
           loading="lazy"
           decoding="async"
-          className="col-span-3 row-span-3 h-full w-full rounded-3xl bg-slate-800 object-cover"
+          className="col-span-3 row-span-3 h-full w-full rounded-3xl bg-ink object-cover"
         />
         {/* Wide bottom tile */}
         <motion.img
@@ -171,7 +171,7 @@ const HeroMosaic = () => {
           alt={picks[3].alt}
           loading="lazy"
           decoding="async"
-          className="col-span-3 row-span-2 h-full w-full rounded-3xl bg-slate-800 object-cover"
+          className="col-span-3 row-span-2 h-full w-full rounded-3xl bg-ink object-cover"
         />
       </div>
 

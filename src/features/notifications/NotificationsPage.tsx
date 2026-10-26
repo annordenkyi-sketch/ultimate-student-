@@ -29,7 +29,7 @@ export const NotificationsPage = () => {
       <div className="px-4 pb-6">
         {unreadCount > 0 && (
           <div className="mb-3 flex items-center justify-between">
-            <p className="text-xs text-slate-500">
+            <p className="text-xs text-muted">
               {unreadCount} unread notification{unreadCount === 1 ? "" : "s"}
             </p>
             <button
@@ -56,12 +56,12 @@ export const NotificationsPage = () => {
                   onClick={() => markAsRead(n.id)}
                   className={`block rounded-xl border p-3 shadow-sm transition ${
                     n.read
-                      ? "border-slate-200 bg-white"
+                      ? "border-line bg-white"
                       : "border-brand-200 bg-brand-50"
                   }`}
                 >
                   <div className="flex items-start justify-between gap-2">
-                    <p className="text-sm font-semibold text-slate-900">
+                    <p className="text-sm font-semibold text-ink">
                       {n.title}
                     </p>
                     {!n.read && (
@@ -71,8 +71,8 @@ export const NotificationsPage = () => {
                       />
                     )}
                   </div>
-                  <p className="text-xs text-slate-600">{n.body}</p>
-                  <p className="mt-1 text-[11px] text-slate-500">
+                  <p className="text-xs text-muted">{n.body}</p>
+                  <p className="mt-1 text-[11px] text-muted">
                     {formatDateTime(n.date)}
                   </p>
                 </Link>

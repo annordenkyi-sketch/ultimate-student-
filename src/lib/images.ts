@@ -105,9 +105,9 @@ export const FEATURE_IMAGES = {
   },
   loginHero: {
     id: "loginHero",
-    photoId: "photo-1741699428220-65f37f3fbbcb",
-    alt: "A student studying at a library table with open books",
-    credit: { name: "Zoshua Colah", profile: "https://unsplash.com/@zoshuacolah" },
+    photoId: "photo-1758270704763-22072a90d3b6",
+    alt: "Students talking and laughing in a lecture hall",
+    credit: { name: "Vitaly Gariev", profile: "https://unsplash.com/@silverkblack" },
   },
   onboardingTypeHero: {
     id: "onboardingTypeHero",

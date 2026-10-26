@@ -166,19 +166,6 @@ const HeroCarousel = ({
         })}
       </div>
 
-      {/* Photo credit (small, bottom-right) */}
-      <p className="absolute bottom-4 right-4 z-10 hidden text-[10px] text-white/50 md:block">
-        Photo:{" "}
-        <a
-          href={HERO_PHOTOS[i].credit.profile}
-          target="_blank"
-          rel="noreferrer"
-          className="underline-offset-2 hover:underline"
-        >
-          {HERO_PHOTOS[i].credit.name}
-        </a>
-        {" "}on Unsplash
-      </p>
     </>
   );
 };

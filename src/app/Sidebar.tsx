@@ -4,13 +4,15 @@ import {
   GraduationCap,
   Home as HomeIcon,
   LifeBuoy,
+  LogOut,
   Map as MapIcon,
   Megaphone,
   Building2,
   Users,
   type LucideIcon,
 } from "lucide-react";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
+import { useProfile } from "@/hooks/useProfile";
 
 interface NavItem {
   to: string;
@@ -41,7 +43,18 @@ const linkClass = ({ isActive }: { isActive: boolean }): string =>
       : "text-slate-700 hover:bg-slate-100"
   }`;
 
-export const Sidebar = () => (
+export const Sidebar = () => {
+  const { clearProfile } = useProfile();
+  const navigate = useNavigate();
+
+  const onLogOut = () => {
+    const ok = window.confirm("Log out of this device?");
+    if (!ok) return;
+    clearProfile();
+    navigate("/welcome", { replace: true });
+  };
+
+  return (
   <aside
     aria-label="Main navigation"
     className="fixed inset-y-0 left-0 z-30 hidden w-64 border-r border-slate-200 bg-white lg:block"
@@ -120,6 +133,18 @@ export const Sidebar = () => (
           </ul>
         </div>
       </nav>
+
+      <div className="border-t border-slate-200 p-3">
+        <button
+          type="button"
+          onClick={onLogOut}
+          className="flex w-full items-center gap-3 rounded-xl px-3 py-2 text-sm font-medium text-slate-700 transition hover:bg-rose-50 hover:text-rose-700"
+        >
+          <LogOut className="h-4 w-4" aria-hidden="true" />
+          Log out
+        </button>
+      </div>
     </div>
   </aside>
-);
+  );
+};

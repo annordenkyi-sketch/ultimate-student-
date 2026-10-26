@@ -1,105 +1,527 @@
+import type { ReactNode } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { ArrowRight, GraduationCap, LogIn } from "lucide-react";
+import {
+  ArrowRight,
+  Bell,
+  Briefcase,
+  Building2,
+  GraduationCap,
+  LifeBuoy,
+  LogIn,
+  Map as MapIcon,
+  Users,
+  type LucideIcon,
+} from "lucide-react";
 import { motion, useReducedMotion } from "framer-motion";
-import { ActionButton } from "@/components/ActionButton";
-import { CampusMosaic } from "@/components/CampusMosaic";
-import { FloatingChips } from "@/components/FloatingChips";
-import { FadeIn } from "@/components/Motion";
+import { FadeIn, PressableDiv } from "@/components/Motion";
+import { MOSAIC_IMAGES, unsplash, unsplashSrcSet } from "@/lib/images";
+
+/* ─────────────────── Highlight pill behind one word ─────────────────── */
+
+interface HighlightProps {
+  children: ReactNode;
+  tone: "pink" | "amber" | "emerald";
+  tilt?: number;
+}
+
+const TONE: Record<HighlightProps["tone"], string> = {
+  pink: "bg-pink-300/80 text-slate-900",
+  amber: "bg-amber-300/90 text-slate-900",
+  emerald: "bg-emerald-300/80 text-slate-900",
+};
+
+const WordHighlight = ({ children, tone, tilt = -2 }: HighlightProps) => (
+  <span className="relative inline-block px-[0.35em] py-[0.05em]">
+    <span
+      aria-hidden="true"
+      className={`absolute inset-0 -z-[1] rounded-[0.75em] ${TONE[tone]}`}
+      style={{ transform: `rotate(${tilt}deg)` }}
+    />
+    <span className="relative">{children}</span>
+  </span>
+);
+
+/* ─────────────────── Floating badge pills ─────────────────── */
+
+interface Badge {
+  label: string;
+  sub?: string;
+  tone: "white" | "amber" | "pink";
+  className: string;
+  delay: number;
+}
+
+const BADGES: Badge[] = [
+  {
+    label: "New opportunity",
+    sub: "Internships this week",
+    tone: "white",
+    className: "left-[-6%] top-[14%]",
+    delay: 0.4,
+  },
+  {
+    label: "This week on campus",
+    sub: "3 events",
+    tone: "amber",
+    className: "right-[-4%] top-[36%]",
+    delay: 0.7,
+  },
+  {
+    label: "You're all set",
+    sub: "Personalised home",
+    tone: "pink",
+    className: "left-[-8%] bottom-[12%]",
+    delay: 1.0,
+  },
+];
+
+const TONES: Record<Badge["tone"], string> = {
+  white: "bg-white text-slate-900 ring-slate-200",
+  amber: "bg-amber-200 text-slate-900 ring-amber-300",
+  pink: "bg-pink-200 text-slate-900 ring-pink-300",
+};
+
+const FloatingBadge = ({ label, sub, tone, className, delay }: Badge) => {
+  const reduce = useReducedMotion();
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20, scale: 0.9 }}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
+      transition={{ duration: 0.5, delay, ease: [0.22, 1, 0.36, 1] }}
+      className={`absolute hidden md:block ${className}`}
+    >
+      <motion.div
+        animate={reduce ? undefined : { y: [0, -6, 0] }}
+        transition={{
+          duration: 3.6 + delay,
+          ease: "easeInOut",
+          repeat: Infinity,
+          delay,
+        }}
+        className={`rounded-2xl px-4 py-3 shadow-xl shadow-slate-900/10 ring-1 ${TONES[tone]}`}
+      >
+        <p className="text-xs font-semibold">{label}</p>
+        {sub && <p className="mt-0.5 text-[11px] text-slate-600">{sub}</p>}
+      </motion.div>
+    </motion.div>
+  );
+};
+
+/* ─────────────────── Hero mosaic (static asymmetric grid) ─────────────────── */
+
+const HeroMosaic = () => {
+  const picks = [
+    MOSAIC_IMAGES[0],
+    MOSAIC_IMAGES[2],
+    MOSAIC_IMAGES[3],
+    MOSAIC_IMAGES[7],
+  ];
+  const reduce = useReducedMotion();
+
+  return (
+    <div className="relative mx-auto w-full max-w-[520px] md:max-w-none">
+      <div className="grid grid-cols-6 grid-rows-6 gap-3">
+        {/* Tall left tile */}
+        <motion.img
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.5, delay: 0.1 }}
+          src={unsplash(picks[0].photoId, 600, 65)}
+          srcSet={unsplashSrcSet(picks[0].photoId)}
+          sizes="(min-width:1024px) 320px, 50vw"
+          alt={picks[0].alt}
+          loading="eager"
+          decoding="async"
+          className="col-span-3 row-span-4 h-full w-full rounded-3xl bg-slate-800 object-cover"
+        />
+        {/* Top right tile */}
+        <motion.img
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.5, delay: 0.2 }}
+          src={unsplash(picks[1].photoId, 500, 65)}
+          srcSet={unsplashSrcSet(picks[1].photoId)}
+          sizes="(min-width:1024px) 260px, 40vw"
+          alt={picks[1].alt}
+          loading="eager"
+          decoding="async"
+          className="col-span-3 row-span-3 h-full w-full rounded-3xl bg-slate-800 object-cover"
+        />
+        {/* Bottom right tile */}
+        <motion.img
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.5, delay: 0.3 }}
+          src={unsplash(picks[2].photoId, 500, 65)}
+          srcSet={unsplashSrcSet(picks[2].photoId)}
+          sizes="(min-width:1024px) 260px, 40vw"
+          alt={picks[2].alt}
+          loading="lazy"
+          decoding="async"
+          className="col-span-3 row-span-3 h-full w-full rounded-3xl bg-slate-800 object-cover"
+        />
+        {/* Wide bottom tile */}
+        <motion.img
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.5, delay: 0.4 }}
+          src={unsplash(picks[3].photoId, 600, 65)}
+          srcSet={unsplashSrcSet(picks[3].photoId)}
+          sizes="(min-width:1024px) 320px, 50vw"
+          alt={picks[3].alt}
+          loading="lazy"
+          decoding="async"
+          className="col-span-3 row-span-2 h-full w-full rounded-3xl bg-slate-800 object-cover"
+        />
+      </div>
+
+      {/* Decorative blob behind the mosaic */}
+      <div
+        aria-hidden="true"
+        className="absolute -inset-10 -z-10 rounded-[48px] bg-gradient-to-br from-brand-500/15 via-pink-300/10 to-amber-300/15 blur-2xl"
+      />
+
+      {BADGES.map((b) => (
+        <FloatingBadge key={b.label} {...b} />
+      ))}
+
+      {!reduce && (
+        <motion.div
+          aria-hidden="true"
+          className="pointer-events-none absolute -right-6 top-6 h-16 w-16 rounded-full bg-amber-300"
+          animate={{ scale: [1, 1.15, 1], opacity: [0.6, 0.9, 0.6] }}
+          transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+        />
+      )}
+    </div>
+  );
+};
+
+/* ─────────────────── Top nav ─────────────────── */
+
+const TopNav = () => (
+  <header className="sticky top-0 z-30 border-b border-slate-200 bg-white/85 backdrop-blur">
+    <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 md:px-8">
+      <Link
+        to="/welcome"
+        className="inline-flex items-center gap-2 text-sm font-semibold text-slate-900"
+      >
+        <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-brand-600 text-white">
+          <GraduationCap className="h-4 w-4" aria-hidden="true" />
+        </span>
+        Ultimate Student
+      </Link>
+      <nav className="flex items-center gap-2">
+        <Link
+          to="/login"
+          className="inline-flex items-center gap-2 rounded-full bg-slate-900 px-5 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-slate-800 motion-safe:active:scale-[0.97]"
+        >
+          <LogIn className="h-4 w-4" aria-hidden="true" />
+          Log in
+        </Link>
+      </nav>
+    </div>
+  </header>
+);
+
+/* ─────────────────── Section components ─────────────────── */
+
+interface Feature {
+  icon: LucideIcon;
+  title: string;
+  body: string;
+  tint: string;
+}
+
+const FEATURES: Feature[] = [
+  {
+    icon: MapIcon,
+    title: "Find your way around campus",
+    body: "A clean map of lecture halls, labs, offices and services, with walking times from where you are.",
+    tint: "bg-brand-100 text-brand-700",
+  },
+  {
+    icon: Building2,
+    title: "Discover hostels",
+    body: "Filter by price, distance, water, power and food options. Save the ones you like for later.",
+    tint: "bg-emerald-100 text-emerald-700",
+  },
+  {
+    icon: Bell,
+    title: "Stay on top of announcements",
+    body: "Notices from academic, hostels, events and services — read when you have a moment, not scattered across apps.",
+    tint: "bg-amber-100 text-amber-700",
+  },
+  {
+    icon: Users,
+    title: "Join events and clubs",
+    body: "See what's happening this week on campus. RSVP, bring a friend, keep track of what you've saved.",
+    tint: "bg-pink-100 text-pink-700",
+  },
+  {
+    icon: Briefcase,
+    title: "Find opportunities",
+    body: "Internships, scholarships, open applications — the ones that fit your programme and level.",
+    tint: "bg-indigo-100 text-indigo-700",
+  },
+  {
+    icon: LifeBuoy,
+    title: "Reach student services",
+    body: "Clinic, counselling, security, chaplaincy and the dean's office — one tap to call, email or get directions.",
+    tint: "bg-sky-100 text-sky-700",
+  },
+];
+
+const WhatYouCanDo = () => (
+  <section
+    aria-labelledby="features-heading"
+    className="mx-auto w-full max-w-6xl px-4 py-16 md:px-8 md:py-24"
+  >
+    <FadeIn>
+      <p className="text-[11px] font-semibold uppercase tracking-widest text-amber-700">
+        What you can do
+      </p>
+      <h2
+        id="features-heading"
+        className="mt-2 max-w-2xl text-3xl font-bold tracking-tight text-slate-900 md:text-5xl"
+      >
+        Everything campus throws at you,
+        <br className="hidden md:block" /> in{" "}
+        <WordHighlight tone="amber" tilt={-2}>one place</WordHighlight>.
+      </h2>
+    </FadeIn>
+
+    <ul className="mt-10 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+      {FEATURES.map((f, i) => {
+        const Icon = f.icon;
+        return (
+          <li key={f.title}>
+            <FadeIn delay={0.05 * i}>
+              <PressableDiv className="h-full rounded-3xl border border-slate-200 bg-white p-6 transition hover:border-slate-300 hover:shadow-sm">
+                <span
+                  className={`inline-flex h-11 w-11 items-center justify-center rounded-2xl ${f.tint}`}
+                >
+                  <Icon className="h-5 w-5" aria-hidden="true" />
+                </span>
+                <h3 className="mt-4 text-lg font-bold tracking-tight text-slate-900">
+                  {f.title}
+                </h3>
+                <p className="mt-2 text-sm leading-relaxed text-slate-600">
+                  {f.body}
+                </p>
+              </PressableDiv>
+            </FadeIn>
+          </li>
+        );
+      })}
+    </ul>
+  </section>
+);
+
+const STEPS = [
+  {
+    n: "01",
+    title: "Create your account",
+    body: "Name, email, a password — nothing else to install.",
+  },
+  {
+    n: "02",
+    title: "Tell us about you",
+    body: "Student type, where you live, interests. We use it to filter what you see.",
+  },
+  {
+    n: "03",
+    title: "Get your personalised home",
+    body: "Announcements, events, hostels and services that match you — nothing you don't need.",
+  },
+];
+
+const HowItWorks = () => (
+  <section
+    aria-labelledby="steps-heading"
+    className="relative overflow-hidden bg-slate-50 py-16 md:py-24"
+  >
+    <div className="mx-auto w-full max-w-6xl px-4 md:px-8">
+      <FadeIn>
+        <p className="text-[11px] font-semibold uppercase tracking-widest text-amber-700">
+          How it works
+        </p>
+        <h2
+          id="steps-heading"
+          className="mt-2 max-w-2xl text-3xl font-bold tracking-tight text-slate-900 md:text-5xl"
+        >
+          Three steps and{" "}
+          <WordHighlight tone="pink" tilt={2}>you're in</WordHighlight>.
+        </h2>
+      </FadeIn>
+
+      <ol className="relative mt-12 grid gap-6 md:grid-cols-3">
+        {/* Dotted connector (desktop only) */}
+        <div
+          aria-hidden="true"
+          className="absolute left-1/2 top-7 hidden h-px w-2/3 -translate-x-1/2 md:block"
+          style={{
+            backgroundImage:
+              "repeating-linear-gradient(to right, rgb(203,213,225) 0 6px, transparent 6px 14px)",
+          }}
+        />
+        {STEPS.map((s, i) => (
+          <li key={s.n}>
+            <FadeIn delay={0.1 * i}>
+              <div className="relative flex flex-col items-start rounded-3xl border border-slate-200 bg-white p-6 md:items-center md:text-center">
+                <span className="flex h-14 w-14 items-center justify-center rounded-full bg-brand-600 text-base font-bold text-white shadow-lg shadow-brand-600/30">
+                  {s.n}
+                </span>
+                <h3 className="mt-5 text-lg font-bold tracking-tight text-slate-900">
+                  {s.title}
+                </h3>
+                <p className="mt-2 max-w-xs text-sm leading-relaxed text-slate-600">
+                  {s.body}
+                </p>
+              </div>
+            </FadeIn>
+          </li>
+        ))}
+      </ol>
+    </div>
+  </section>
+);
+
+const FinalCTA = ({ onStart }: { onStart: () => void }) => (
+  <section className="mx-auto w-full max-w-6xl px-4 py-16 md:px-8 md:py-24">
+    <FadeIn>
+      <div className="overflow-hidden rounded-[32px] bg-brand-700 px-6 py-12 text-center md:px-16 md:py-20">
+        <p className="text-[11px] font-semibold uppercase tracking-widest text-amber-200">
+          Ready when you are
+        </p>
+        <h2 className="mx-auto mt-3 max-w-3xl text-3xl font-bold leading-tight tracking-tight text-white md:text-5xl">
+          Your campus is a lot. Your app shouldn't be.{" "}
+          <WordHighlight tone="amber" tilt={-2}>Get started</WordHighlight>.
+        </h2>
+        <p className="mx-auto mt-4 max-w-xl text-sm text-brand-100 md:text-base">
+          Set up takes a minute. No credit card. No install.
+        </p>
+        <div className="mt-8">
+          <button
+            type="button"
+            onClick={onStart}
+            className="inline-flex items-center gap-2 rounded-full bg-amber-300 px-7 py-3 text-sm font-semibold text-slate-900 shadow-xl shadow-amber-500/30 transition hover:bg-amber-200 motion-safe:hover:-translate-y-0.5 motion-safe:active:scale-[0.97]"
+          >
+            Get started
+            <ArrowRight className="h-4 w-4" aria-hidden="true" />
+          </button>
+        </div>
+      </div>
+    </FadeIn>
+  </section>
+);
+
+const SiteFooter = () => (
+  <footer className="border-t border-slate-200 bg-white">
+    <div className="mx-auto flex max-w-6xl flex-col items-start justify-between gap-6 px-4 py-10 text-sm md:flex-row md:items-center md:px-8">
+      <Link
+        to="/welcome"
+        className="inline-flex items-center gap-2 font-semibold text-slate-900"
+      >
+        <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-brand-600 text-white">
+          <GraduationCap className="h-4 w-4" aria-hidden="true" />
+        </span>
+        Ultimate Student
+      </Link>
+      <nav className="flex flex-wrap gap-x-6 gap-y-2 text-slate-600">
+        <a href="#about" className="hover:text-slate-900">About</a>
+        <a href="#contact" className="hover:text-slate-900">Contact</a>
+        <a href="#privacy" className="hover:text-slate-900">Privacy</a>
+        <a href="#terms" className="hover:text-slate-900">Terms</a>
+      </nav>
+      <p className="text-xs text-slate-500">© 2026 IID Global</p>
+    </div>
+  </footer>
+);
+
+/* ─────────────────── Page ─────────────────── */
 
 export const WelcomePage = () => {
   const navigate = useNavigate();
-  const reduce = useReducedMotion();
-
   const goStart = () => navigate("/onboarding/account");
 
   return (
-    <div className="relative isolate min-h-screen overflow-hidden bg-slate-950">
-      {/* ────── Mosaic (fades in, then starts scrolling) ────── */}
-      <motion.div
-        className="absolute inset-0"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 1.2, ease: "easeOut" }}
+    <div className="min-h-screen bg-white text-slate-900">
+      <TopNav />
+
+      {/* Hero */}
+      <section
+        aria-labelledby="hero-heading"
+        className="relative overflow-hidden"
       >
-        <CampusMosaic />
-      </motion.div>
+        <div
+          aria-hidden="true"
+          className="absolute inset-x-0 top-0 -z-10 h-[520px] bg-gradient-to-b from-brand-50 via-white to-white"
+        />
 
-      {/* ────── Readability overlay ────── */}
-      <div
-        aria-hidden="true"
-        className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/80 to-slate-950/30 md:bg-gradient-to-r md:from-slate-950 md:via-slate-950/85 md:to-slate-950/10"
-      />
-
-      {/* ────── Floating community chips ────── */}
-      <FloatingChips />
-
-      {/* ────── Content ────── */}
-      <div className="relative z-10 flex min-h-screen flex-col px-6 pb-10 pt-6 md:px-10 lg:px-16">
-        {/* Top bar: brand chip (left) + Log in (right) */}
-        <div className="flex items-center justify-between">
-          <FadeIn>
-            <span className="inline-flex items-center gap-1.5 rounded-full bg-amber-200/15 px-3 py-1.5 text-[11px] font-semibold uppercase tracking-wider text-amber-100 ring-1 ring-amber-200/40 backdrop-blur-sm">
-              <GraduationCap className="h-3.5 w-3.5" aria-hidden="true" />
-              Ultimate Student
-            </span>
-          </FadeIn>
-          <FadeIn delay={0.1}>
-            <Link
-              to="/login"
-              className="inline-flex items-center gap-2 rounded-xl bg-amber-300 px-5 py-2.5 text-sm font-semibold text-slate-900 shadow-xl shadow-amber-500/40 ring-1 ring-amber-100/50 transition duration-150 hover:bg-amber-200 motion-safe:hover:-translate-y-0.5 motion-safe:active:scale-[0.97]"
-            >
-              <LogIn className="h-4 w-4" aria-hidden="true" />
-              Log in
-            </Link>
-          </FadeIn>
-        </div>
-
-        {/* Headline + buttons: bottom on mobile, center-left on desktop */}
-        <div className="mt-auto md:mt-0 md:flex-1 md:items-center md:flex">
-          <div className="max-w-xl md:max-w-lg">
-            <FadeIn delay={0.3} y={18}>
-              <h1 className="text-[36px] font-bold leading-[1.05] text-white display md:text-5xl lg:text-6xl">
-                Your campus community.
+        <div className="mx-auto grid max-w-6xl grid-cols-1 items-center gap-10 px-4 py-12 md:px-8 md:py-20 lg:grid-cols-2 lg:gap-16 lg:py-28">
+          {/* Left — copy */}
+          <div className="max-w-xl">
+            <FadeIn>
+              <p className="text-[11px] font-semibold uppercase tracking-widest text-amber-700">
+                Ultimate Student
+              </p>
+            </FadeIn>
+            <FadeIn delay={0.08}>
+              <h1
+                id="hero-heading"
+                className="mt-3 text-4xl font-bold leading-[1.05] tracking-tight text-slate-900 sm:text-5xl md:text-6xl lg:text-7xl"
+              >
+                Your{" "}
+                <WordHighlight tone="pink" tilt={-3}>campus</WordHighlight>{" "}
+                community, in{" "}
+                <WordHighlight tone="amber" tilt={2}>one app</WordHighlight>.
               </h1>
             </FadeIn>
-            <FadeIn delay={0.45}>
-              <p className="mt-3 max-w-md text-base leading-relaxed text-slate-200 md:mt-4 md:text-lg">
-                Classes, hostels, events and opportunities together.
+            <FadeIn delay={0.18}>
+              <p className="mt-5 max-w-md text-base leading-relaxed text-slate-600 md:text-lg">
+                Classes, hostels, announcements, events and opportunities —
+                every part of student life in one calm place.
               </p>
             </FadeIn>
 
-            <FadeIn delay={0.6} className="mt-7">
-              <motion.div
-                animate={
-                  reduce
-                    ? undefined
-                    : {
-                        boxShadow: [
-                          "0 0 0 0 rgba(79,70,229,0.0)",
-                          "0 0 0 12px rgba(79,70,229,0.18)",
-                          "0 0 0 0 rgba(79,70,229,0.0)",
-                        ],
-                      }
-                }
-                transition={{
-                  duration: 2.4,
-                  ease: "easeInOut",
-                  repeat: Infinity,
-                }}
-                className="inline-block rounded-xl"
-              >
-                <ActionButton
+            <FadeIn delay={0.28}>
+              <div className="mt-8 flex flex-wrap items-center gap-3">
+                <button
+                  type="button"
                   onClick={goStart}
-                  leading={<ArrowRight className="h-4 w-4" aria-hidden="true" />}
-                  className="px-6"
+                  className="inline-flex items-center gap-2 rounded-full bg-brand-600 px-6 py-3 text-sm font-semibold text-white shadow-xl shadow-brand-600/30 transition hover:bg-brand-700 motion-safe:hover:-translate-y-0.5 motion-safe:active:scale-[0.97]"
                 >
                   Get started
-                </ActionButton>
-              </motion.div>
+                  <ArrowRight className="h-4 w-4" aria-hidden="true" />
+                </button>
+                <Link
+                  to="/login"
+                  className="inline-flex items-center gap-2 rounded-full border border-slate-300 bg-white px-6 py-3 text-sm font-semibold text-slate-800 transition hover:border-slate-400 hover:bg-slate-50 motion-safe:active:scale-[0.97]"
+                >
+                  I have an account
+                </Link>
+              </div>
+            </FadeIn>
+
+            <FadeIn delay={0.4}>
+              <p className="mt-6 text-xs text-slate-500">
+                Built with students at IID partner universities.
+              </p>
             </FadeIn>
           </div>
+
+          {/* Right — mosaic + badges */}
+          <div className="relative">
+            <HeroMosaic />
+          </div>
         </div>
-      </div>
+      </section>
+
+      <WhatYouCanDo />
+      <HowItWorks />
+      <FinalCTA onStart={goStart} />
+      <SiteFooter />
     </div>
   );
 };

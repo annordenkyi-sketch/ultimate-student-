@@ -486,13 +486,6 @@ export const WelcomePage = () => {
                   <WordHighlight tone="amber" tilt={2}>one app</WordHighlight>.
                 </h1>
               </FadeIn>
-              <FadeIn delay={0.25}>
-                <p className="mt-6 max-w-xl text-base leading-relaxed text-white/85 md:text-lg">
-                  Classes, hostels, announcements, events and opportunities —
-                  every part of student life in one calm place.
-                </p>
-              </FadeIn>
-
               <FadeIn delay={0.4}>
                 <div className="mt-8 flex flex-wrap items-center gap-3">
                   <button

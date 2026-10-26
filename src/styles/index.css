@@ -14,20 +14,22 @@ body,
 }
 
 body {
-  @apply bg-slate-50 text-slate-900 antialiased font-sans;
+  @apply bg-paper text-muted antialiased font-sans;
 }
 
 h1,
 h2,
 h3,
+h4,
 .display {
-  font-family: "Plus Jakarta Sans", Inter, system-ui, sans-serif;
-  letter-spacing: -0.015em;
+  font-family: "Bricolage Grotesque", "DM Sans", Inter, system-ui, sans-serif;
+  letter-spacing: -0.02em;
+  @apply text-ink;
 }
 
 /* Visible focus ring for keyboard users */
 :focus-visible {
-  @apply outline-none ring-2 ring-brand-500 ring-offset-2 ring-offset-white;
+  @apply outline-none ring-2 ring-brand-600 ring-offset-2 ring-offset-paper;
 }
 
 /* Skip link styling */

@@ -75,10 +75,10 @@ const MobileHeader = ({ firstName }: { firstName: string }) => {
     <header className="lg:hidden">
       <div className="flex items-center justify-between">
         <div>
-          <p className="text-[11px] font-semibold uppercase tracking-widest text-amber-700">
+          <p className="text-[11px] font-semibold uppercase tracking-widest text-accent-600">
             {greeting()}
           </p>
-          <h1 className="mt-0.5 text-2xl font-bold tracking-tight text-slate-900">
+          <h1 className="mt-0.5 text-2xl font-bold tracking-tight text-ink">
             {firstName}
           </h1>
         </div>
@@ -89,7 +89,7 @@ const MobileHeader = ({ firstName }: { firstName: string }) => {
               ? `Notifications, ${unreadCount} unread`
               : "Notifications"
           }
-          className="relative inline-flex h-10 w-10 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-700 hover:bg-slate-50"
+          className="relative inline-flex h-10 w-10 items-center justify-center rounded-full border border-line bg-white text-ink hover:bg-brand-50/60"
         >
           <Bell className="h-5 w-5" aria-hidden="true" />
           {unreadCount > 0 && (
@@ -113,13 +113,13 @@ const MobileHeader = ({ firstName }: { firstName: string }) => {
 
 const GreetingHeader = ({ firstName }: { firstName: string }) => (
   <header className="hidden lg:block">
-    <p className="text-[11px] font-semibold uppercase tracking-widest text-amber-700">
+    <p className="text-[11px] font-semibold uppercase tracking-widest text-accent-600">
       {greeting()}
     </p>
-    <h1 className="mt-1 text-4xl font-bold tracking-tight text-slate-900 lg:text-5xl">
+    <h1 className="mt-1 text-4xl font-bold tracking-tight text-ink lg:text-5xl">
       Welcome back, {firstName}.
     </h1>
-    <p className="mt-2 text-sm text-slate-500">{formatToday()}</p>
+    <p className="mt-2 text-sm text-muted">{formatToday()}</p>
   </header>
 );
 
@@ -203,7 +203,7 @@ const FeaturedHero = ({
 
   return (
     <section aria-label="Featured" className="relative">
-      <div className="relative overflow-hidden rounded-2xl border border-slate-200 bg-white">
+      <div className="relative overflow-hidden rounded-2xl border border-line bg-white">
         <div className="relative aspect-[16/10] md:aspect-[21/9]">
           <img
             key={slide.key}
@@ -238,7 +238,7 @@ const FeaturedHero = ({
           {/* Caption bottom-left */}
           <div className="absolute inset-x-0 bottom-0 flex items-end justify-between gap-4 p-5 md:p-8">
             <div className="max-w-xl">
-              <p className="text-[11px] font-semibold uppercase tracking-widest text-amber-200">
+              <p className="text-[11px] font-semibold uppercase tracking-widest text-accent-200">
                 {slide.eyebrow}
               </p>
               <h2 className="mt-1 line-clamp-2 text-xl font-bold leading-tight text-white md:text-2xl">
@@ -249,7 +249,7 @@ const FeaturedHero = ({
               </p>
               <Link
                 to={slide.to}
-                className="mt-3 inline-flex items-center gap-1 rounded-full bg-white px-4 py-1.5 text-xs font-semibold text-slate-900 shadow-sm transition hover:bg-slate-100"
+                className="mt-3 inline-flex items-center gap-1 rounded-full bg-white px-4 py-1.5 text-xs font-semibold text-ink shadow-sm transition hover:bg-paper"
               >
                 {slide.cta}
                 <ArrowRight className="h-3 w-3" aria-hidden="true" />
@@ -262,7 +262,7 @@ const FeaturedHero = ({
                   type="button"
                   onClick={prev}
                   aria-label="Previous"
-                  className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-white/90 text-slate-900 shadow-sm transition hover:bg-white"
+                  className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-white/90 text-ink shadow-sm transition hover:bg-white"
                 >
                   <ArrowLeft className="h-4 w-4" aria-hidden="true" />
                 </button>
@@ -270,7 +270,7 @@ const FeaturedHero = ({
                   type="button"
                   onClick={next}
                   aria-label="Next"
-                  className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-white/90 text-slate-900 shadow-sm transition hover:bg-white"
+                  className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-white/90 text-ink shadow-sm transition hover:bg-white"
                 >
                   <ArrowRight className="h-4 w-4" aria-hidden="true" />
                 </button>
@@ -355,7 +355,7 @@ const HighlightCards = ({ campusEventsCount }: { campusEventsCount: number }) =>
             <li key={h.key}>
               <Link
                 to={h.to}
-                className="group flex h-full flex-col gap-4 rounded-2xl border border-slate-200 bg-white p-5 transition hover:border-slate-300"
+                className="group flex h-full flex-col gap-4 rounded-2xl border border-line bg-white p-5 transition hover:border-brand-300"
               >
                 <div className="flex items-center justify-between">
                   <span
@@ -363,16 +363,16 @@ const HighlightCards = ({ campusEventsCount }: { campusEventsCount: number }) =>
                   >
                     <Icon className="h-4 w-4" aria-hidden="true" />
                   </span>
-                  <span className="text-[10px] font-semibold uppercase tracking-widest text-amber-700">
+                  <span className="text-[10px] font-semibold uppercase tracking-widest text-accent-600">
                     {h.tag}
                   </span>
                 </div>
 
                 <div className="min-w-0">
-                  <p className="truncate text-base font-bold tracking-tight text-slate-900">
+                  <p className="truncate text-base font-bold tracking-tight text-ink">
                     {h.primary}
                   </p>
-                  <p className="mt-0.5 line-clamp-1 text-xs text-slate-500">
+                  <p className="mt-0.5 line-clamp-1 text-xs text-muted">
                     {h.secondary}
                   </p>
                 </div>
@@ -404,16 +404,16 @@ interface Stat {
 const AtAGlance = ({ stats }: { stats: Stat[] }) => (
   <section
     aria-labelledby="glance-heading"
-    className="rounded-2xl border border-slate-200 bg-white p-6 md:p-10"
+    className="rounded-2xl border border-line bg-white p-6 md:p-10"
   >
     <div className="mb-6 flex items-end justify-between gap-6 md:mb-10">
       <div>
-        <p className="text-[11px] font-semibold uppercase tracking-widest text-amber-700">
+        <p className="text-[11px] font-semibold uppercase tracking-widest text-accent-600">
           Your week
         </p>
         <h2
           id="glance-heading"
-          className="mt-1 text-3xl font-bold tracking-tight text-slate-900 md:text-4xl"
+          className="mt-1 text-3xl font-bold tracking-tight text-ink md:text-4xl"
         >
           Ultimate Student at a glance
         </h2>
@@ -424,13 +424,13 @@ const AtAGlance = ({ stats }: { stats: Stat[] }) => (
       {stats.map((s) => {
         const Icon = s.icon;
         return (
-          <li key={s.key} className="border-t border-slate-200 pt-5">
+          <li key={s.key} className="border-t border-line pt-5">
             <div className="flex items-center justify-between gap-3">
-              <p className="text-xs font-semibold uppercase tracking-widest text-amber-700">
+              <p className="text-xs font-semibold uppercase tracking-widest text-accent-600">
                 {s.label}
               </p>
               <Icon
-                className="h-4 w-4 text-slate-300"
+                className="h-4 w-4 text-line"
                 aria-hidden="true"
               />
             </div>
@@ -438,14 +438,14 @@ const AtAGlance = ({ stats }: { stats: Stat[] }) => (
               to={s.to}
               className="group mt-3 inline-flex items-baseline gap-2"
             >
-              <span className="text-5xl font-bold tracking-tight text-slate-900 group-hover:text-brand-700 md:text-6xl">
+              <span className="text-5xl font-bold tracking-tight text-ink group-hover:text-brand-700 md:text-6xl">
                 {s.value}
               </span>
               <span className="text-xs font-semibold text-brand-700 group-hover:text-brand-800">
                 →
               </span>
             </Link>
-            <p className="mt-2 text-xs text-slate-500">{s.caption}</p>
+            <p className="mt-2 text-xs text-muted">{s.caption}</p>
           </li>
         );
       })}
@@ -479,16 +479,16 @@ const AnnouncementsPanel = () => {
   return (
     <section
       aria-labelledby="ann-heading"
-      className="rounded-2xl border border-slate-200 bg-white"
+      className="rounded-2xl border border-line bg-white"
     >
-      <header className="flex items-end justify-between gap-4 border-b border-slate-100 px-6 py-5">
+      <header className="flex items-end justify-between gap-4 border-b border-line/60 px-6 py-5">
         <div>
-          <p className="text-[11px] font-semibold uppercase tracking-widest text-amber-700">
+          <p className="text-[11px] font-semibold uppercase tracking-widest text-accent-600">
             Updates
           </p>
           <h2
             id="ann-heading"
-            className="mt-0.5 text-xl font-bold tracking-tight text-slate-900"
+            className="mt-0.5 text-xl font-bold tracking-tight text-ink"
           >
             Announcements
           </h2>
@@ -502,37 +502,37 @@ const AnnouncementsPanel = () => {
       </header>
 
       {items == null ? (
-        <ul className="divide-y divide-slate-100">
+        <ul className="divide-y divide-line/60">
           {[0, 1, 2, 3].map((i) => (
-            <li key={i} className="h-20 animate-pulse bg-slate-50/60" />
+            <li key={i} className="h-20 animate-pulse bg-paper/60" />
           ))}
         </ul>
       ) : items.length === 0 ? (
-        <p className="px-6 py-10 text-center text-sm text-slate-500">
+        <p className="px-6 py-10 text-center text-sm text-muted">
           Nothing to show yet.
         </p>
       ) : (
-        <ul className="divide-y divide-slate-100">
+        <ul className="divide-y divide-line/60">
           {items.slice(0, 4).map((a) => {
             const unread = !isRead(a.id);
             return (
               <li key={a.id}>
                 <Link
                   to={`/announcements/${a.id}`}
-                  className="flex items-start gap-4 px-6 py-5 transition hover:bg-slate-50"
+                  className="flex items-start gap-4 px-6 py-5 transition hover:bg-brand-50/60"
                 >
                   <span
                     aria-hidden="true"
                     className={`mt-2 h-2 w-2 shrink-0 rounded-full ${
-                      unread ? "bg-brand-600" : "bg-slate-300"
+                      unread ? "bg-brand-600" : "bg-line"
                     }`}
                   />
                   <div className="min-w-0 flex-1">
                     <div className="flex items-baseline justify-between gap-3">
-                      <p className="text-sm font-bold tracking-tight text-slate-900">
+                      <p className="text-sm font-bold tracking-tight text-ink">
                         {a.title}
                       </p>
-                      <p className="shrink-0 text-[11px] uppercase tracking-wider text-slate-400">
+                      <p className="shrink-0 text-[11px] uppercase tracking-wider text-muted">
                         {new Date(a.date).toLocaleDateString(undefined, {
                           day: "numeric",
                           month: "short",
@@ -540,11 +540,11 @@ const AnnouncementsPanel = () => {
                       </p>
                     </div>
                     {a.source && (
-                      <p className="mt-0.5 text-[11px] font-medium uppercase tracking-wider text-amber-700">
+                      <p className="mt-0.5 text-[11px] font-medium uppercase tracking-wider text-accent-600">
                         {a.source}
                       </p>
                     )}
-                    <p className="mt-1 line-clamp-2 text-xs text-slate-500">
+                    <p className="mt-1 line-clamp-2 text-xs text-muted">
                       {a.body}
                     </p>
                   </div>

@@ -30,12 +30,12 @@ export const SavedBlock = () => {
   return (
     <section
       aria-labelledby="saved-heading"
-      className="rounded-xl border border-slate-200 bg-white"
+      className="rounded-xl border border-line bg-white"
     >
-      <header className="border-b border-slate-100 px-4 py-3">
+      <header className="border-b border-line/60 px-4 py-3">
         <h2
           id="saved-heading"
-          className="text-sm font-semibold text-slate-900"
+          className="text-sm font-semibold text-ink"
         >
           Saved for later
         </h2>
@@ -49,7 +49,7 @@ export const SavedBlock = () => {
         />
       ) : (
         <>
-          <ul className="divide-y divide-slate-100">
+          <ul className="divide-y divide-line/60">
             {visible.map((i) => {
               const meta = sectionById(i.section);
               const Icon = meta.icon;
@@ -63,7 +63,7 @@ export const SavedBlock = () => {
                 <li key={i.id} className="relative">
                   <Link
                     to={`/section/${i.section}/${i.id}`}
-                    className="flex items-start gap-3 p-3 pr-10 transition hover:bg-slate-50"
+                    className="flex items-start gap-3 p-3 pr-10 transition hover:bg-brand-50/60"
                   >
                     <span
                       className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-lg ${meta.accent}`}
@@ -71,11 +71,11 @@ export const SavedBlock = () => {
                       <Icon className="h-4 w-4" aria-hidden="true" />
                     </span>
                     <div className="min-w-0 flex-1">
-                      <p className="truncate text-sm font-semibold text-slate-900">
+                      <p className="truncate text-sm font-semibold text-ink">
                         {i.title}
                       </p>
-                      <p className="line-clamp-1 text-xs text-slate-500">
-                        <span className="text-[10px] font-semibold uppercase tracking-wider text-slate-400">
+                      <p className="line-clamp-1 text-xs text-muted">
+                        <span className="text-[10px] font-semibold uppercase tracking-wider text-muted">
                           {meta.shortLabel}
                         </span>{" "}
                         · {i.summary}
@@ -86,7 +86,7 @@ export const SavedBlock = () => {
                     type="button"
                     onClick={onRemove}
                     aria-label={`Remove ${i.title} from saved`}
-                    className="absolute right-2 top-1/2 inline-flex h-7 w-7 -translate-y-1/2 items-center justify-center rounded-md text-slate-400 transition hover:bg-slate-100 hover:text-slate-700"
+                    className="absolute right-2 top-1/2 inline-flex h-7 w-7 -translate-y-1/2 items-center justify-center rounded-md text-muted transition hover:bg-paper hover:text-ink"
                   >
                     <X className="h-3.5 w-3.5" aria-hidden="true" />
                   </button>
@@ -94,7 +94,7 @@ export const SavedBlock = () => {
               );
             })}
           </ul>
-          <footer className="border-t border-slate-100 px-4 py-3 text-right">
+          <footer className="border-t border-line/60 px-4 py-3 text-right">
             <Link
               to="/saved"
               className="text-xs font-semibold text-brand-700 hover:text-brand-800"

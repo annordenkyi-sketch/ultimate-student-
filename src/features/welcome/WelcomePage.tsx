@@ -20,14 +20,14 @@ import { MOSAIC_IMAGES, unsplash, unsplashSrcSet } from "@/lib/images";
 
 interface HighlightProps {
   children: ReactNode;
-  tone: "pink" | "amber" | "emerald";
+  tone: "sage" | "amber" | "blush";
   tilt?: number;
 }
 
 const TONE: Record<HighlightProps["tone"], string> = {
-  pink: "bg-pink-300/80 text-slate-900",
-  amber: "bg-amber-300/90 text-slate-900",
-  emerald: "bg-emerald-300/80 text-slate-900",
+  sage: "bg-brand-200/70 text-ink",
+  amber: "bg-accent-200/90 text-ink",
+  blush: "bg-rose-200/70 text-ink",
 };
 
 const WordHighlight = ({ children, tone, tilt = -2 }: HighlightProps) => (
@@ -46,7 +46,7 @@ const WordHighlight = ({ children, tone, tilt = -2 }: HighlightProps) => (
 interface Badge {
   label: string;
   sub?: string;
-  tone: "white" | "amber" | "pink";
+  tone: "white" | "amber" | "sage";
   className: string;
   delay: number;
 }
@@ -69,16 +69,16 @@ const BADGES: Badge[] = [
   {
     label: "You're all set",
     sub: "Personalised home",
-    tone: "pink",
+    tone: "sage",
     className: "left-[-8%] bottom-[12%]",
     delay: 1.0,
   },
 ];
 
 const TONES: Record<Badge["tone"], string> = {
-  white: "bg-white text-slate-900 ring-slate-200",
-  amber: "bg-amber-200 text-slate-900 ring-amber-300",
-  pink: "bg-pink-200 text-slate-900 ring-pink-300",
+  white: "bg-white text-ink ring-line",
+  amber: "bg-accent-200 text-ink ring-accent-300",
+  sage: "bg-brand-100 text-ink ring-brand-200",
 };
 
 const FloatingBadge = ({ label, sub, tone, className, delay }: Badge) => {
@@ -101,7 +101,7 @@ const FloatingBadge = ({ label, sub, tone, className, delay }: Badge) => {
         className={`rounded-2xl px-4 py-3 shadow-xl shadow-slate-900/10 ring-1 ${TONES[tone]}`}
       >
         <p className="text-xs font-semibold">{label}</p>
-        {sub && <p className="mt-0.5 text-[11px] text-slate-600">{sub}</p>}
+        {sub && <p className="mt-0.5 text-[11px] text-muted">{sub}</p>}
       </motion.div>
     </motion.div>
   );
@@ -178,7 +178,7 @@ const HeroMosaic = () => {
       {/* Decorative blob behind the mosaic */}
       <div
         aria-hidden="true"
-        className="absolute -inset-10 -z-10 rounded-[48px] bg-gradient-to-br from-brand-500/15 via-pink-300/10 to-amber-300/15 blur-2xl"
+        className="absolute -inset-10 -z-10 rounded-[48px] bg-gradient-to-br from-brand-300/20 via-accent-200/15 to-rose-200/15 blur-2xl"
       />
 
       {BADGES.map((b) => (
@@ -188,7 +188,7 @@ const HeroMosaic = () => {
       {!reduce && (
         <motion.div
           aria-hidden="true"
-          className="pointer-events-none absolute -right-6 top-6 h-16 w-16 rounded-full bg-amber-300"
+          className="pointer-events-none absolute -right-6 top-6 h-16 w-16 rounded-full bg-accent-300"
           animate={{ scale: [1, 1.15, 1], opacity: [0.6, 0.9, 0.6] }}
           transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
         />
@@ -200,11 +200,11 @@ const HeroMosaic = () => {
 /* ─────────────────── Top nav ─────────────────── */
 
 const TopNav = () => (
-  <header className="sticky top-0 z-30 border-b border-slate-200 bg-white/85 backdrop-blur">
+  <header className="sticky top-0 z-30 border-b border-line bg-paper/85 backdrop-blur">
     <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 md:px-8">
       <Link
         to="/welcome"
-        className="inline-flex items-center gap-2 text-sm font-semibold text-slate-900"
+        className="inline-flex items-center gap-2 font-display text-base font-bold text-ink"
       >
         <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-brand-600 text-white">
           <GraduationCap className="h-4 w-4" aria-hidden="true" />
@@ -214,7 +214,7 @@ const TopNav = () => (
       <nav className="flex items-center gap-2">
         <Link
           to="/login"
-          className="inline-flex items-center gap-2 rounded-full bg-slate-900 px-5 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-slate-800 motion-safe:active:scale-[0.97]"
+          className="inline-flex items-center gap-2 rounded-full bg-brand-700 px-5 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-brand-800 motion-safe:active:scale-[0.97]"
         >
           <LogIn className="h-4 w-4" aria-hidden="true" />
           Log in
@@ -244,25 +244,25 @@ const FEATURES: Feature[] = [
     icon: Building2,
     title: "Discover hostels",
     body: "Filter by price, distance, water, power and food options. Save the ones you like for later.",
-    tint: "bg-emerald-100 text-emerald-700",
+    tint: "bg-accent-100 text-accent-700",
   },
   {
     icon: Bell,
     title: "Stay on top of announcements",
     body: "Notices from academic, hostels, events and services — read when you have a moment, not scattered across apps.",
-    tint: "bg-amber-100 text-amber-700",
+    tint: "bg-rose-100 text-rose-700",
   },
   {
     icon: Users,
     title: "Join events and clubs",
     body: "See what's happening this week on campus. RSVP, bring a friend, keep track of what you've saved.",
-    tint: "bg-pink-100 text-pink-700",
+    tint: "bg-indigo-100 text-indigo-700",
   },
   {
     icon: Briefcase,
     title: "Find opportunities",
     body: "Internships, scholarships, open applications — the ones that fit your programme and level.",
-    tint: "bg-indigo-100 text-indigo-700",
+    tint: "bg-brand-100 text-brand-700",
   },
   {
     icon: LifeBuoy,
@@ -278,12 +278,12 @@ const WhatYouCanDo = () => (
     className="mx-auto w-full max-w-6xl px-4 py-16 md:px-8 md:py-24"
   >
     <FadeIn>
-      <p className="text-[11px] font-semibold uppercase tracking-widest text-amber-700">
+      <p className="text-[11px] font-semibold uppercase tracking-widest text-accent-600">
         What you can do
       </p>
       <h2
         id="features-heading"
-        className="mt-2 max-w-2xl text-3xl font-bold tracking-tight text-slate-900 md:text-5xl"
+        className="mt-2 max-w-2xl font-display text-3xl font-bold tracking-tight text-ink md:text-5xl"
       >
         Everything campus throws at you,
         <br className="hidden md:block" /> in{" "}
@@ -297,16 +297,16 @@ const WhatYouCanDo = () => (
         return (
           <li key={f.title}>
             <FadeIn delay={0.05 * i}>
-              <PressableDiv className="h-full rounded-3xl border border-slate-200 bg-white p-6 transition hover:border-slate-300 hover:shadow-sm">
+              <PressableDiv className="h-full rounded-3xl border border-line bg-white p-6 transition hover:border-brand-300 hover:shadow-sm">
                 <span
                   className={`inline-flex h-11 w-11 items-center justify-center rounded-2xl ${f.tint}`}
                 >
                   <Icon className="h-5 w-5" aria-hidden="true" />
                 </span>
-                <h3 className="mt-4 text-lg font-bold tracking-tight text-slate-900">
+                <h3 className="mt-4 font-display text-lg font-bold tracking-tight text-ink">
                   {f.title}
                 </h3>
-                <p className="mt-2 text-sm leading-relaxed text-slate-600">
+                <p className="mt-2 text-sm leading-relaxed text-muted">
                   {f.body}
                 </p>
               </PressableDiv>
@@ -339,19 +339,19 @@ const STEPS = [
 const HowItWorks = () => (
   <section
     aria-labelledby="steps-heading"
-    className="relative overflow-hidden bg-slate-50 py-16 md:py-24"
+    className="relative overflow-hidden bg-brand-50 py-16 md:py-24"
   >
     <div className="mx-auto w-full max-w-6xl px-4 md:px-8">
       <FadeIn>
-        <p className="text-[11px] font-semibold uppercase tracking-widest text-amber-700">
+        <p className="text-[11px] font-semibold uppercase tracking-widest text-accent-600">
           How it works
         </p>
         <h2
           id="steps-heading"
-          className="mt-2 max-w-2xl text-3xl font-bold tracking-tight text-slate-900 md:text-5xl"
+          className="mt-2 max-w-2xl font-display text-3xl font-bold tracking-tight text-ink md:text-5xl"
         >
           Three steps and{" "}
-          <WordHighlight tone="pink" tilt={2}>you're in</WordHighlight>.
+          <WordHighlight tone="blush" tilt={2}>you're in</WordHighlight>.
         </h2>
       </FadeIn>
 
@@ -362,20 +362,20 @@ const HowItWorks = () => (
           className="absolute left-1/2 top-7 hidden h-px w-2/3 -translate-x-1/2 md:block"
           style={{
             backgroundImage:
-              "repeating-linear-gradient(to right, rgb(203,213,225) 0 6px, transparent 6px 14px)",
+              "repeating-linear-gradient(to right, #A6CFC2 0 6px, transparent 6px 14px)",
           }}
         />
         {STEPS.map((s, i) => (
           <li key={s.n}>
             <FadeIn delay={0.1 * i}>
-              <div className="relative flex flex-col items-start rounded-3xl border border-slate-200 bg-white p-6 md:items-center md:text-center">
-                <span className="flex h-14 w-14 items-center justify-center rounded-full bg-brand-600 text-base font-bold text-white shadow-lg shadow-brand-600/30">
+              <div className="relative flex flex-col items-start rounded-3xl border border-line bg-white p-6 md:items-center md:text-center">
+                <span className="flex h-14 w-14 items-center justify-center rounded-full bg-brand-700 font-display text-base font-bold text-white shadow-lg shadow-brand-700/25">
                   {s.n}
                 </span>
-                <h3 className="mt-5 text-lg font-bold tracking-tight text-slate-900">
+                <h3 className="mt-5 font-display text-lg font-bold tracking-tight text-ink">
                   {s.title}
                 </h3>
-                <p className="mt-2 max-w-xs text-sm leading-relaxed text-slate-600">
+                <p className="mt-2 max-w-xs text-sm leading-relaxed text-muted">
                   {s.body}
                 </p>
               </div>
@@ -390,11 +390,11 @@ const HowItWorks = () => (
 const FinalCTA = ({ onStart }: { onStart: () => void }) => (
   <section className="mx-auto w-full max-w-6xl px-4 py-16 md:px-8 md:py-24">
     <FadeIn>
-      <div className="overflow-hidden rounded-[32px] bg-brand-700 px-6 py-12 text-center md:px-16 md:py-20">
-        <p className="text-[11px] font-semibold uppercase tracking-widest text-amber-200">
+      <div className="overflow-hidden rounded-[32px] bg-brand-800 px-6 py-12 text-center md:px-16 md:py-20">
+        <p className="text-[11px] font-semibold uppercase tracking-widest text-accent-300">
           Ready when you are
         </p>
-        <h2 className="mx-auto mt-3 max-w-3xl text-3xl font-bold leading-tight tracking-tight text-white md:text-5xl">
+        <h2 className="mx-auto mt-3 max-w-3xl font-display text-3xl font-bold leading-tight tracking-tight text-white md:text-5xl">
           Your campus is a lot. Your app shouldn't be.{" "}
           <WordHighlight tone="amber" tilt={-2}>Get started</WordHighlight>.
         </h2>
@@ -405,7 +405,7 @@ const FinalCTA = ({ onStart }: { onStart: () => void }) => (
           <button
             type="button"
             onClick={onStart}
-            className="inline-flex items-center gap-2 rounded-full bg-amber-300 px-7 py-3 text-sm font-semibold text-slate-900 shadow-xl shadow-amber-500/30 transition hover:bg-amber-200 motion-safe:hover:-translate-y-0.5 motion-safe:active:scale-[0.97]"
+            className="inline-flex items-center gap-2 rounded-full bg-accent-400 px-7 py-3 text-sm font-semibold text-ink shadow-xl shadow-accent-500/30 transition hover:bg-accent-300 motion-safe:hover:-translate-y-0.5 motion-safe:active:scale-[0.97]"
           >
             Get started
             <ArrowRight className="h-4 w-4" aria-hidden="true" />
@@ -417,24 +417,24 @@ const FinalCTA = ({ onStart }: { onStart: () => void }) => (
 );
 
 const SiteFooter = () => (
-  <footer className="border-t border-slate-200 bg-white">
+  <footer className="border-t border-line bg-paper">
     <div className="mx-auto flex max-w-6xl flex-col items-start justify-between gap-6 px-4 py-10 text-sm md:flex-row md:items-center md:px-8">
       <Link
         to="/welcome"
-        className="inline-flex items-center gap-2 font-semibold text-slate-900"
+        className="inline-flex items-center gap-2 font-display font-semibold text-ink"
       >
         <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-brand-600 text-white">
           <GraduationCap className="h-4 w-4" aria-hidden="true" />
         </span>
         Ultimate Student
       </Link>
-      <nav className="flex flex-wrap gap-x-6 gap-y-2 text-slate-600">
-        <a href="#about" className="hover:text-slate-900">About</a>
-        <a href="#contact" className="hover:text-slate-900">Contact</a>
-        <a href="#privacy" className="hover:text-slate-900">Privacy</a>
-        <a href="#terms" className="hover:text-slate-900">Terms</a>
+      <nav className="flex flex-wrap gap-x-6 gap-y-2 text-muted">
+        <a href="#about" className="hover:text-brand-700">About</a>
+        <a href="#contact" className="hover:text-brand-700">Contact</a>
+        <a href="#privacy" className="hover:text-brand-700">Privacy</a>
+        <a href="#terms" className="hover:text-brand-700">Terms</a>
       </nav>
-      <p className="text-xs text-slate-500">© 2026 IID Global</p>
+      <p className="text-xs text-muted">© 2026 IID Global</p>
     </div>
   </footer>
 );
@@ -446,7 +446,7 @@ export const WelcomePage = () => {
   const goStart = () => navigate("/onboarding/account");
 
   return (
-    <div className="min-h-screen bg-white text-slate-900">
+    <div className="min-h-screen bg-paper text-muted">
       <TopNav />
 
       {/* Hero */}
@@ -456,30 +456,30 @@ export const WelcomePage = () => {
       >
         <div
           aria-hidden="true"
-          className="absolute inset-x-0 top-0 -z-10 h-[520px] bg-gradient-to-b from-brand-50 via-white to-white"
+          className="absolute inset-x-0 top-0 -z-10 h-[520px] bg-gradient-to-b from-brand-50 via-paper to-paper"
         />
 
         <div className="mx-auto grid max-w-6xl grid-cols-1 items-center gap-10 px-4 py-12 md:px-8 md:py-20 lg:grid-cols-2 lg:gap-16 lg:py-28">
           {/* Left — copy */}
           <div className="max-w-xl">
             <FadeIn>
-              <p className="text-[11px] font-semibold uppercase tracking-widest text-amber-700">
+              <p className="text-[11px] font-semibold uppercase tracking-widest text-accent-600">
                 Ultimate Student
               </p>
             </FadeIn>
             <FadeIn delay={0.08}>
               <h1
                 id="hero-heading"
-                className="mt-3 text-4xl font-bold leading-[1.05] tracking-tight text-slate-900 sm:text-5xl md:text-6xl lg:text-7xl"
+                className="mt-3 font-display text-4xl font-bold leading-[1.05] tracking-tight text-ink sm:text-5xl md:text-6xl lg:text-7xl"
               >
                 Your{" "}
-                <WordHighlight tone="pink" tilt={-3}>campus</WordHighlight>{" "}
+                <WordHighlight tone="sage" tilt={-3}>campus</WordHighlight>{" "}
                 community, in{" "}
                 <WordHighlight tone="amber" tilt={2}>one app</WordHighlight>.
               </h1>
             </FadeIn>
             <FadeIn delay={0.18}>
-              <p className="mt-5 max-w-md text-base leading-relaxed text-slate-600 md:text-lg">
+              <p className="mt-5 max-w-md text-base leading-relaxed text-muted md:text-lg">
                 Classes, hostels, announcements, events and opportunities —
                 every part of student life in one calm place.
               </p>
@@ -490,14 +490,14 @@ export const WelcomePage = () => {
                 <button
                   type="button"
                   onClick={goStart}
-                  className="inline-flex items-center gap-2 rounded-full bg-brand-600 px-6 py-3 text-sm font-semibold text-white shadow-xl shadow-brand-600/30 transition hover:bg-brand-700 motion-safe:hover:-translate-y-0.5 motion-safe:active:scale-[0.97]"
+                  className="inline-flex items-center gap-2 rounded-full bg-brand-700 px-6 py-3 text-sm font-semibold text-white shadow-xl shadow-brand-700/25 transition hover:bg-brand-800 motion-safe:hover:-translate-y-0.5 motion-safe:active:scale-[0.97]"
                 >
                   Get started
                   <ArrowRight className="h-4 w-4" aria-hidden="true" />
                 </button>
                 <Link
                   to="/login"
-                  className="inline-flex items-center gap-2 rounded-full border border-slate-300 bg-white px-6 py-3 text-sm font-semibold text-slate-800 transition hover:border-slate-400 hover:bg-slate-50 motion-safe:active:scale-[0.97]"
+                  className="inline-flex items-center gap-2 rounded-full border border-line bg-white px-6 py-3 text-sm font-semibold text-ink transition hover:border-brand-300 hover:bg-brand-50 motion-safe:active:scale-[0.97]"
                 >
                   I have an account
                 </Link>
@@ -505,7 +505,7 @@ export const WelcomePage = () => {
             </FadeIn>
 
             <FadeIn delay={0.4}>
-              <p className="mt-6 text-xs text-slate-500">
+              <p className="mt-6 text-xs text-muted">
                 Built with students at IID partner universities.
               </p>
             </FadeIn>

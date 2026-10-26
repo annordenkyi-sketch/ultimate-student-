@@ -50,18 +50,18 @@ export const EventsBlock = () => {
   return (
     <section
       aria-labelledby="events-heading"
-      className="rounded-xl border border-slate-200 bg-white"
+      className="rounded-xl border border-line bg-white"
     >
-      <header className="border-b border-slate-100 px-4 py-3">
+      <header className="border-b border-line/60 px-4 py-3">
         <h2
           id="events-heading"
-          className="text-sm font-semibold text-slate-900"
+          className="text-sm font-semibold text-ink"
         >
           This week
         </h2>
       </header>
 
-      <ul className="divide-y divide-slate-100">
+      <ul className="divide-y divide-line/60">
         {visible.map((e) => {
           const to = e.sectionItemId
             ? `/section/social/${e.sectionItemId}`
@@ -70,17 +70,17 @@ export const EventsBlock = () => {
             <li key={e.id}>
               <Link
                 to={to}
-                className="flex items-start gap-3 p-3 transition hover:bg-slate-50"
+                className="flex items-start gap-3 p-3 transition hover:bg-brand-50/60"
               >
                 <DateBlock iso={e.date} />
                 <div className="min-w-0 flex-1">
-                  <p className="truncate text-sm font-semibold text-slate-900">
+                  <p className="truncate text-sm font-semibold text-ink">
                     {e.title}
                   </p>
-                  <p className="mt-0.5 text-xs text-slate-500">
+                  <p className="mt-0.5 text-xs text-muted">
                     {formatTime(e.date)}
                   </p>
-                  <p className="mt-0.5 flex items-center gap-1 text-xs text-slate-500">
+                  <p className="mt-0.5 flex items-center gap-1 text-xs text-muted">
                     <MapPin className="h-3 w-3" aria-hidden="true" />
                     <span className="truncate">{e.location}</span>
                   </p>
@@ -92,7 +92,7 @@ export const EventsBlock = () => {
       </ul>
 
       {(hasMore || visible.length > 0) && (
-        <footer className="border-t border-slate-100 px-4 py-3 text-right">
+        <footer className="border-t border-line/60 px-4 py-3 text-right">
           <Link
             to="/section/social"
             className="text-xs font-semibold text-brand-700 hover:text-brand-800"

@@ -19,7 +19,7 @@ const tabs: TabDef[] = [
 export const BottomTabBar = () => (
   <nav
     aria-label="Primary"
-    className="fixed inset-x-0 bottom-0 z-30 border-t border-slate-200 bg-white lg:hidden"
+    className="fixed inset-x-0 bottom-0 z-30 border-t border-line bg-paper lg:hidden"
   >
     <ul className="mx-auto flex max-w-[480px] items-stretch justify-between px-2 pb-[max(env(safe-area-inset-bottom),0px)]">
       {tabs.map((tab) => {
@@ -33,7 +33,7 @@ export const BottomTabBar = () => (
                 `flex flex-col items-center justify-center gap-0.5 py-2.5 text-[11px] font-medium transition ${
                   isActive
                     ? "text-brand-700"
-                    : "text-slate-500 hover:text-slate-700"
+                    : "text-muted hover:text-ink"
                 }`
               }
               aria-label={tab.label}

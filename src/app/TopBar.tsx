@@ -11,7 +11,7 @@ export const TopBar = () => {
   const initial = (profile?.name || "S").trim().charAt(0).toUpperCase();
 
   return (
-    <header className="sticky top-0 z-20 hidden h-16 border-b border-slate-200 bg-white/95 backdrop-blur-sm lg:block">
+    <header className="sticky top-0 z-20 hidden h-16 border-b border-line bg-paper/95 backdrop-blur-sm lg:block">
       <div className="mx-auto flex h-full max-w-[1200px] items-center gap-4 px-6">
         {/* Wide search */}
         <div className="flex-1 max-w-xl">
@@ -26,13 +26,13 @@ export const TopBar = () => {
                 ? `Notifications, ${unreadCount} unread`
                 : "Notifications"
             }
-            className="relative inline-flex h-10 w-10 items-center justify-center rounded-full text-slate-600 transition hover:bg-slate-100 hover:text-slate-900"
+            className="relative inline-flex h-10 w-10 items-center justify-center rounded-full text-muted transition hover:bg-brand-50 hover:text-ink"
           >
             <Bell className="h-5 w-5" aria-hidden="true" />
             {unreadCount > 0 && (
               <span
                 aria-hidden="true"
-                className="absolute right-1.5 top-1.5 flex h-4 min-w-[16px] items-center justify-center rounded-full bg-rose-600 px-1 text-[10px] font-semibold text-white"
+                className="absolute right-1.5 top-1.5 flex h-4 min-w-[16px] items-center justify-center rounded-full bg-danger px-1 text-[10px] font-semibold text-white"
               >
                 {unreadCount}
               </span>

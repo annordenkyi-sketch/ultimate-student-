@@ -40,7 +40,7 @@ const linkClass = ({ isActive }: { isActive: boolean }): string =>
   `flex items-center gap-3 rounded-xl px-3 py-2 text-sm font-medium transition ${
     isActive
       ? "bg-brand-50 text-brand-700"
-      : "text-slate-700 hover:bg-slate-100"
+      : "text-ink hover:bg-brand-50/60"
   }`;
 
 export const Sidebar = () => {
@@ -57,15 +57,15 @@ export const Sidebar = () => {
   return (
   <aside
     aria-label="Main navigation"
-    className="fixed inset-y-0 left-0 z-30 hidden w-64 border-r border-slate-200 bg-white lg:block"
+    className="fixed inset-y-0 left-0 z-30 hidden w-64 border-r border-line bg-paper lg:block"
   >
     <div className="flex h-full flex-col">
       {/* Brand */}
-      <div className="flex h-16 items-center border-b border-slate-200 px-5">
+      <div className="flex h-16 items-center border-b border-line px-5">
         <NavLink
           to="/"
           end
-          className="inline-flex items-center gap-2 text-sm font-semibold text-slate-900"
+          className="inline-flex items-center gap-2 font-display text-base font-bold text-ink"
         >
           <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-brand-600 text-white">
             <GraduationCap className="h-4 w-4" aria-hidden="true" />
@@ -102,8 +102,8 @@ export const Sidebar = () => {
           })}
         </ul>
 
-        <div className="mt-6 border-t border-slate-200 pt-4">
-          <p className="px-3 pb-2 text-[11px] font-semibold uppercase tracking-wider text-slate-400">
+        <div className="mt-6 border-t border-line pt-4">
+          <p className="px-3 pb-2 text-[11px] font-semibold uppercase tracking-wider text-muted">
             Library
           </p>
           <ul className="space-y-0.5">
@@ -134,11 +134,11 @@ export const Sidebar = () => {
         </div>
       </nav>
 
-      <div className="border-t border-slate-200 p-3">
+      <div className="border-t border-line p-3">
         <button
           type="button"
           onClick={onLogOut}
-          className="flex w-full items-center gap-3 rounded-xl px-3 py-2 text-sm font-medium text-slate-700 transition hover:bg-rose-50 hover:text-rose-700"
+          className="flex w-full items-center gap-3 rounded-xl px-3 py-2 text-sm font-medium text-ink transition hover:bg-danger/10 hover:text-danger"
         >
           <LogOut className="h-4 w-4" aria-hidden="true" />
           Log out

@@ -26,9 +26,9 @@ export const SearchBar = ({
     <form
       role="search"
       onSubmit={onSubmit}
-      className="flex w-full items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 py-1.5 transition focus-within:border-brand-500"
+      className="flex w-full items-center gap-2 rounded-xl border border-line bg-white px-3 py-1.5 transition focus-within:border-brand-500"
     >
-      <Search className="h-4 w-4 text-slate-400" aria-hidden="true" />
+      <Search className="h-4 w-4 text-muted" aria-hidden="true" />
       <label htmlFor="global-search" className="sr-only">
         Search Ultimate Student
       </label>
@@ -39,7 +39,7 @@ export const SearchBar = ({
         onChange={(e) => setValue(e.target.value)}
         placeholder={placeholder}
         autoFocus={autoFocus}
-        className="min-w-0 flex-1 border-0 bg-transparent py-1.5 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-0"
+        className="min-w-0 flex-1 border-0 bg-transparent py-1.5 text-sm text-ink placeholder:text-muted focus:outline-none focus:ring-0"
       />
       <button
         type="submit"

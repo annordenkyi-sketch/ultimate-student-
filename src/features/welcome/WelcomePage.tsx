@@ -1,10 +1,12 @@
 import type { ReactNode } from "react";
+import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import {
   ArrowRight,
   Bell,
   Briefcase,
   Building2,
+  ChevronDown,
   GraduationCap,
   LifeBuoy,
   LogIn,
@@ -12,9 +14,9 @@ import {
   Users,
   type LucideIcon,
 } from "lucide-react";
-import { motion, useReducedMotion } from "framer-motion";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { FadeIn, PressableDiv } from "@/components/Motion";
-import { MOSAIC_IMAGES, unsplash, unsplashSrcSet } from "@/lib/images";
+import { unsplash, unsplashSrcSet, type UnsplashImage } from "@/lib/images";
 
 /* ─────────────────── Highlight pill behind one word ─────────────────── */
 
@@ -41,188 +43,194 @@ const WordHighlight = ({ children, tone, tilt = -2 }: HighlightProps) => (
   </span>
 );
 
-/* ─────────────────── Floating badge pills ─────────────────── */
+/* ─────────────────── Hero photos (free Unsplash License) ─────────────────── */
 
-interface Badge {
-  label: string;
-  sub?: string;
-  tone: "white" | "amber" | "sage";
-  className: string;
-  delay: number;
-}
-
-const BADGES: Badge[] = [
+const HERO_PHOTOS: UnsplashImage[] = [
   {
-    label: "New opportunity",
-    sub: "Internships this week",
-    tone: "white",
-    className: "left-[-6%] top-[14%]",
-    delay: 0.4,
+    id: "hero-grads",
+    photoId: "photo-1769905226600-1d447fe7d020",
+    alt: "Graduates in caps and gowns gathered in an auditorium",
+    credit: { name: "Blessfield John", profile: "https://unsplash.com/@blessfield" },
   },
   {
-    label: "This week on campus",
-    sub: "3 events",
-    tone: "amber",
-    className: "right-[-4%] top-[36%]",
-    delay: 0.7,
+    id: "hero-group-outside",
+    photoId: "photo-1648301033733-44554c74ec50",
+    alt: "A group of African students sitting together outside a university building",
+    credit: { name: "Creab ThePolymath", profile: "https://unsplash.com/@cr_eab" },
   },
   {
-    label: "You're all set",
-    sub: "Personalised home",
-    tone: "sage",
-    className: "left-[-8%] bottom-[12%]",
-    delay: 1.0,
+    id: "hero-campus",
+    photoId: "photo-1616428394230-ba242d33e3ba",
+    alt: "Students walking across a university campus",
+    credit: { name: "Jonah Brown", profile: "https://unsplash.com/@jonahbrown" },
+  },
+  {
+    id: "hero-lab",
+    photoId: "photo-1766297246931-7b861269dab0",
+    alt: "A student scientist looking through a microscope in a laboratory",
+    credit: { name: "Chidera Faustina Okeke", profile: "https://unsplash.com/@thefourthwxll" },
+  },
+  {
+    id: "hero-sports",
+    photoId: "photo-1600077063877-22118d6290eb",
+    alt: "A group of young men playing football on a university pitch",
+    credit: { name: "Omar Ramadan", profile: "https://unsplash.com/@omarvellous14" },
   },
 ];
 
-const TONES: Record<Badge["tone"], string> = {
-  white: "bg-white text-ink ring-line",
-  amber: "bg-accent-200 text-ink ring-accent-300",
-  sage: "bg-brand-100 text-ink ring-brand-200",
-};
+const SLIDE_MS = 5500;
 
-const FloatingBadge = ({ label, sub, tone, className, delay }: Badge) => {
-  const reduce = useReducedMotion();
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 20, scale: 0.9 }}
-      animate={{ opacity: 1, y: 0, scale: 1 }}
-      transition={{ duration: 0.5, delay, ease: [0.22, 1, 0.36, 1] }}
-      className={`absolute hidden md:block ${className}`}
-    >
-      <motion.div
-        animate={reduce ? undefined : { y: [0, -6, 0] }}
-        transition={{
-          duration: 3.6 + delay,
-          ease: "easeInOut",
-          repeat: Infinity,
-          delay,
-        }}
-        className={`rounded-2xl px-4 py-3 shadow-xl shadow-slate-900/10 ring-1 ${TONES[tone]}`}
-      >
-        <p className="text-xs font-semibold">{label}</p>
-        {sub && <p className="mt-0.5 text-[11px] text-muted">{sub}</p>}
-      </motion.div>
-    </motion.div>
-  );
-};
+/* ─────────────────── Hero carousel ─────────────────── */
 
-/* ─────────────────── Hero mosaic (static asymmetric grid) ─────────────────── */
-
-const HeroMosaic = () => {
-  const picks = [
-    MOSAIC_IMAGES[0],
-    MOSAIC_IMAGES[2],
-    MOSAIC_IMAGES[3],
-    MOSAIC_IMAGES[7],
-  ];
+const HeroCarousel = ({
+  i,
+  onPick,
+  paused,
+}: {
+  i: number;
+  onPick: (n: number) => void;
+  paused: boolean;
+}) => {
   const reduce = useReducedMotion();
 
   return (
-    <div className="relative mx-auto w-full max-w-[520px] md:max-w-none">
-      <div className="grid grid-cols-6 grid-rows-6 gap-3">
-        {/* Tall left tile */}
-        <motion.img
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.5, delay: 0.1 }}
-          src={unsplash(picks[0].photoId, 600, 65)}
-          srcSet={unsplashSrcSet(picks[0].photoId)}
-          sizes="(min-width:1024px) 320px, 50vw"
-          alt={picks[0].alt}
-          loading="eager"
-          decoding="async"
-          className="col-span-3 row-span-4 h-full w-full rounded-3xl bg-ink object-cover"
-        />
-        {/* Top right tile */}
-        <motion.img
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.5, delay: 0.2 }}
-          src={unsplash(picks[1].photoId, 500, 65)}
-          srcSet={unsplashSrcSet(picks[1].photoId)}
-          sizes="(min-width:1024px) 260px, 40vw"
-          alt={picks[1].alt}
-          loading="eager"
-          decoding="async"
-          className="col-span-3 row-span-3 h-full w-full rounded-3xl bg-ink object-cover"
-        />
-        {/* Bottom right tile */}
-        <motion.img
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.5, delay: 0.3 }}
-          src={unsplash(picks[2].photoId, 500, 65)}
-          srcSet={unsplashSrcSet(picks[2].photoId)}
-          sizes="(min-width:1024px) 260px, 40vw"
-          alt={picks[2].alt}
-          loading="lazy"
-          decoding="async"
-          className="col-span-3 row-span-3 h-full w-full rounded-3xl bg-ink object-cover"
-        />
-        {/* Wide bottom tile */}
-        <motion.img
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.5, delay: 0.4 }}
-          src={unsplash(picks[3].photoId, 600, 65)}
-          srcSet={unsplashSrcSet(picks[3].photoId)}
-          sizes="(min-width:1024px) 320px, 50vw"
-          alt={picks[3].alt}
-          loading="lazy"
-          decoding="async"
-          className="col-span-3 row-span-2 h-full w-full rounded-3xl bg-ink object-cover"
+    <>
+      {/* Preload the rest so cross-fade never flickers */}
+      <div aria-hidden="true" className="hidden">
+        {HERO_PHOTOS.map((p) => (
+          <img key={p.id} src={unsplash(p.photoId, 2000, 70)} alt="" />
+        ))}
+      </div>
+
+      <div className="absolute inset-0 overflow-hidden">
+        <AnimatePresence initial={false} mode="sync">
+          <motion.div
+            key={HERO_PHOTOS[i].id}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: reduce ? 0 : 1.1, ease: "easeInOut" }}
+            className="absolute inset-0"
+          >
+            <motion.img
+              src={unsplash(HERO_PHOTOS[i].photoId, 2000, 70)}
+              srcSet={unsplashSrcSet(HERO_PHOTOS[i].photoId)}
+              sizes="100vw"
+              alt={HERO_PHOTOS[i].alt}
+              loading="eager"
+              decoding="async"
+              className="h-full w-full object-cover"
+              initial={reduce ? undefined : { scale: 1.02, x: 0, y: 0 }}
+              animate={
+                reduce
+                  ? undefined
+                  : paused
+                    ? { scale: 1.02, x: 0, y: 0 }
+                    : { scale: 1.14, x: -24, y: -12 }
+              }
+              transition={{ duration: SLIDE_MS / 1000 + 0.5, ease: "linear" }}
+            />
+          </motion.div>
+        </AnimatePresence>
+
+        {/* Dark gradient overlay for readability */}
+        <div
+          aria-hidden="true"
+          className="absolute inset-0 bg-gradient-to-b from-ink/40 via-ink/55 to-ink/85"
         />
       </div>
 
-      {/* Decorative blob behind the mosaic */}
+      {/* Dot indicators */}
       <div
-        aria-hidden="true"
-        className="absolute -inset-10 -z-10 rounded-[48px] bg-gradient-to-br from-brand-300/20 via-accent-200/15 to-rose-200/15 blur-2xl"
-      />
+        role="tablist"
+        aria-label="Hero slides"
+        className="absolute inset-x-0 bottom-20 z-10 flex items-center justify-center gap-2 md:bottom-24"
+      >
+        {HERO_PHOTOS.map((p, idx) => {
+          const active = idx === i;
+          return (
+            <button
+              key={p.id}
+              type="button"
+              role="tab"
+              aria-selected={active}
+              aria-label={`Show photo ${idx + 1} of ${HERO_PHOTOS.length}`}
+              onClick={() => onPick(idx)}
+              className={`h-2 rounded-full transition-all duration-500 ${
+                active
+                  ? "w-10 bg-white"
+                  : "w-2 bg-white/50 hover:bg-white/80"
+              }`}
+            />
+          );
+        })}
+      </div>
 
-      {BADGES.map((b) => (
-        <FloatingBadge key={b.label} {...b} />
-      ))}
-
-      {!reduce && (
-        <motion.div
-          aria-hidden="true"
-          className="pointer-events-none absolute -right-6 top-6 h-16 w-16 rounded-full bg-accent-300"
-          animate={{ scale: [1, 1.15, 1], opacity: [0.6, 0.9, 0.6] }}
-          transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
-        />
-      )}
-    </div>
+      {/* Photo credit (small, bottom-right) */}
+      <p className="absolute bottom-4 right-4 z-10 hidden text-[10px] text-white/50 md:block">
+        Photo:{" "}
+        <a
+          href={HERO_PHOTOS[i].credit.profile}
+          target="_blank"
+          rel="noreferrer"
+          className="underline-offset-2 hover:underline"
+        >
+          {HERO_PHOTOS[i].credit.name}
+        </a>
+        {" "}on Unsplash
+      </p>
+    </>
   );
 };
 
-/* ─────────────────── Top nav ─────────────────── */
+/* ─────────────────── Hero overlay nav ─────────────────── */
 
-const TopNav = () => (
-  <header className="sticky top-0 z-30 border-b border-line bg-paper/85 backdrop-blur">
-    <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 md:px-8">
-      <Link
-        to="/welcome"
-        className="inline-flex items-center gap-2 font-display text-base font-bold text-ink"
-      >
-        <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-brand-600 text-white">
-          <GraduationCap className="h-4 w-4" aria-hidden="true" />
-        </span>
-        Ultimate Student
-      </Link>
-      <nav className="flex items-center gap-2">
-        <Link
-          to="/login"
-          className="inline-flex items-center gap-2 rounded-full bg-brand-700 px-5 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-brand-800 motion-safe:active:scale-[0.97]"
-        >
-          <LogIn className="h-4 w-4" aria-hidden="true" />
-          Log in
-        </Link>
-      </nav>
-    </div>
-  </header>
+const HeroNav = () => (
+  <div className="absolute inset-x-0 top-0 z-20 flex h-16 items-center justify-between px-4 md:h-20 md:px-8">
+    <Link
+      to="/welcome"
+      className="inline-flex items-center gap-2 font-display text-base font-bold text-white md:text-lg"
+    >
+      <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-white/15 ring-1 ring-white/40 backdrop-blur-sm">
+        <GraduationCap className="h-4 w-4" aria-hidden="true" />
+      </span>
+      Ultimate Student
+    </Link>
+    <Link
+      to="/login"
+      className="inline-flex items-center gap-2 rounded-full bg-brand-700 px-5 py-2 text-sm font-semibold text-white shadow-lg shadow-ink/30 transition hover:bg-brand-800 motion-safe:active:scale-[0.97]"
+    >
+      <LogIn className="h-4 w-4" aria-hidden="true" />
+      Log in
+    </Link>
+  </div>
 );
+
+/* ─────────────────── Scroll-down arrow ─────────────────── */
+
+const ScrollDown = () => {
+  const reduce = useReducedMotion();
+  const onClick = () => {
+    const next = document.getElementById("after-hero");
+    next?.scrollIntoView({ behavior: reduce ? "auto" : "smooth" });
+  };
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      aria-label="Scroll to see more"
+      className="absolute inset-x-0 bottom-6 z-10 mx-auto flex w-12 flex-col items-center text-white/80 transition hover:text-white"
+    >
+      <motion.span
+        animate={reduce ? undefined : { y: [0, 8, 0] }}
+        transition={{ duration: 1.8, repeat: Infinity, ease: "easeInOut" }}
+        className="flex h-10 w-10 items-center justify-center rounded-full ring-1 ring-white/40 backdrop-blur-sm"
+      >
+        <ChevronDown className="h-5 w-5" aria-hidden="true" />
+      </motion.span>
+    </button>
+  );
+};
 
 /* ─────────────────── Section components ─────────────────── */
 
@@ -274,6 +282,7 @@ const FEATURES: Feature[] = [
 
 const WhatYouCanDo = () => (
   <section
+    id="after-hero"
     aria-labelledby="features-heading"
     className="mx-auto w-full max-w-6xl px-4 py-16 md:px-8 md:py-24"
   >
@@ -445,79 +454,84 @@ export const WelcomePage = () => {
   const navigate = useNavigate();
   const goStart = () => navigate("/onboarding/account");
 
+  const [i, setI] = useState(0);
+  const [paused, setPaused] = useState(false);
+  const reduce = useReducedMotion();
+
+  useEffect(() => {
+    if (reduce || paused) return;
+    const id = window.setInterval(
+      () => setI((n) => (n + 1) % HERO_PHOTOS.length),
+      SLIDE_MS,
+    );
+    return () => window.clearInterval(id);
+  }, [reduce, paused]);
+
   return (
     <div className="min-h-screen bg-paper text-muted">
-      <TopNav />
-
-      {/* Hero */}
+      {/* ─── Full-screen hero ─── */}
       <section
         aria-labelledby="hero-heading"
-        className="relative overflow-hidden"
+        onMouseEnter={() => setPaused(true)}
+        onMouseLeave={() => setPaused(false)}
+        className="relative isolate h-screen min-h-[640px] w-full overflow-hidden"
       >
-        <div
-          aria-hidden="true"
-          className="absolute inset-x-0 top-0 -z-10 h-[520px] bg-gradient-to-b from-brand-50 via-paper to-paper"
-        />
+        <HeroCarousel i={i} onPick={setI} paused={paused} />
+        <HeroNav />
 
-        <div className="mx-auto grid max-w-6xl grid-cols-1 items-center gap-10 px-4 py-12 md:px-8 md:py-20 lg:grid-cols-2 lg:gap-16 lg:py-28">
-          {/* Left — copy */}
-          <div className="max-w-xl">
-            <FadeIn>
-              <p className="text-[11px] font-semibold uppercase tracking-widest text-accent-600">
-                Ultimate Student
-              </p>
-            </FadeIn>
-            <FadeIn delay={0.08}>
-              <h1
-                id="hero-heading"
-                className="mt-3 font-display text-4xl font-bold leading-[1.05] tracking-tight text-ink sm:text-5xl md:text-6xl lg:text-7xl"
-              >
-                Your{" "}
-                <WordHighlight tone="sage" tilt={-3}>campus</WordHighlight>{" "}
-                community, in{" "}
-                <WordHighlight tone="amber" tilt={2}>one app</WordHighlight>.
-              </h1>
-            </FadeIn>
-            <FadeIn delay={0.18}>
-              <p className="mt-5 max-w-md text-base leading-relaxed text-muted md:text-lg">
-                Classes, hostels, announcements, events and opportunities —
-                every part of student life in one calm place.
-              </p>
-            </FadeIn>
-
-            <FadeIn delay={0.28}>
-              <div className="mt-8 flex flex-wrap items-center gap-3">
-                <button
-                  type="button"
-                  onClick={goStart}
-                  className="inline-flex items-center gap-2 rounded-full bg-brand-700 px-6 py-3 text-sm font-semibold text-white shadow-xl shadow-brand-700/25 transition hover:bg-brand-800 motion-safe:hover:-translate-y-0.5 motion-safe:active:scale-[0.97]"
+        {/* Headline + CTAs centred on the image */}
+        <div className="relative z-10 flex h-full items-center">
+          <div className="mx-auto flex w-full max-w-6xl flex-col px-4 pb-24 pt-24 md:px-8">
+            <div className="max-w-3xl">
+              <FadeIn>
+                <p className="text-[11px] font-semibold uppercase tracking-widest text-accent-300">
+                  Ultimate Student
+                </p>
+              </FadeIn>
+              <FadeIn delay={0.1}>
+                <h1
+                  id="hero-heading"
+                  className="mt-3 font-display text-5xl font-bold leading-[1.02] tracking-tight text-white sm:text-6xl md:text-7xl lg:text-8xl"
                 >
-                  Get started
-                  <ArrowRight className="h-4 w-4" aria-hidden="true" />
-                </button>
-                <Link
-                  to="/login"
-                  className="inline-flex items-center gap-2 rounded-full border border-line bg-white px-6 py-3 text-sm font-semibold text-ink transition hover:border-brand-300 hover:bg-brand-50 motion-safe:active:scale-[0.97]"
-                >
-                  I have an account
-                </Link>
-              </div>
-            </FadeIn>
+                  Your{" "}
+                  <WordHighlight tone="sage" tilt={-3}>campus</WordHighlight>{" "}
+                  community, in{" "}
+                  <WordHighlight tone="amber" tilt={2}>one app</WordHighlight>.
+                </h1>
+              </FadeIn>
+              <FadeIn delay={0.25}>
+                <p className="mt-6 max-w-xl text-base leading-relaxed text-white/85 md:text-lg">
+                  Classes, hostels, announcements, events and opportunities —
+                  every part of student life in one calm place.
+                </p>
+              </FadeIn>
 
-            <FadeIn delay={0.4}>
-              <p className="mt-6 text-xs text-muted">
-                Built with students at IID partner universities.
-              </p>
-            </FadeIn>
-          </div>
-
-          {/* Right — mosaic + badges */}
-          <div className="relative">
-            <HeroMosaic />
+              <FadeIn delay={0.4}>
+                <div className="mt-8 flex flex-wrap items-center gap-3">
+                  <button
+                    type="button"
+                    onClick={goStart}
+                    className="inline-flex items-center gap-2 rounded-full bg-brand-700 px-7 py-3 text-sm font-semibold text-white shadow-xl shadow-ink/40 transition hover:bg-brand-800 motion-safe:hover:-translate-y-0.5 motion-safe:active:scale-[0.97]"
+                  >
+                    Get started
+                    <ArrowRight className="h-4 w-4" aria-hidden="true" />
+                  </button>
+                  <Link
+                    to="/login"
+                    className="inline-flex items-center gap-2 rounded-full border border-white/40 bg-white/10 px-7 py-3 text-sm font-semibold text-white backdrop-blur-sm transition hover:bg-white/20 motion-safe:active:scale-[0.97]"
+                  >
+                    I have an account
+                  </Link>
+                </div>
+              </FadeIn>
+            </div>
           </div>
         </div>
+
+        <ScrollDown />
       </section>
 
+      {/* Everything below is untouched */}
       <WhatYouCanDo />
       <HowItWorks />
       <FinalCTA onStart={goStart} />

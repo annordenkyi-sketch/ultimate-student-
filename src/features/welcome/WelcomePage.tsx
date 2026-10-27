@@ -3,19 +3,12 @@ import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import {
   ArrowRight,
-  Bell,
-  Briefcase,
-  Building2,
   ChevronDown,
   GraduationCap,
-  LifeBuoy,
   LogIn,
-  Map as MapIcon,
-  Users,
-  type LucideIcon,
 } from "lucide-react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
-import { FadeIn, PressableDiv } from "@/components/Motion";
+import { FadeIn } from "@/components/Motion";
 import { unsplash, unsplashSrcSet, type UnsplashImage } from "@/lib/images";
 
 /* ─────────────────── Highlight pill behind one word ─────────────────── */
@@ -221,99 +214,6 @@ const ScrollDown = () => {
 
 /* ─────────────────── Section components ─────────────────── */
 
-interface Feature {
-  icon: LucideIcon;
-  title: string;
-  body: string;
-  tint: string;
-}
-
-const FEATURES: Feature[] = [
-  {
-    icon: MapIcon,
-    title: "Find your way around campus",
-    body: "A clean map of lecture halls, labs, offices and services, with walking times from where you are.",
-    tint: "bg-brand-100 text-brand-700",
-  },
-  {
-    icon: Building2,
-    title: "Discover hostels",
-    body: "Filter by price, distance, water, power and food options. Save the ones you like for later.",
-    tint: "bg-accent-100 text-accent-700",
-  },
-  {
-    icon: Bell,
-    title: "Stay on top of announcements",
-    body: "Notices from academic, hostels, events and services — read when you have a moment, not scattered across apps.",
-    tint: "bg-rose-100 text-rose-700",
-  },
-  {
-    icon: Users,
-    title: "Join events and clubs",
-    body: "See what's happening this week on campus. RSVP, bring a friend, keep track of what you've saved.",
-    tint: "bg-indigo-100 text-indigo-700",
-  },
-  {
-    icon: Briefcase,
-    title: "Find opportunities",
-    body: "Internships, scholarships, open applications — the ones that fit your programme and level.",
-    tint: "bg-brand-100 text-brand-700",
-  },
-  {
-    icon: LifeBuoy,
-    title: "Reach student services",
-    body: "Clinic, counselling, security, chaplaincy and the dean's office — one tap to call, email or get directions.",
-    tint: "bg-sky-100 text-sky-700",
-  },
-];
-
-const WhatYouCanDo = () => (
-  <section
-    id="after-hero"
-    aria-labelledby="features-heading"
-    className="mx-auto w-full max-w-6xl px-4 py-16 md:px-8 md:py-24"
-  >
-    <FadeIn>
-      <p className="text-[11px] font-semibold uppercase tracking-widest text-accent-600">
-        What you can do
-      </p>
-      <h2
-        id="features-heading"
-        className="mt-2 max-w-2xl font-display text-3xl font-bold tracking-tight text-ink md:text-5xl"
-      >
-        Everything campus throws at you,
-        <br className="hidden md:block" /> in{" "}
-        <WordHighlight tone="amber" tilt={-2}>one place</WordHighlight>.
-      </h2>
-    </FadeIn>
-
-    <ul className="mt-10 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
-      {FEATURES.map((f, i) => {
-        const Icon = f.icon;
-        return (
-          <li key={f.title}>
-            <FadeIn delay={0.05 * i}>
-              <PressableDiv className="h-full rounded-3xl border border-line bg-white p-6 transition hover:border-brand-300 hover:shadow-sm">
-                <span
-                  className={`inline-flex h-11 w-11 items-center justify-center rounded-2xl ${f.tint}`}
-                >
-                  <Icon className="h-5 w-5" aria-hidden="true" />
-                </span>
-                <h3 className="mt-4 font-display text-lg font-bold tracking-tight text-ink">
-                  {f.title}
-                </h3>
-                <p className="mt-2 text-sm leading-relaxed text-muted">
-                  {f.body}
-                </p>
-              </PressableDiv>
-            </FadeIn>
-          </li>
-        );
-      })}
-    </ul>
-  </section>
-);
-
 const STEPS = [
   {
     n: "01",
@@ -334,6 +234,7 @@ const STEPS = [
 
 const HowItWorks = () => (
   <section
+    id="after-hero"
     aria-labelledby="steps-heading"
     className="relative overflow-hidden bg-brand-50 py-16 md:py-24"
   >
@@ -512,7 +413,6 @@ export const WelcomePage = () => {
       </section>
 
       {/* Everything below is untouched */}
-      <WhatYouCanDo />
       <HowItWorks />
       <FinalCTA onStart={goStart} />
       <SiteFooter />

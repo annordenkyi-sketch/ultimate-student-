@@ -11,7 +11,6 @@ import {
 } from "lucide-react";
 import { motion, useReducedMotion } from "framer-motion";
 import { ActionButton } from "@/components/ActionButton";
-import { FadeIn } from "@/components/Motion";
 import { FEATURE_IMAGES, unsplash, unsplashSrcSet } from "@/lib/images";
 import { AuthError, auth } from "@/lib/auth";
 import { useProfile } from "@/hooks/useProfile";
@@ -69,7 +68,6 @@ export const LoginPage = () => {
     } catch (err) {
       setLoading(false);
       if (err instanceof AuthError) {
-        // Keep the email field; only reset password focus-wise.
         setErrors({ form: err.message });
       } else {
         setErrors({ form: "Something went wrong. Try again." });
@@ -78,96 +76,99 @@ export const LoginPage = () => {
   };
 
   return (
-    <motion.div
-      initial={{ opacity: 0, x: 24 }}
-      animate={{ opacity: 1, x: 0 }}
-      transition={{ duration: 0.32, ease: [0.22, 1, 0.36, 1] }}
-      className="min-h-screen bg-ink lg:grid lg:grid-cols-[1.05fr_1fr]"
-    >
-      {/* ───── Hero / brand pane ───── */}
-      <div className="relative h-[36vh] min-h-[260px] overflow-hidden lg:h-auto lg:min-h-screen">
-        <motion.img
-          src={unsplash(img.photoId, 1600, 65)}
-          srcSet={unsplashSrcSet(img.photoId)}
-          sizes="(min-width: 1024px) 55vw, 100vw"
-          alt=""
-          className="absolute inset-0 h-full w-full object-cover will-change-transform"
-          initial={{ opacity: 0, scale: 1 }}
-          animate={
-            reduce
-              ? { opacity: 1 }
-              : {
-                  opacity: 1,
-                  scale: [1, 1.08, 1],
-                  x: ["0%", "-1.5%", "0%"],
-                }
-          }
-          transition={{
-            opacity: { duration: 1.1, ease: "easeOut" },
-            scale: {
-              duration: 18,
-              ease: "easeInOut",
-              repeat: Infinity,
-              repeatType: "loop",
-            },
-            x: {
-              duration: 22,
-              ease: "easeInOut",
-              repeat: Infinity,
-              repeatType: "loop",
-            },
-          }}
-        />
-        <div
-          aria-hidden="true"
-          className="absolute inset-0 bg-gradient-to-b from-ink/60 via-ink/55 to-ink lg:bg-gradient-to-br lg:from-ink/80 lg:via-ink/55 lg:to-brand-900/60"
-        />
+    <div className="relative isolate min-h-screen overflow-hidden bg-ink">
+      {/* ───── Full-screen background photo with Ken Burns ───── */}
+      <motion.img
+        src={unsplash(img.photoId, 1800, 65)}
+        srcSet={unsplashSrcSet(img.photoId)}
+        sizes="100vw"
+        alt=""
+        className="absolute inset-0 h-full w-full object-cover will-change-transform"
+        initial={{ opacity: 0, scale: 1 }}
+        animate={
+          reduce
+            ? { opacity: 1 }
+            : {
+                opacity: 1,
+                scale: [1, 1.08, 1],
+                x: ["0%", "-1.5%", "0%"],
+              }
+        }
+        transition={{
+          opacity: { duration: 1.1, ease: "easeOut" },
+          scale: {
+            duration: 18,
+            ease: "easeInOut",
+            repeat: Infinity,
+            repeatType: "loop",
+          },
+          x: {
+            duration: 22,
+            ease: "easeInOut",
+            repeat: Infinity,
+            repeatType: "loop",
+          },
+        }}
+      />
 
-        <div className="relative mx-auto flex h-full max-w-xl flex-col px-6 pb-10 pt-5 text-white lg:max-w-none lg:px-12 lg:py-10 xl:px-20">
-          <div className="flex items-center justify-between">
-            <Link
-              to="/welcome"
-              aria-label="Back to welcome"
-              className="inline-flex items-center gap-1.5 rounded-full border border-white/25 bg-white/10 p-2 pr-3 text-sm font-medium text-white backdrop-blur-md transition hover:border-white/50 hover:bg-white/20 motion-safe:active:scale-[0.97]"
-            >
-              <ArrowLeft className="h-4 w-4" aria-hidden="true" />
-              Back
-            </Link>
-            <span className="inline-flex items-center gap-1.5 rounded-full bg-accent-200/15 px-3 py-1.5 text-[11px] font-semibold uppercase tracking-wider text-accent-100 ring-1 ring-accent-200/40 backdrop-blur-sm">
-              <GraduationCap className="h-3.5 w-3.5" aria-hidden="true" />
-              Ultimate Student
+      {/* Dark gradient overlay — ensures card and nav stand out */}
+      <div
+        aria-hidden="true"
+        className="absolute inset-0 bg-gradient-to-b from-ink/70 via-ink/55 to-ink/85 lg:bg-gradient-to-l lg:from-ink/85 lg:via-ink/60 lg:to-ink/40"
+      />
+
+      {/* ───── Top bar ───── */}
+      <div
+        className="absolute inset-x-0 top-0 z-20 flex h-16 items-center justify-between md:h-20"
+        style={{
+          paddingLeft: "max(16px, env(safe-area-inset-left))",
+          paddingRight: "max(16px, env(safe-area-inset-right))",
+        }}
+      >
+        <div className="md:pl-4">
+          <Link
+            to="/welcome"
+            aria-label="Back to welcome"
+            className="inline-flex items-center gap-1.5 rounded-full border border-white/25 bg-white/10 py-2 pl-2 pr-3 text-sm font-medium text-white backdrop-blur-md transition hover:border-white/50 hover:bg-white/20 motion-safe:active:scale-[0.97]"
+          >
+            <ArrowLeft className="h-4 w-4" aria-hidden="true" />
+            Back
+          </Link>
+        </div>
+        <div className="md:pr-4">
+          <Link
+            to="/welcome"
+            className="inline-flex items-center gap-2 font-display text-sm font-bold text-white sm:text-base md:text-lg"
+          >
+            <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-white/15 ring-1 ring-white/40 backdrop-blur-sm">
+              <GraduationCap className="h-4 w-4" aria-hidden="true" />
             </span>
-          </div>
-
-          <div className="mt-auto lg:max-w-md">
-            <FadeIn delay={0.08} y={16}>
-              <h1 className="text-[32px] font-bold leading-[1.1] display lg:text-5xl">
-                Back on campus.
-              </h1>
-            </FadeIn>
-          </div>
+            <span className="whitespace-nowrap">Ultimate Student</span>
+          </Link>
         </div>
       </div>
 
-      {/* ───── Form pane ───── */}
-      <FadeIn
-        delay={0.2}
-        y={20}
-        className="relative z-10 -mt-6 flex-1 lg:mt-0 lg:flex lg:items-center lg:justify-center lg:bg-paper lg:px-10"
+      {/* ───── Floating form card ───── */}
+      <main
+        id="main-content"
+        className="relative z-10 flex min-h-screen items-center justify-center px-4 pb-10 pt-24 lg:justify-end lg:px-16 lg:pt-28"
       >
-        <form
+        <motion.form
           onSubmit={onSubmit}
           noValidate
           aria-labelledby="login-heading"
-          className="min-h-full rounded-t-3xl bg-white px-6 pb-8 pt-7 shadow-hero lg:min-h-0 lg:w-full lg:max-w-md lg:rounded-3xl lg:border lg:border-line lg:px-8 lg:py-9 lg:shadow-lift"
+          initial={{ opacity: 0, y: reduce ? 0 : 24 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
+          className="w-full max-w-md rounded-[20px] border border-white/40 bg-white/85 px-6 py-7 shadow-2xl shadow-ink/40 backdrop-blur-xl lg:max-w-[420px] lg:px-8 lg:py-9"
         >
-          <h2
+          <h1
             id="login-heading"
-            className="text-xl font-bold text-ink display"
+            className="font-display text-2xl font-bold tracking-tight text-ink md:text-3xl"
           >
-            Log in
-          </h2>
-          <p className="mt-1 text-sm text-muted">
+            Back on campus.
+          </h1>
+          <p className="mt-1.5 text-sm text-muted">
             Use your university email and password.
           </p>
 
@@ -181,12 +182,12 @@ export const LoginPage = () => {
             </div>
           )}
 
-          <div className="mt-5 space-y-4">
+          <div className="mt-6 space-y-4">
             {/* Identifier */}
             <div>
               <label
                 htmlFor="identifier"
-                className="text-sm font-medium text-ink"
+                className="text-sm font-semibold text-ink"
               >
                 Email or university ID
               </label>
@@ -225,7 +226,7 @@ export const LoginPage = () => {
             <div>
               <label
                 htmlFor="password"
-                className="text-sm font-medium text-ink"
+                className="text-sm font-semibold text-ink"
               >
                 Password
               </label>
@@ -303,7 +304,7 @@ export const LoginPage = () => {
             {loading ? "Signing in" : "Log in"}
           </ActionButton>
 
-          <p className="mt-6 text-center text-sm text-muted">
+          <p className="mt-5 text-center text-sm text-muted">
             New here?{" "}
             <Link
               to="/onboarding/account"
@@ -312,8 +313,8 @@ export const LoginPage = () => {
               Get started →
             </Link>
           </p>
-        </form>
-      </FadeIn>
-    </motion.div>
+        </motion.form>
+      </main>
+    </div>
   );
 };

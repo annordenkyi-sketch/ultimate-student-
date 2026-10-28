@@ -3,9 +3,16 @@ import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import {
   ArrowRight,
+  Bell,
+  Briefcase,
+  Building2,
   ChevronDown,
   GraduationCap,
+  LifeBuoy,
   LogIn,
+  Map as MapIcon,
+  Users,
+  type LucideIcon,
 } from "lucide-react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { FadeIn } from "@/components/Motion";
@@ -178,7 +185,8 @@ const HeroNav = () => (
     </Link>
     <Link
       to="/login"
-      className="inline-flex items-center gap-2 rounded-full bg-brand-700 px-5 py-2 text-sm font-semibold text-white shadow-lg shadow-ink/30 transition hover:bg-brand-800 motion-safe:active:scale-[0.97]"
+      aria-label="Log in"
+      className="inline-flex items-center gap-2 rounded-full bg-brand-600 px-5 py-2.5 text-sm font-bold text-white shadow-xl shadow-ink/50 ring-2 ring-white/30 transition hover:bg-brand-500 hover:ring-white/50 motion-safe:hover:-translate-y-0.5 motion-safe:active:scale-[0.97]"
     >
       <LogIn className="h-4 w-4" aria-hidden="true" />
       Log in
@@ -212,7 +220,122 @@ const ScrollDown = () => {
   );
 };
 
-/* ─────────────────── Section components ─────────────────── */
+/* ─────────────────── What you can do ─────────────────── */
+
+interface Feature {
+  icon: LucideIcon;
+  title: string;
+  body: string;
+}
+
+const FEATURES: Feature[] = [
+  {
+    icon: MapIcon,
+    title: "Find your way",
+    body: "Locate any lecture hall, office or ATM on campus.",
+  },
+  {
+    icon: Building2,
+    title: "Find a hostel",
+    body: "Compare verified hostels by price and facilities.",
+  },
+  {
+    icon: Bell,
+    title: "Stay informed",
+    body: "Get campus announcements as they happen.",
+  },
+  {
+    icon: Users,
+    title: "Join campus life",
+    body: "Discover events, clubs and societies.",
+  },
+  {
+    icon: Briefcase,
+    title: "Grab opportunities",
+    body: "Internships, jobs and competitions in one place.",
+  },
+  {
+    icon: LifeBuoy,
+    title: "Get help fast",
+    body: "Reach health, counselling and emergency services.",
+  },
+];
+
+const FeatureCard = ({ feature, index }: { feature: Feature; index: number }) => {
+  const reduce = useReducedMotion();
+  const Icon = feature.icon;
+  return (
+    <motion.li
+      variants={{
+        hidden: { opacity: 0, y: reduce ? 0 : 24 },
+        visible: {
+          opacity: 1,
+          y: 0,
+          transition: {
+            duration: 0.5,
+            delay: 0.05 * index,
+            ease: [0.22, 1, 0.36, 1],
+          },
+        },
+      }}
+      whileHover={reduce ? undefined : { y: -4 }}
+      transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
+      className="group"
+    >
+      <div className="relative flex h-full flex-col gap-4 rounded-3xl border border-line bg-white p-6 shadow-sm transition-all duration-200 group-hover:border-brand-500 group-hover:shadow-lg group-hover:shadow-brand-600/15 md:p-7">
+        <motion.span
+          whileHover={reduce ? undefined : { y: -3, scale: 1.08 }}
+          transition={{ type: "spring", stiffness: 350, damping: 15 }}
+          className="flex h-14 w-14 items-center justify-center rounded-full bg-brand-600 text-white shadow-md shadow-brand-600/30"
+        >
+          <Icon className="h-6 w-6" aria-hidden="true" strokeWidth={2.2} />
+        </motion.span>
+        <div className="min-w-0">
+          <h3 className="font-display text-xl font-bold tracking-tight text-ink">
+            {feature.title}
+          </h3>
+          <p className="mt-1.5 text-sm leading-relaxed text-muted">
+            {feature.body}
+          </p>
+        </div>
+      </div>
+    </motion.li>
+  );
+};
+
+const WhatYouCanDo = () => (
+  <section
+    id="after-hero"
+    aria-labelledby="features-heading"
+    className="mx-auto w-full max-w-6xl px-4 py-14 md:px-8 md:py-20"
+  >
+    <FadeIn>
+      <h2
+        id="features-heading"
+        className="max-w-2xl font-display text-3xl font-bold tracking-tight text-ink md:text-5xl"
+      >
+        What you can do
+      </h2>
+    </FadeIn>
+
+    <motion.ul
+      initial="hidden"
+      whileInView="visible"
+      viewport={{ once: true, amount: 0.15 }}
+      variants={{
+        hidden: {},
+        visible: { transition: { staggerChildren: 0.08 } },
+      }}
+      className="mt-10 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3"
+    >
+      {FEATURES.map((f, i) => (
+        <FeatureCard key={f.title} feature={f} index={i} />
+      ))}
+    </motion.ul>
+  </section>
+);
+
+/* ─────────────────── How it works ─────────────────── */
 
 const STEPS = [
   {
@@ -234,7 +357,6 @@ const STEPS = [
 
 const HowItWorks = () => (
   <section
-    id="after-hero"
     aria-labelledby="steps-heading"
     className="mx-auto w-full max-w-6xl px-4 py-6 md:px-8 md:py-16"
   >
@@ -412,6 +534,7 @@ export const WelcomePage = () => {
       </section>
 
       {/* Everything below is untouched */}
+      <WhatYouCanDo />
       <HowItWorks />
       <FinalCTA onStart={goStart} />
       <SiteFooter />

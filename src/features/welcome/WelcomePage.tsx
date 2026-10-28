@@ -236,10 +236,10 @@ const HowItWorks = () => (
   <section
     id="after-hero"
     aria-labelledby="steps-heading"
-    className="mx-auto w-full max-w-6xl px-4 py-10 md:px-8 md:py-16"
+    className="mx-auto w-full max-w-6xl px-4 py-6 md:px-8 md:py-16"
   >
-    <div className="overflow-hidden rounded-[32px] bg-brand-50 px-6 py-10 md:px-10 md:py-12 lg:px-14 lg:py-14">
-      <div className="grid grid-cols-1 items-center gap-10 lg:grid-cols-5 lg:gap-14">
+    <div className="overflow-hidden rounded-[28px] bg-brand-50 px-5 py-7 md:px-10 md:py-12 lg:px-14 lg:py-14">
+      <div className="grid grid-cols-1 items-center gap-6 lg:grid-cols-5 lg:gap-14">
         {/* Left — eyebrow + headline */}
         <div className="lg:col-span-2">
           <FadeIn>
@@ -248,7 +248,7 @@ const HowItWorks = () => (
             </p>
             <h2
               id="steps-heading"
-              className="mt-2 font-display text-3xl font-bold leading-[1.05] tracking-tight text-ink md:text-4xl lg:text-5xl"
+              className="mt-1.5 font-display text-2xl font-bold leading-[1.05] tracking-tight text-ink md:text-4xl lg:text-5xl"
             >
               Three steps and{" "}
               <WordHighlight tone="blush" tilt={2}>you're in</WordHighlight>.
@@ -257,19 +257,19 @@ const HowItWorks = () => (
         </div>
 
         {/* Right — stacked step cards */}
-        <ol className="relative space-y-3 lg:col-span-3">
+        <ol className="relative space-y-2.5 lg:col-span-3 lg:space-y-3">
           {STEPS.map((s, i) => (
             <li key={s.n}>
               <FadeIn delay={0.08 * (i + 1)} y={6}>
-                <div className="flex items-start gap-4 rounded-2xl border border-line bg-white p-4 md:p-5">
-                  <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-brand-700 font-display text-sm font-bold text-white shadow-md shadow-brand-700/20">
+                <div className="flex items-start gap-3 rounded-2xl border border-line bg-white p-3 md:gap-4 md:p-5">
+                  <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-brand-700 font-display text-xs font-bold text-white shadow-md shadow-brand-700/20 md:h-11 md:w-11 md:text-sm">
                     {s.n}
                   </span>
                   <div className="min-w-0">
-                    <h3 className="font-display text-base font-bold tracking-tight text-ink md:text-lg">
+                    <h3 className="font-display text-sm font-bold tracking-tight text-ink md:text-lg">
                       {s.title}
                     </h3>
-                    <p className="mt-1 text-sm leading-relaxed text-muted">
+                    <p className="mt-0.5 text-xs leading-relaxed text-muted md:mt-1 md:text-sm">
                       {s.body}
                     </p>
                   </div>

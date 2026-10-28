@@ -236,50 +236,49 @@ const HowItWorks = () => (
   <section
     id="after-hero"
     aria-labelledby="steps-heading"
-    className="relative overflow-hidden bg-brand-50 py-16 md:py-24"
+    className="mx-auto w-full max-w-6xl px-4 py-10 md:px-8 md:py-16"
   >
-    <div className="mx-auto w-full max-w-6xl px-4 md:px-8">
-      <FadeIn>
-        <p className="text-[11px] font-semibold uppercase tracking-widest text-accent-600">
-          How it works
-        </p>
-        <h2
-          id="steps-heading"
-          className="mt-2 max-w-2xl font-display text-3xl font-bold tracking-tight text-ink md:text-5xl"
-        >
-          Three steps and{" "}
-          <WordHighlight tone="blush" tilt={2}>you're in</WordHighlight>.
-        </h2>
-      </FadeIn>
+    <div className="overflow-hidden rounded-[32px] bg-brand-50 px-6 py-10 md:px-10 md:py-12 lg:px-14 lg:py-14">
+      <div className="grid grid-cols-1 items-center gap-10 lg:grid-cols-5 lg:gap-14">
+        {/* Left — eyebrow + headline */}
+        <div className="lg:col-span-2">
+          <FadeIn>
+            <p className="text-[11px] font-semibold uppercase tracking-widest text-accent-600">
+              How it works
+            </p>
+            <h2
+              id="steps-heading"
+              className="mt-2 font-display text-3xl font-bold leading-[1.05] tracking-tight text-ink md:text-4xl lg:text-5xl"
+            >
+              Three steps and{" "}
+              <WordHighlight tone="blush" tilt={2}>you're in</WordHighlight>.
+            </h2>
+          </FadeIn>
+        </div>
 
-      <ol className="relative mt-12 grid gap-6 md:grid-cols-3">
-        {/* Dotted connector (desktop only) */}
-        <div
-          aria-hidden="true"
-          className="absolute left-1/2 top-7 hidden h-px w-2/3 -translate-x-1/2 md:block"
-          style={{
-            backgroundImage:
-              "repeating-linear-gradient(to right, #A6CFC2 0 6px, transparent 6px 14px)",
-          }}
-        />
-        {STEPS.map((s, i) => (
-          <li key={s.n}>
-            <FadeIn delay={0.1 * i}>
-              <div className="relative flex flex-col items-start rounded-3xl border border-line bg-white p-6 md:items-center md:text-center">
-                <span className="flex h-14 w-14 items-center justify-center rounded-full bg-brand-700 font-display text-base font-bold text-white shadow-lg shadow-brand-700/25">
-                  {s.n}
-                </span>
-                <h3 className="mt-5 font-display text-lg font-bold tracking-tight text-ink">
-                  {s.title}
-                </h3>
-                <p className="mt-2 max-w-xs text-sm leading-relaxed text-muted">
-                  {s.body}
-                </p>
-              </div>
-            </FadeIn>
-          </li>
-        ))}
-      </ol>
+        {/* Right — stacked step cards */}
+        <ol className="relative space-y-3 lg:col-span-3">
+          {STEPS.map((s, i) => (
+            <li key={s.n}>
+              <FadeIn delay={0.08 * (i + 1)} y={6}>
+                <div className="flex items-start gap-4 rounded-2xl border border-line bg-white p-4 md:p-5">
+                  <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-brand-700 font-display text-sm font-bold text-white shadow-md shadow-brand-700/20">
+                    {s.n}
+                  </span>
+                  <div className="min-w-0">
+                    <h3 className="font-display text-base font-bold tracking-tight text-ink md:text-lg">
+                      {s.title}
+                    </h3>
+                    <p className="mt-1 text-sm leading-relaxed text-muted">
+                      {s.body}
+                    </p>
+                  </div>
+                </div>
+              </FadeIn>
+            </li>
+          ))}
+        </ol>
+      </div>
     </div>
   </section>
 );

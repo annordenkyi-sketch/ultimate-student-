@@ -173,24 +173,34 @@ const HeroCarousel = ({
 /* ─────────────────── Hero overlay nav ─────────────────── */
 
 const HeroNav = () => (
-  <div className="absolute inset-x-0 top-0 z-20 flex h-16 items-center justify-between px-4 md:h-20 md:px-8">
-    <Link
-      to="/welcome"
-      className="inline-flex items-center gap-2 font-display text-base font-bold text-white md:text-lg"
-    >
-      <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-white/15 ring-1 ring-white/40 backdrop-blur-sm">
-        <GraduationCap className="h-4 w-4" aria-hidden="true" />
-      </span>
-      Ultimate Student
-    </Link>
-    <Link
-      to="/login"
-      aria-label="Log in"
-      className="inline-flex items-center gap-2 rounded-full bg-brand-600 px-5 py-2.5 text-sm font-bold text-white shadow-xl shadow-ink/50 ring-2 ring-white/30 transition hover:bg-brand-500 hover:ring-white/50 motion-safe:hover:-translate-y-0.5 motion-safe:active:scale-[0.97]"
-    >
-      <LogIn className="h-4 w-4" aria-hidden="true" />
-      Log in
-    </Link>
+  <div
+    className="absolute inset-x-0 top-0 z-40 flex h-16 items-center justify-between gap-3 md:h-20"
+    style={{
+      paddingLeft: "max(16px, env(safe-area-inset-left))",
+      paddingRight: "max(16px, env(safe-area-inset-right))",
+    }}
+  >
+    <div className="md:pl-4">
+      <Link
+        to="/welcome"
+        className="inline-flex items-center gap-2 font-display text-sm font-bold text-white sm:text-base md:text-lg"
+      >
+        <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-white/15 ring-1 ring-white/40 backdrop-blur-sm">
+          <GraduationCap className="h-4 w-4" aria-hidden="true" />
+        </span>
+        <span className="whitespace-nowrap">Ultimate Student</span>
+      </Link>
+    </div>
+    <div className="md:pr-4">
+      <Link
+        to="/login"
+        aria-label="Log in"
+        className="inline-flex shrink-0 items-center gap-2 whitespace-nowrap rounded-full bg-brand-600 px-6 py-3 text-sm font-bold text-white shadow-xl shadow-ink/50 transition hover:bg-brand-500 motion-safe:hover:-translate-y-0.5 motion-safe:active:scale-[0.97]"
+      >
+        <LogIn className="h-4 w-4" aria-hidden="true" />
+        Log in
+      </Link>
+    </div>
   </div>
 );
 

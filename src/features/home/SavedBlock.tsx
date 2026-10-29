@@ -97,7 +97,7 @@ export const SavedBlock = () => {
           <footer className="border-t border-line/60 px-4 py-3 text-right">
             <Link
               to="/saved"
-              className="text-xs font-semibold text-brand-700 hover:text-brand-800"
+              className="text-xs font-semibold text-brand-700 hover:text-brand-800 hover:underline"
             >
               See all
             </Link>

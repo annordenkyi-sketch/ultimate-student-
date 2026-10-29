@@ -13,7 +13,7 @@ export const ShortcutsBlock = () => (
       </h2>
       <Link
         to="/sections"
-        className="text-xs font-semibold text-brand-700 hover:text-brand-800 lg:hidden"
+        className="text-xs font-semibold text-brand-700 hover:text-brand-800 hover:underline lg:hidden"
       >
         See all
       </Link>

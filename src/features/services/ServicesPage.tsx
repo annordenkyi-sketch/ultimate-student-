@@ -108,7 +108,7 @@ const ServiceCard = ({ item, query, dense }: CardProps) => {
           {item.contact.phone && (
             <a
               href={`tel:${item.contact.phone.replace(/\s/g, "")}`}
-              className="rounded-lg bg-brand-600 px-3 py-1.5 text-xs font-semibold text-white transition hover:bg-brand-700"
+              className="rounded-lg bg-brand-600 px-3 py-1.5 text-xs font-semibold text-white transition hover:bg-accent-500 hover:text-brand-900"
             >
               Call
             </a>
@@ -199,7 +199,7 @@ export const ServicesPage = () => {
           </p>
           <Link
             to={`/search?q=${encodeURIComponent(query)}`}
-            className="mt-2 inline-block text-xs font-semibold text-brand-700 hover:text-brand-800"
+            className="mt-2 inline-block text-xs font-semibold text-brand-700 hover:text-brand-800 hover:underline"
           >
             Search all of Ultimate Student →
           </Link>

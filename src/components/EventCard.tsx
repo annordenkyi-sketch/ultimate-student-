@@ -11,7 +11,7 @@ interface Props {
 export const EventCard = ({ event, linkTo }: Props) => {
   const content = (
     <>
-      <span className="mb-3 inline-flex items-center gap-1.5 rounded-full bg-accent-100 px-2.5 py-1 text-[11px] font-semibold text-accent-600">
+      <span className="mb-3 inline-flex items-center gap-1.5 rounded-full bg-accent-100 px-2.5 py-1 text-[11px] font-semibold text-accent-700">
         <CalendarDays className="h-3 w-3" aria-hidden="true" />
         Event
       </span>

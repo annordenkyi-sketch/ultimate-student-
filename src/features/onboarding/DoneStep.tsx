@@ -186,7 +186,7 @@ const SummaryRow = ({ icon: Icon, label, value, editTo }: SummaryRowProps) => (
     </div>
     <Link
       to={editTo}
-      className="inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs font-semibold text-brand-700 transition hover:bg-brand-50 hover:text-brand-800"
+      className="inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs font-semibold text-brand-700 transition hover:bg-brand-50 hover:text-brand-800 hover:underline"
     >
       <Pencil className="h-3 w-3" aria-hidden="true" />
       Edit
@@ -431,7 +431,7 @@ export const DoneStep = () => {
                 </div>
                 <Link
                   to="/onboarding/living?part=B"
-                  className="inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs font-semibold text-brand-700 transition hover:bg-brand-50 hover:text-brand-800"
+                  className="inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs font-semibold text-brand-700 transition hover:bg-brand-50 hover:text-brand-800 hover:underline"
                 >
                   <Pencil className="h-3 w-3" aria-hidden="true" />
                   Edit
@@ -500,7 +500,7 @@ export const DoneStep = () => {
         {/* Reminders */}
         <FadeIn delay={1.2} className="mt-6">
           <label className="flex cursor-pointer items-start gap-3 rounded-2xl border border-line bg-white p-4 shadow-card transition hover:border-line">
-            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-accent-100 text-accent-600">
+            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-accent-100 text-accent-700">
               <BellRing className="h-4 w-4" aria-hidden="true" />
             </span>
             <div className="min-w-0 flex-1">

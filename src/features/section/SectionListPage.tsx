@@ -106,7 +106,7 @@ export const SectionListPage = () => {
               </p>
               <Link
                 to={`/search?q=${encodeURIComponent(query)}`}
-                className="mt-2 inline-block text-xs font-semibold text-brand-700 hover:text-brand-800"
+                className="mt-2 inline-block text-xs font-semibold text-brand-700 hover:text-brand-800 hover:underline"
               >
                 Search all of Ultimate Student →
               </Link>

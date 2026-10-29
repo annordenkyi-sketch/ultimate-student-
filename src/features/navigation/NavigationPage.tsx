@@ -181,18 +181,18 @@ const CampusMap = ({ places, selectedId, onSelect }: CampusMapProps) => {
         role="img"
         aria-label="Illustrative campus map"
       >
-        <ellipse cx="190" cy="190" rx="150" ry="55" fill="#d1fae5" />
-        <ellipse cx="380" cy="110" rx="80" ry="50" fill="#d1fae5" />
-        <ellipse cx="100" cy="90" rx="60" ry="35" fill="#d1fae5" />
+        <ellipse cx="190" cy="190" rx="150" ry="55" fill="#D7E0F1" />
+        <ellipse cx="380" cy="110" rx="80" ry="50" fill="#D7E0F1" />
+        <ellipse cx="100" cy="90" rx="60" ry="35" fill="#D7E0F1" />
 
-        <path d="M 30 200 L 470 200" stroke="#cbd5e1" strokeWidth="2" strokeDasharray="4 3" fill="none" />
-        <path d="M 250 20 L 250 280" stroke="#cbd5e1" strokeWidth="2" strokeDasharray="4 3" fill="none" />
-        <path d="M 60 60 Q 220 110 440 55" stroke="#cbd5e1" strokeWidth="2" strokeDasharray="4 3" fill="none" />
+        <path d="M 30 200 L 470 200" stroke="#DDE3EC" strokeWidth="2" strokeDasharray="4 3" fill="none" />
+        <path d="M 250 20 L 250 280" stroke="#DDE3EC" strokeWidth="2" strokeDasharray="4 3" fill="none" />
+        <path d="M 60 60 Q 220 110 440 55" stroke="#DDE3EC" strokeWidth="2" strokeDasharray="4 3" fill="none" />
 
         <g>
           <circle cx={(YOU_ARE_HERE.x / 100) * w} cy={(YOU_ARE_HERE.y / 100) * h} r="18" fill="rgba(16, 185, 129, 0.18)" />
-          <circle cx={(YOU_ARE_HERE.x / 100) * w} cy={(YOU_ARE_HERE.y / 100) * h} r="7" fill="#10b981" stroke="white" strokeWidth="3" />
-          <text x={(YOU_ARE_HERE.x / 100) * w} y={(YOU_ARE_HERE.y / 100) * h + 24} textAnchor="middle" fontSize="10" fontWeight="600" fill="#065f46">
+          <circle cx={(YOU_ARE_HERE.x / 100) * w} cy={(YOU_ARE_HERE.y / 100) * h} r="7" fill="#C9A227" stroke="white" strokeWidth="3" />
+          <text x={(YOU_ARE_HERE.x / 100) * w} y={(YOU_ARE_HERE.y / 100) * h + 24} textAnchor="middle" fontSize="10" fontWeight="600" fill="#1E2A4A">
             You are here
           </text>
         </g>
@@ -206,8 +206,8 @@ const CampusMap = ({ places, selectedId, onSelect }: CampusMapProps) => {
           return (
             <g key={p.id} style={{ cursor: "pointer" }} onClick={() => onSelect(p.id)}>
               {isSelected && <circle cx={x} cy={y} r="18" fill="rgba(79, 70, 229, 0.18)" />}
-              <circle cx={x} cy={y} r={isSelected ? 9 : 7} fill={isSelected ? "#4f46e5" : "#64748b"} stroke="white" strokeWidth="2" />
-              <text x={x} y={y - 14} textAnchor="middle" fontSize="9" fontWeight="600" fill={isSelected ? "#312e81" : "#334155"}>
+              <circle cx={x} cy={y} r={isSelected ? 9 : 7} fill={isSelected ? "#1A3A8F" : "#829DD1"} stroke="white" strokeWidth="2" />
+              <text x={x} y={y - 14} textAnchor="middle" fontSize="9" fontWeight="600" fill={isSelected ? "#0F2256" : "#1E2A4A"}>
                 {p.title}
               </text>
             </g>
@@ -269,7 +269,7 @@ const SelectedCard = ({
       <button
         type="button"
         onClick={() => openInMaps(item, userLocation)}
-        className="mt-4 flex w-full items-center justify-center gap-2 rounded-xl bg-brand-600 px-4 py-3 text-sm font-semibold text-white transition hover:bg-brand-700 motion-safe:active:scale-[0.98]"
+        className="mt-4 flex w-full items-center justify-center gap-2 rounded-xl bg-brand-600 px-4 py-3 text-sm font-semibold text-white transition hover:bg-accent-500 hover:text-brand-900 motion-safe:active:scale-[0.98]"
       >
         Get directions
         <ArrowUpRight className="h-4 w-4" aria-hidden="true" />
@@ -307,7 +307,7 @@ const SelectedCard = ({
 
       <Link
         to={`/section/navigation/${item.id}`}
-        className="mt-3 inline-block text-xs font-semibold text-brand-700 hover:text-brand-800"
+        className="mt-3 inline-block text-xs font-semibold text-brand-700 hover:text-brand-800 hover:underline"
       >
         View full details →
       </Link>
@@ -347,7 +347,7 @@ const PlacesList = ({
           <strong className="text-ink">"{query}"</strong> in Campus map.
           <Link
             to={`/search?q=${encodeURIComponent(query)}`}
-            className="mt-1 block text-xs font-semibold text-brand-700 hover:text-brand-800"
+            className="mt-1 block text-xs font-semibold text-brand-700 hover:text-brand-800 hover:underline"
           >
             Search all of Ultimate Student
           </Link>
@@ -442,7 +442,7 @@ const LocationBanner = ({
           type="button"
           onClick={onAllow}
           disabled={status === "requesting"}
-          className="shrink-0 rounded-lg bg-brand-600 px-3 py-1.5 text-xs font-semibold text-white transition hover:bg-brand-700 disabled:cursor-not-allowed disabled:opacity-60"
+          className="shrink-0 rounded-lg bg-brand-600 px-3 py-1.5 text-xs font-semibold text-white transition hover:bg-accent-500 hover:text-brand-900 disabled:cursor-not-allowed disabled:opacity-60"
         >
           {status === "requesting" ? "Asking…" : buttonLabel}
         </button>
@@ -634,7 +634,7 @@ export const NavigationPage = () => {
               aria-pressed={sort === "nearest" && canSortByNearest}
               className={`px-3 py-1 transition ${
                 sort === "nearest" && canSortByNearest
-                  ? "bg-ink text-white"
+                  ? "bg-brand-900 text-white"
                   : "text-ink hover:bg-paper disabled:cursor-not-allowed disabled:text-muted"
               }`}
             >
@@ -646,7 +646,7 @@ export const NavigationPage = () => {
               aria-pressed={sort === "alpha" || !canSortByNearest}
               className={`border-l border-line px-3 py-1 transition ${
                 sort === "alpha" || !canSortByNearest
-                  ? "bg-ink text-white"
+                  ? "bg-brand-900 text-white"
                   : "text-ink hover:bg-paper"
               }`}
             >

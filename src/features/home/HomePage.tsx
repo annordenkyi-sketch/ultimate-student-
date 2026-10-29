@@ -66,7 +66,7 @@ const MobileHeader = ({ firstName }: { firstName: string }) => {
     <header className="lg:hidden">
       <div className="flex items-center justify-between">
         <div>
-          <p className="text-[11px] font-semibold uppercase tracking-widest text-accent-600">
+          <p className="text-[11px] font-semibold uppercase tracking-widest text-accent-700">
             {greeting()}
           </p>
           <h1 className="mt-0.5 text-2xl font-bold tracking-tight text-ink">
@@ -104,7 +104,7 @@ const MobileHeader = ({ firstName }: { firstName: string }) => {
 
 const GreetingHeader = ({ firstName }: { firstName: string }) => (
   <header className="hidden lg:block">
-    <p className="text-[11px] font-semibold uppercase tracking-widest text-accent-600">
+    <p className="text-[11px] font-semibold uppercase tracking-widest text-accent-700">
       {greeting()}
     </p>
     <h1 className="mt-1 text-4xl font-bold tracking-tight text-ink lg:text-5xl">
@@ -194,7 +194,7 @@ const HighlightCards = ({ campusEventsCount }: { campusEventsCount: number }) =>
                   >
                     <Icon className="h-4 w-4" aria-hidden="true" />
                   </span>
-                  <span className="text-[10px] font-semibold uppercase tracking-widest text-accent-600">
+                  <span className="text-[10px] font-semibold uppercase tracking-widest text-accent-700">
                     {h.tag}
                   </span>
                 </div>
@@ -208,7 +208,7 @@ const HighlightCards = ({ campusEventsCount }: { campusEventsCount: number }) =>
                   </p>
                 </div>
 
-                <p className="mt-auto inline-flex items-center gap-1 text-xs font-semibold text-brand-700 group-hover:text-brand-800">
+                <p className="mt-auto inline-flex items-center gap-1 text-xs font-semibold text-brand-700 group-hover:text-brand-800 hover:underline">
                   {h.cta}
                   <ChevronRight className="h-3 w-3" aria-hidden="true" />
                 </p>
@@ -239,7 +239,7 @@ const AtAGlance = ({ stats }: { stats: Stat[] }) => (
   >
     <div className="mb-6 flex items-end justify-between gap-6 md:mb-10">
       <div>
-        <p className="text-[11px] font-semibold uppercase tracking-widest text-accent-600">
+        <p className="text-[11px] font-semibold uppercase tracking-widest text-accent-700">
           Your week
         </p>
         <h2
@@ -257,7 +257,7 @@ const AtAGlance = ({ stats }: { stats: Stat[] }) => (
         return (
           <li key={s.key} className="border-t border-line pt-5">
             <div className="flex items-center justify-between gap-3">
-              <p className="text-xs font-semibold uppercase tracking-widest text-accent-600">
+              <p className="text-xs font-semibold uppercase tracking-widest text-accent-700">
                 {s.label}
               </p>
               <Icon
@@ -272,7 +272,7 @@ const AtAGlance = ({ stats }: { stats: Stat[] }) => (
               <span className="text-5xl font-bold tracking-tight text-ink group-hover:text-brand-700 md:text-6xl">
                 {s.value}
               </span>
-              <span className="text-xs font-semibold text-brand-700 group-hover:text-brand-800">
+              <span className="text-xs font-semibold text-brand-700 group-hover:text-brand-800 hover:underline">
                 →
               </span>
             </Link>
@@ -314,7 +314,7 @@ const AnnouncementsPanel = () => {
     >
       <header className="flex items-end justify-between gap-4 border-b border-line/60 px-6 py-5">
         <div>
-          <p className="text-[11px] font-semibold uppercase tracking-widest text-accent-600">
+          <p className="text-[11px] font-semibold uppercase tracking-widest text-accent-700">
             Updates
           </p>
           <h2
@@ -326,7 +326,7 @@ const AnnouncementsPanel = () => {
         </div>
         <Link
           to="/announcements"
-          className="text-xs font-semibold text-brand-700 hover:text-brand-800"
+          className="text-xs font-semibold text-brand-700 hover:text-brand-800 hover:underline"
         >
           See all →
         </Link>
@@ -371,7 +371,7 @@ const AnnouncementsPanel = () => {
                       </p>
                     </div>
                     {a.source && (
-                      <p className="mt-0.5 text-[11px] font-medium uppercase tracking-wider text-accent-600">
+                      <p className="mt-0.5 text-[11px] font-medium uppercase tracking-wider text-accent-700">
                         {a.source}
                       </p>
                     )}

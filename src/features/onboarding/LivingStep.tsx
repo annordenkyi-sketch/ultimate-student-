@@ -263,7 +263,7 @@ const InterestTile = ({
       {/* Dark gradient for text contrast */}
       <div
         aria-hidden="true"
-        className="absolute inset-0 bg-gradient-to-t from-ink/80 via-ink/15 to-transparent"
+        className="absolute inset-0 bg-gradient-to-t from-brand-900/80 via-brand-900/15 to-transparent"
       />
 
       {/* Icon chip top-left */}
@@ -557,7 +557,7 @@ export const LivingStep = () => {
                         <button
                           type="button"
                           onClick={() => setDraft({ hostel: undefined })}
-                          className="mt-2 text-xs font-semibold text-brand-700 hover:text-brand-800"
+                          className="mt-2 text-xs font-semibold text-brand-700 hover:text-brand-800 hover:underline"
                         >
                           Skip for now
                         </button>

@@ -558,7 +558,7 @@ const RegistrationGuide = () => {
             {isNext && (
               <button
                 type="button"
-                className="text-xs font-semibold text-brand-700 hover:text-brand-800"
+                className="text-xs font-semibold text-brand-700 hover:text-brand-800 hover:underline"
               >
                 Start
               </button>
@@ -711,7 +711,7 @@ const typeTint: Record<Hit["type"], string> = {
   Deadline: "bg-rose-100 text-rose-700",
   Exam: "bg-brand-100 text-brand-700",
   Course: "bg-paper text-ink",
-  Step: "bg-accent-100 text-accent-600",
+  Step: "bg-accent-100 text-accent-700",
   Contact: "bg-emerald-100 text-emerald-700",
 };
 
@@ -727,7 +727,7 @@ const SearchResults = ({ query }: { query: string }) => {
         </p>
         <Link
           to={`/search?q=${encodeURIComponent(query)}`}
-          className="mt-2 inline-block text-xs font-semibold text-brand-700 hover:text-brand-800"
+          className="mt-2 inline-block text-xs font-semibold text-brand-700 hover:text-brand-800 hover:underline"
         >
           Search all of Ultimate Student →
         </Link>

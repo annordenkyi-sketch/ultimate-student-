@@ -88,7 +88,7 @@ const ROTATION_INTERVAL_MS = 4000;
 /* ───────────────────────── Phone mockup ───────────────────────── */
 
 const PhoneMockup = () => (
-  <div className="w-[200px] rounded-[32px] bg-ink p-2 shadow-2xl ring-1 ring-ink/60">
+  <div className="w-[200px] rounded-[32px] bg-brand-900 p-2 shadow-2xl ring-1 ring-brand-900/60">
     <div className="overflow-hidden rounded-[26px] bg-paper p-2.5">
       <div className="mb-2 flex items-center justify-between text-[8px] font-semibold text-muted">
         <span>9:41</span>
@@ -213,8 +213,8 @@ const Slideshow = ({
       aria-hidden="true"
       className={
         variant === "desktop"
-          ? "absolute inset-0 bg-gradient-to-br from-ink/75 via-ink/50 to-brand-900/55"
-          : "absolute inset-0 bg-gradient-to-b from-ink/40 via-ink/15 to-white"
+          ? "absolute inset-0 bg-gradient-to-br from-brand-900/75 via-brand-900/50 to-brand-900/55"
+          : "absolute inset-0 bg-gradient-to-b from-brand-900/40 via-brand-900/15 to-white"
       }
     />
 
@@ -243,7 +243,7 @@ const Slideshow = ({
     <div
       role="tablist"
       aria-label="Image slideshow"
-      className={`absolute left-1/2 flex -translate-x-1/2 items-center gap-1.5 rounded-full bg-ink/40 px-2.5 py-1.5 backdrop-blur-md ${
+      className={`absolute left-1/2 flex -translate-x-1/2 items-center gap-1.5 rounded-full bg-brand-900/40 px-2.5 py-1.5 backdrop-blur-md ${
         variant === "desktop" ? "bottom-10" : "bottom-4"
       }`}
     >
@@ -316,7 +316,7 @@ const PhotoCard = ({
           />
           <div
             aria-hidden="true"
-            className="pointer-events-none absolute inset-0 hidden md:block md:bg-gradient-to-t md:from-ink/30 md:to-transparent"
+            className="pointer-events-none absolute inset-0 hidden md:block md:bg-gradient-to-t md:from-brand-900/30 md:to-transparent"
           />
         </div>
 

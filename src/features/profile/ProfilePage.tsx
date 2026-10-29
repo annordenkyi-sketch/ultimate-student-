@@ -105,7 +105,7 @@ const SectionShell = ({
         <button
           type="button"
           onClick={onToggle}
-          className="inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs font-semibold text-brand-700 transition hover:bg-brand-50 hover:text-brand-800"
+          className="inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs font-semibold text-brand-700 transition hover:bg-brand-50 hover:text-brand-800 hover:underline"
         >
           {isEditing ? (
             <>
@@ -162,7 +162,7 @@ const SaveBar = ({
       type="submit"
       onClick={onSave}
       disabled={!canSave}
-      className="rounded-xl bg-brand-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-brand-700 disabled:cursor-not-allowed disabled:opacity-50"
+      className="rounded-xl bg-brand-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-accent-500 hover:text-brand-900 disabled:cursor-not-allowed disabled:opacity-50"
     >
       Save
     </button>
@@ -258,7 +258,7 @@ const ProfileHeader = ({
           <button
             type="button"
             onClick={onEditProfile}
-            className="inline-flex items-center gap-1.5 rounded-xl bg-brand-600 px-3 py-2 text-xs font-semibold text-white hover:bg-brand-700"
+            className="inline-flex items-center gap-1.5 rounded-xl bg-brand-600 px-3 py-2 text-xs font-semibold text-white hover:bg-accent-500 hover:text-brand-900"
           >
             <Pencil className="h-3.5 w-3.5" aria-hidden="true" />
             Edit profile

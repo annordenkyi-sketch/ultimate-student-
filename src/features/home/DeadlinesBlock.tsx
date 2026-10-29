@@ -40,7 +40,7 @@ export const DeadlinesBlock = () => {
         </h2>
         <Link
           to="/section/academic"
-          className="text-xs font-semibold text-brand-700 hover:text-brand-800"
+          className="text-xs font-semibold text-brand-700 hover:text-brand-800 hover:underline"
         >
           See all
         </Link>

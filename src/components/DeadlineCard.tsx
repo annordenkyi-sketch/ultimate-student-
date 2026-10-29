@@ -10,8 +10,8 @@ interface Props {
 
 const categoryTone: Record<Deadline["category"], string> = {
   registration: "bg-brand-100 text-brand-700",
-  exam: "bg-accent-100 text-accent-600",
-  fees: "bg-accent-100 text-accent-600",
+  exam: "bg-accent-100 text-accent-700",
+  fees: "bg-accent-100 text-accent-700",
   other: "bg-paper text-ink",
 };
 
@@ -35,7 +35,7 @@ export const DeadlineCard = ({ deadline, linkTo }: Props) => {
           <span>{formatDate(deadline.date)}</span>
           <span
             className={`rounded-full px-1.5 py-0.5 text-[10px] font-semibold ${
-              soon ? "bg-accent-100 text-accent-600" : "bg-paper text-muted"
+              soon ? "bg-accent-100 text-accent-700" : "bg-paper text-muted"
             }`}
           >
             {relativeDays(deadline.date)}

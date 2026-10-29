@@ -398,7 +398,7 @@ const FilterPanel = ({ state, update }: FilterPanelProps) => {
               onClick={() => update({ priceMode: mode, priceMax: null })}
               className={`flex-1 px-2 py-1.5 transition ${
                 state.priceMode === mode
-                  ? "bg-ink text-white"
+                  ? "bg-brand-900 text-white"
                   : "bg-white text-ink hover:bg-paper"
               }`}
             >
@@ -676,7 +676,7 @@ const HostelCard = ({ hostel, priceMode, query }: CardProps) => {
         className={`mt-3 text-[11px] font-semibold uppercase tracking-wider ${
           hostel.availability === "Available now"
             ? "text-emerald-700"
-            : "text-accent-600"
+            : "text-accent-700"
         }`}
       >
         {hostel.availability}
@@ -796,7 +796,7 @@ export const AccommodationPage = () => {
           <button
             type="button"
             onClick={clearAll}
-            className="text-xs font-semibold text-brand-700 hover:text-brand-800"
+            className="text-xs font-semibold text-brand-700 hover:text-brand-800 hover:underline"
           >
             Clear all
           </button>
@@ -827,7 +827,7 @@ export const AccommodationPage = () => {
               <button
                 type="button"
                 onClick={clearAll}
-                className="mt-4 inline-flex rounded-xl bg-brand-600 px-4 py-2 text-sm font-semibold text-white hover:bg-brand-700"
+                className="mt-4 inline-flex rounded-xl bg-brand-600 px-4 py-2 text-sm font-semibold text-white hover:bg-accent-500 hover:text-brand-900"
               >
                 Clear filters
               </button>
@@ -884,7 +884,7 @@ export const AccommodationPage = () => {
             <button
               type="button"
               onClick={() => setShowMobileFilters(false)}
-              className="flex-1 rounded-xl bg-brand-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-brand-700"
+              className="flex-1 rounded-xl bg-brand-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-accent-500 hover:text-brand-900"
             >
               Show {filtered.length}{" "}
               {filtered.length === 1 ? "hostel" : "hostels"}

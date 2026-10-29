@@ -36,7 +36,7 @@ export const GreetingHero = ({ firstName }: Props) => {
       {/* Overlay for contrast */}
       <div
         aria-hidden="true"
-        className="absolute inset-0 bg-gradient-to-b from-ink/60 via-ink/60 to-brand-900/80"
+        className="absolute inset-0 bg-gradient-to-b from-brand-900/60 via-brand-900/60 to-brand-900/80"
       />
 
       <div className="relative px-5 pb-5 pt-5 text-white">

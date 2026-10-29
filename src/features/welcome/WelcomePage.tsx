@@ -1,22 +1,38 @@
-import type { ReactNode } from "react";
-import { useEffect, useState } from "react";
+import type { ComponentType, ReactNode } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import {
   ArrowRight,
-  Bell,
-  Briefcase,
-  Building2,
   ChevronDown,
+  ChevronLeft,
+  ChevronRight,
   GraduationCap,
-  LifeBuoy,
   LogIn,
-  Map as MapIcon,
-  Users,
-  type LucideIcon,
 } from "lucide-react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
+import HTMLFlipBook from "react-pageflip";
 import { FadeIn } from "@/components/Motion";
 import { unsplash, unsplashSrcSet, type UnsplashImage } from "@/lib/images";
+
+/* The library's TS types mark every FlipSetting prop as required even though
+   the runtime supplies defaults. Cast to a loose component to pass only what
+   we care about. */
+const FlipBook = HTMLFlipBook as unknown as ComponentType<Record<string, unknown>>;
+
+/* Match Tailwind's lg: breakpoint for picking book vs card stack. */
+const useIsDesktop = (): boolean => {
+  const [isDesktop, setIsDesktop] = useState<boolean>(() => {
+    if (typeof window === "undefined") return false;
+    return window.matchMedia("(min-width: 1024px)").matches;
+  });
+  useEffect(() => {
+    const mq = window.matchMedia("(min-width: 1024px)");
+    const handler = () => setIsDesktop(mq.matches);
+    mq.addEventListener("change", handler);
+    return () => mq.removeEventListener("change", handler);
+  }, []);
+  return isDesktop;
+};
 
 /* ─────────────────── Highlight pill behind one word ─────────────────── */
 
@@ -136,7 +152,7 @@ const HeroCarousel = ({
         {/* Dark gradient overlay for readability */}
         <div
           aria-hidden="true"
-          className="absolute inset-0 bg-gradient-to-b from-ink/40 via-ink/55 to-ink/85"
+          className="absolute inset-0 bg-gradient-to-b from-brand-900/40 via-brand-900/55 to-brand-900/85"
         />
       </div>
 
@@ -195,7 +211,7 @@ const HeroNav = () => (
       <Link
         to="/login"
         aria-label="Log in"
-        className="inline-flex shrink-0 items-center gap-2 whitespace-nowrap rounded-full bg-brand-600 px-6 py-3 text-sm font-bold text-white shadow-xl shadow-ink/50 transition hover:bg-brand-500 motion-safe:hover:-translate-y-0.5 motion-safe:active:scale-[0.97]"
+        className="inline-flex shrink-0 items-center gap-2 whitespace-nowrap rounded-full bg-brand-600 px-6 py-3 text-sm font-bold text-white shadow-xl shadow-brand-900/50 transition hover:bg-accent-500 hover:text-brand-900 motion-safe:hover:-translate-y-0.5 motion-safe:active:scale-[0.97]"
       >
         <LogIn className="h-4 w-4" aria-hidden="true" />
         Log in
@@ -230,120 +246,419 @@ const ScrollDown = () => {
   );
 };
 
-/* ─────────────────── What you can do ─────────────────── */
+/* ─────────────────── Campus life (image strip) ─────────────────── */
 
-interface Feature {
-  icon: LucideIcon;
-  title: string;
-  body: string;
+interface CampusPhoto {
+  id: string;
+  photoId: string;
+  alt: string;
+  caption: string;
 }
 
-const FEATURES: Feature[] = [
+/* Credits for these photographers are already registered in
+   src/lib/images.ts (ALL_CREDITS) and surfaced on /profile. */
+const CAMPUS_LIFE_PHOTOS: CampusPhoto[] = [
   {
-    icon: MapIcon,
-    title: "Find your way",
-    body: "Locate any lecture hall, office or ATM on campus.",
+    id: "campus-together",
+    photoId: "photo-1616428394230-ba242d33e3ba",
+    alt: "African students walking together across a university campus",
+    caption: "Life on campus",
   },
   {
-    icon: Building2,
-    title: "Find a hostel",
-    body: "Compare verified hostels by price and facilities.",
+    id: "campus-study",
+    photoId: "photo-1761370981247-1dfd749ec96b",
+    alt: "Three African women reviewing study notes together, laughing",
+    caption: "Learn together",
   },
   {
-    icon: Bell,
-    title: "Stay informed",
-    body: "Get campus announcements as they happen.",
-  },
-  {
-    icon: Users,
-    title: "Join campus life",
-    body: "Discover events, clubs and societies.",
-  },
-  {
-    icon: Briefcase,
-    title: "Grab opportunities",
-    body: "Internships, jobs and competitions in one place.",
-  },
-  {
-    icon: LifeBuoy,
-    title: "Get help fast",
-    body: "Reach health, counselling and emergency services.",
+    id: "campus-event",
+    photoId: "photo-1769905226600-1d447fe7d020",
+    alt: "African graduates in caps and gowns gathered in an auditorium",
+    caption: "Never miss out",
   },
 ];
 
-const FeatureCard = ({ feature, index }: { feature: Feature; index: number }) => {
-  const reduce = useReducedMotion();
-  const Icon = feature.icon;
-  return (
-    <motion.li
-      variants={{
-        hidden: { opacity: 0, y: reduce ? 0 : 24 },
-        visible: {
-          opacity: 1,
-          y: 0,
-          transition: {
-            duration: 0.5,
-            delay: 0.05 * index,
-            ease: [0.22, 1, 0.36, 1],
-          },
-        },
-      }}
-      whileHover={reduce ? undefined : { y: -4 }}
-      transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
-      className="group"
+/* ─── Photo face (image + caption overlay) ─── */
+const PhotoFace = ({
+  photo,
+  compact = false,
+}: {
+  photo: CampusPhoto;
+  compact?: boolean;
+}) => (
+  <div
+    className={`relative h-full w-full overflow-hidden bg-paper ${
+      compact ? "rounded-xl" : "rounded-[24px]"
+    }`}
+  >
+    <img
+      src={unsplash(photo.photoId, compact ? 800 : 1600, 70)}
+      srcSet={unsplashSrcSet(photo.photoId)}
+      sizes={compact ? "400px" : "100vw"}
+      alt={photo.alt}
+      draggable={false}
+      decoding="async"
+      className="pointer-events-none h-full w-full select-none object-cover"
+    />
+    <div
+      aria-hidden="true"
+      className="pointer-events-none absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-brand-900/85 via-brand-900/40 to-transparent"
+    />
+    <p
+      className={`pointer-events-none absolute inset-x-0 font-display font-bold tracking-tight text-white ${
+        compact
+          ? "bottom-3 px-4 text-base md:text-lg"
+          : "bottom-6 px-6 text-2xl md:bottom-8 md:px-10 md:text-3xl lg:text-4xl"
+      }`}
     >
-      <div className="relative flex h-full flex-col gap-4 rounded-3xl border border-line bg-white p-6 shadow-sm transition-all duration-200 group-hover:border-brand-500 group-hover:shadow-lg group-hover:shadow-brand-600/15 md:p-7">
-        <motion.span
-          whileHover={reduce ? undefined : { y: -3, scale: 1.08 }}
-          transition={{ type: "spring", stiffness: 350, damping: 15 }}
-          className="flex h-14 w-14 items-center justify-center rounded-full bg-brand-600 text-white shadow-md shadow-brand-600/30"
+      {photo.caption}
+    </p>
+  </div>
+);
+
+/* ─── Preload all photos so a flip never shows a blank page ─── */
+const PhotoPreload = () => (
+  <div aria-hidden="true" className="hidden">
+    {CAMPUS_LIFE_PHOTOS.map((p) => (
+      <img key={`pre-${p.id}`} src={unsplash(p.photoId, 1600, 70)} alt="" />
+    ))}
+  </div>
+);
+
+/* ─── Small floating hint pill (first view only) ─── */
+const HintPill = ({ text }: { text: string }) => (
+  <motion.div
+    role="status"
+    initial={{ opacity: 0, y: 8 }}
+    animate={{ opacity: 1, y: 0 }}
+    exit={{ opacity: 0, y: 8 }}
+    transition={{ duration: 0.3 }}
+    className="pointer-events-none absolute left-1/2 top-3 z-30 -translate-x-1/2 whitespace-nowrap rounded-full bg-brand-900/85 px-4 py-1.5 text-xs font-semibold text-white shadow-lg backdrop-blur-sm"
+  >
+    {text}
+  </motion.div>
+);
+
+/* ─── Arrow controls shared by book & fade fallback ─── */
+const PagerControls = ({
+  page,
+  total,
+  onPrev,
+  onNext,
+  loop = false,
+}: {
+  page: number;
+  total: number;
+  onPrev: () => void;
+  onNext: () => void;
+  loop?: boolean;
+}) => (
+  <div className="mt-5 flex items-center justify-center gap-5">
+    <button
+      type="button"
+      onClick={onPrev}
+      disabled={!loop && page === 0}
+      aria-label="Previous page"
+      className="flex h-11 w-11 items-center justify-center rounded-full border border-line bg-white text-ink shadow-sm transition hover:border-brand-500 hover:text-brand-700 disabled:opacity-30 motion-safe:active:scale-95"
+    >
+      <ChevronLeft className="h-5 w-5" aria-hidden="true" />
+    </button>
+    <span className="min-w-[3rem] text-center text-xs font-semibold text-muted">
+      {page + 1} / {total}
+    </span>
+    <button
+      type="button"
+      onClick={onNext}
+      disabled={!loop && page >= total - 1}
+      aria-label="Next page"
+      className="flex h-11 w-11 items-center justify-center rounded-full border border-line bg-white text-ink shadow-sm transition hover:border-brand-500 hover:text-brand-700 disabled:opacity-30 motion-safe:active:scale-95"
+    >
+      <ChevronRight className="h-5 w-5" aria-hidden="true" />
+    </button>
+  </div>
+);
+
+/* ─── Desktop: realistic book-flip ─── */
+const BookGallery = () => {
+  const bookRef = useRef<{
+    pageFlip?: () => {
+      flipNext: () => void;
+      flipPrev: () => void;
+    };
+  }>(null);
+  const [page, setPage] = useState(0);
+  const [showHint, setShowHint] = useState(true);
+  const total = CAMPUS_LIFE_PHOTOS.length;
+
+  useEffect(() => {
+    const t = window.setTimeout(() => setShowHint(false), 5500);
+    return () => window.clearTimeout(t);
+  }, []);
+
+  const flipNext = () => {
+    bookRef.current?.pageFlip?.()?.flipNext();
+    setShowHint(false);
+  };
+  const flipPrev = () => {
+    bookRef.current?.pageFlip?.()?.flipPrev();
+    setShowHint(false);
+  };
+
+  const onKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
+    if (e.key === "ArrowLeft") {
+      flipPrev();
+      e.preventDefault();
+    } else if (e.key === "ArrowRight") {
+      flipNext();
+      e.preventDefault();
+    }
+  };
+
+  return (
+    <div
+      tabIndex={0}
+      role="group"
+      aria-label="Campus life book — use arrow keys to flip pages"
+      onKeyDown={onKeyDown}
+      className="mx-auto flex w-full max-w-[800px] flex-col items-center outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-4 focus-visible:ring-offset-paper"
+    >
+      <div className="relative w-full">
+        <AnimatePresence>
+          {showHint && <HintPill text="Flip through campus life →" />}
+        </AnimatePresence>
+        <FlipBook
+          ref={bookRef}
+          width={400}
+          height={500}
+          size="stretch"
+          minWidth={320}
+          maxWidth={400}
+          minHeight={400}
+          maxHeight={500}
+          drawShadow={true}
+          flippingTime={700}
+          usePortrait={true}
+          startZIndex={0}
+          autoSize={true}
+          maxShadowOpacity={0.4}
+          showCover={false}
+          mobileScrollSupport={true}
+          clickEventForward={true}
+          useMouseEvents={true}
+          swipeDistance={30}
+          showPageCorners={true}
+          disableFlipByClick={false}
+          startPage={0}
+          className=""
+          style={{}}
+          onFlip={(e: { data: number }) => {
+            setPage(e.data);
+            setShowHint(false);
+          }}
         >
-          <Icon className="h-6 w-6" aria-hidden="true" strokeWidth={2.2} />
-        </motion.span>
-        <div className="min-w-0">
-          <h3 className="font-display text-xl font-bold tracking-tight text-ink">
-            {feature.title}
-          </h3>
-          <p className="mt-1.5 text-sm leading-relaxed text-muted">
-            {feature.body}
-          </p>
-        </div>
+          {CAMPUS_LIFE_PHOTOS.map((p) => (
+            <div key={p.id} className="h-full w-full">
+              <PhotoFace photo={p} compact />
+            </div>
+          ))}
+        </FlipBook>
       </div>
-    </motion.li>
+      <PagerControls
+        page={page}
+        total={total}
+        onPrev={flipPrev}
+        onNext={flipNext}
+      />
+    </div>
   );
 };
 
-const WhatYouCanDo = () => (
-  <section
-    id="after-hero"
-    aria-labelledby="features-heading"
-    className="mx-auto w-full max-w-6xl px-4 py-14 md:px-8 md:py-20"
-  >
-    <FadeIn>
-      <h2
-        id="features-heading"
-        className="max-w-2xl font-display text-3xl font-bold tracking-tight text-ink md:text-5xl"
-      >
-        What you can do
-      </h2>
-    </FadeIn>
+/* ─── Mobile: swipeable card stack (loops) ─── */
+const CardStack = () => {
+  const [index, setIndex] = useState(0);
+  const [showHint, setShowHint] = useState(true);
+  const total = CAMPUS_LIFE_PHOTOS.length;
 
-    <motion.ul
-      initial="hidden"
-      whileInView="visible"
-      viewport={{ once: true, amount: 0.15 }}
-      variants={{
-        hidden: {},
-        visible: { transition: { staggerChildren: 0.08 } },
-      }}
-      className="mt-10 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3"
+  useEffect(() => {
+    const t = window.setTimeout(() => setShowHint(false), 4500);
+    return () => window.clearTimeout(t);
+  }, []);
+
+  const advance = () => {
+    setIndex((i) => (i + 1) % total);
+    setShowHint(false);
+  };
+  const previous = () => {
+    setIndex((i) => (i - 1 + total) % total);
+    setShowHint(false);
+  };
+  const goTo = (i: number) => {
+    setIndex(i);
+    setShowHint(false);
+  };
+
+  const onKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
+    if (e.key === "ArrowLeft") {
+      previous();
+      e.preventDefault();
+    } else if (e.key === "ArrowRight") {
+      advance();
+      e.preventDefault();
+    }
+  };
+
+  return (
+    <div
+      tabIndex={0}
+      role="group"
+      aria-label="Campus life — swipe or use arrow keys"
+      onKeyDown={onKeyDown}
+      className="w-full outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-4 focus-visible:ring-offset-paper"
     >
-      {FEATURES.map((f, i) => (
-        <FeatureCard key={f.title} feature={f} index={i} />
-      ))}
-    </motion.ul>
-  </section>
-);
+      <div className="relative aspect-[16/9] w-full">
+        <AnimatePresence>
+          {showHint && <HintPill text="Swipe to explore" />}
+        </AnimatePresence>
+        {CAMPUS_LIFE_PHOTOS.map((p, i) => {
+          const offset = (i - index + total) % total;
+          const isTop = offset === 0;
+          const visible = offset <= 2;
+          return (
+            <motion.div
+              key={p.id}
+              drag={isTop ? "x" : false}
+              dragConstraints={{ left: 0, right: 0 }}
+              dragElastic={0.7}
+              onDragEnd={(_, info) => {
+                if (info.offset.x < -80) advance();
+                else if (info.offset.x > 80) previous();
+              }}
+              initial={false}
+              animate={{
+                scale: 1 - offset * 0.04,
+                y: offset * 12,
+                opacity: visible ? 1 : 0,
+                zIndex: visible ? total - offset : 0,
+                rotate: isTop ? 0 : offset * 1.4,
+              }}
+              transition={{ type: "spring", stiffness: 260, damping: 28 }}
+              className={`absolute inset-0 overflow-hidden rounded-[24px] bg-paper shadow-xl shadow-brand-900/25 ${
+                isTop ? "cursor-grab active:cursor-grabbing" : ""
+              }`}
+              style={{ touchAction: isTop ? "pan-y" : undefined }}
+            >
+              <PhotoFace photo={p} />
+            </motion.div>
+          );
+        })}
+      </div>
+
+      <div
+        role="tablist"
+        aria-label="Campus life photos"
+        className="mt-6 flex justify-center gap-2"
+      >
+        {CAMPUS_LIFE_PHOTOS.map((p, i) => {
+          const active = i === index;
+          return (
+            <button
+              key={p.id}
+              type="button"
+              role="tab"
+              aria-selected={active}
+              aria-label={`Show photo ${i + 1} of ${total}`}
+              onClick={() => goTo(i)}
+              className={`h-2 rounded-full transition-all duration-300 ${
+                active ? "w-8 bg-brand-700" : "w-2 bg-brand-900/20 hover:bg-brand-900/40"
+              }`}
+            />
+          );
+        })}
+      </div>
+    </div>
+  );
+};
+
+/* ─── Reduced-motion fallback: plain crossfade ─── */
+const FadeGallery = () => {
+  const [index, setIndex] = useState(0);
+  const total = CAMPUS_LIFE_PHOTOS.length;
+
+  const next = () => setIndex((i) => (i + 1) % total);
+  const prev = () => setIndex((i) => (i - 1 + total) % total);
+
+  const onKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
+    if (e.key === "ArrowLeft") {
+      prev();
+      e.preventDefault();
+    } else if (e.key === "ArrowRight") {
+      next();
+      e.preventDefault();
+    }
+  };
+
+  const current = CAMPUS_LIFE_PHOTOS[index];
+  return (
+    <div
+      tabIndex={0}
+      role="group"
+      aria-label="Campus life gallery"
+      onKeyDown={onKeyDown}
+      className="w-full outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
+    >
+      <div className="relative aspect-[16/9] w-full overflow-hidden rounded-[24px] bg-paper shadow-xl shadow-brand-900/20">
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={current.id}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.25 }}
+            className="absolute inset-0"
+          >
+            <PhotoFace photo={current} />
+          </motion.div>
+        </AnimatePresence>
+      </div>
+      <PagerControls
+        page={index}
+        total={total}
+        loop
+        onPrev={prev}
+        onNext={next}
+      />
+    </div>
+  );
+};
+
+const CampusLife = () => {
+  const reduce = useReducedMotion();
+  const isDesktop = useIsDesktop();
+
+  return (
+    <section
+      aria-labelledby="life-heading"
+      className="mx-auto w-full max-w-6xl px-4 py-14 md:px-8 md:py-20"
+    >
+      <FadeIn>
+        <p className="text-[11px] font-semibold uppercase tracking-widest text-accent-700">
+          On campus
+        </p>
+        <h2
+          id="life-heading"
+          className="mt-1.5 max-w-2xl font-display text-3xl font-bold tracking-tight text-ink md:text-5xl"
+        >
+          This is student life.
+        </h2>
+      </FadeIn>
+
+      <PhotoPreload />
+      <div className="mt-10 md:mt-14">
+        {reduce ? <FadeGallery /> : isDesktop ? <BookGallery /> : <CardStack />}
+      </div>
+    </section>
+  );
+};
 
 /* ─────────────────── How it works ─────────────────── */
 
@@ -351,7 +666,7 @@ const STEPS = [
   {
     n: "01",
     title: "Create your account",
-    body: "Name, email, a password — nothing else to install.",
+    body: "Name, email, a password nothing else to install.",
   },
   {
     n: "02",
@@ -361,21 +676,22 @@ const STEPS = [
   {
     n: "03",
     title: "Get your personalised home",
-    body: "Announcements, events, hostels and services that match you — nothing you don't need.",
+    body: "Announcements, events, hostels and services that match you  nothing you don't need.",
   },
 ];
 
 const HowItWorks = () => (
   <section
+    id="after-hero"
     aria-labelledby="steps-heading"
-    className="mx-auto w-full max-w-6xl px-4 py-6 md:px-8 md:py-16"
+    className="mx-auto w-full max-w-6xl px-4 py-14 md:px-8 md:py-20"
   >
     <div className="overflow-hidden rounded-[28px] bg-brand-50 px-5 py-7 md:px-10 md:py-12 lg:px-14 lg:py-14">
       <div className="grid grid-cols-1 items-center gap-6 lg:grid-cols-5 lg:gap-14">
         {/* Left — eyebrow + headline */}
         <div className="lg:col-span-2">
           <FadeIn>
-            <p className="text-[11px] font-semibold uppercase tracking-widest text-accent-600">
+            <p className="text-[11px] font-semibold uppercase tracking-widest text-accent-700">
               How it works
             </p>
             <h2
@@ -433,7 +749,7 @@ const FinalCTA = ({ onStart }: { onStart: () => void }) => (
           <button
             type="button"
             onClick={onStart}
-            className="inline-flex items-center gap-2 rounded-full bg-accent-400 px-7 py-3 text-sm font-semibold text-ink shadow-xl shadow-accent-500/30 transition hover:bg-accent-300 motion-safe:hover:-translate-y-0.5 motion-safe:active:scale-[0.97]"
+            className="inline-flex items-center gap-2 rounded-full bg-brand-600 px-7 py-3 text-sm font-semibold text-white shadow-xl shadow-brand-900/40 transition hover:bg-accent-500 hover:text-brand-900 motion-safe:hover:-translate-y-0.5 motion-safe:active:scale-[0.97]"
           >
             Get started
             <ArrowRight className="h-4 w-4" aria-hidden="true" />
@@ -457,10 +773,10 @@ const SiteFooter = () => (
         Ultimate Student
       </Link>
       <nav className="flex flex-wrap gap-x-6 gap-y-2 text-muted">
-        <a href="#about" className="hover:text-brand-700">About</a>
-        <a href="#contact" className="hover:text-brand-700">Contact</a>
-        <a href="#privacy" className="hover:text-brand-700">Privacy</a>
-        <a href="#terms" className="hover:text-brand-700">Terms</a>
+        <a href="#about" className="hover:text-brand-700 hover:underline">About</a>
+        <a href="#contact" className="hover:text-brand-700 hover:underline">Contact</a>
+        <a href="#privacy" className="hover:text-brand-700 hover:underline">Privacy</a>
+        <a href="#terms" className="hover:text-brand-700 hover:underline">Terms</a>
       </nav>
       <p className="text-xs text-muted">© 2026 IID Global</p>
     </div>
@@ -523,7 +839,7 @@ export const WelcomePage = () => {
                   <button
                     type="button"
                     onClick={goStart}
-                    className="inline-flex items-center gap-2 rounded-full bg-brand-700 px-7 py-3 text-sm font-semibold text-white shadow-xl shadow-ink/40 transition hover:bg-brand-800 motion-safe:hover:-translate-y-0.5 motion-safe:active:scale-[0.97]"
+                    className="inline-flex items-center gap-2 rounded-full bg-brand-700 px-7 py-3 text-sm font-semibold text-white shadow-xl shadow-brand-900/40 transition hover:bg-accent-500 hover:text-brand-900 motion-safe:hover:-translate-y-0.5 motion-safe:active:scale-[0.97]"
                   >
                     Get started
                     <ArrowRight className="h-4 w-4" aria-hidden="true" />
@@ -543,9 +859,8 @@ export const WelcomePage = () => {
         <ScrollDown />
       </section>
 
-      {/* Everything below is untouched */}
-      <WhatYouCanDo />
       <HowItWorks />
+      <CampusLife />
       <FinalCTA onStart={goStart} />
       <SiteFooter />
     </div>

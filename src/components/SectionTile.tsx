@@ -36,7 +36,7 @@ export const SectionTile = ({ meta }: Props) => {
         {/* Dark overlay for text contrast */}
         <div
           aria-hidden="true"
-          className="absolute inset-0 bg-gradient-to-t from-ink/80 via-ink/30 to-transparent"
+          className="absolute inset-0 bg-gradient-to-t from-brand-900/80 via-brand-900/30 to-transparent"
         />
         <div className="relative flex h-full flex-col justify-end p-3 text-white">
           <span className="flex items-center gap-1.5">

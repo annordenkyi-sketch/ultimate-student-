@@ -20,7 +20,7 @@ export const unsplash = (photoId: string, w = 800, q = 70): string =>
   `${UNSPLASH_BASE}/${photoId}?auto=format&fit=crop&w=${w}&q=${q}`;
 
 export const unsplashSrcSet = (photoId: string): string =>
-  [400, 600, 800, 1200]
+  [400, 600, 800, 1200, 1600, 2000]
     .map((w) => `${unsplash(photoId, w)} ${w}w`)
     .join(", ");
 

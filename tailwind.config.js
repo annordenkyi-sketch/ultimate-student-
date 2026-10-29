@@ -4,37 +4,37 @@ export default {
   theme: {
     extend: {
       colors: {
-        // Primary: deep campus green. Used sparingly on CTAs + active states.
+        // Primary: deep royal blue. Used on CTAs, links, headings.
         brand: {
-          50: "#ECF4F1",
-          100: "#D1E6DF",
-          200: "#A6CFC2",
-          300: "#6EAE9A",
-          400: "#398D77",
-          500: "#1E7560",
-          600: "#0F5C4A",
-          700: "#0C4A3C",
-          800: "#0A3B30",
-          900: "#082F27",
+          50: "#EEF2FA",
+          100: "#D7E0F1",
+          200: "#AEC0E3",
+          300: "#829DD1",
+          400: "#5679BE",
+          500: "#325CAE",
+          600: "#1A3A8F", // primary royal blue (headings, buttons, links)
+          700: "#152E72",
+          800: "#0F2256",
+          900: "#0A163A",
         },
-        // Accent: warm amber. Highlights, badges, small details.
+        // Accent: gold. Section labels, highlights, badges, button hover.
         accent: {
-          50: "#FEF7E6",
-          100: "#FDECBF",
-          200: "#FBD98A",
-          300: "#F7C352",
-          400: "#F2A93B",
-          500: "#D98F27",
-          600: "#B47219",
-          700: "#8E5712",
-          800: "#6B410D",
-          900: "#4A2C09",
+          50: "#FCF7E6",
+          100: "#F8EDC2",
+          200: "#F0D97E",
+          300: "#E0B84C", // lighter gold — for dark backgrounds + photo overlays
+          400: "#D4AC37",
+          500: "#C9A227", // primary gold — for small accent text on light bg
+          600: "#A68219",
+          700: "#7A6013",
+          800: "#4F3E0C",
+          900: "#2A2107",
         },
         // Semantic ink + body + surface tokens.
-        ink: "#14213D",      // headings
-        muted: "#4A5568",    // body
-        paper: "#FAF8F3",    // page background
-        line: "#E7E3DA",     // card border
+        ink: "#1A3A8F",      // headings — deep royal blue
+        muted: "#1E2A4A",    // body text — dark navy, high contrast on white
+        paper: "#F7F8FB",    // page background — cool off-white
+        line: "#DDE3EC",     // card border — soft blue-gray
         success: "#1E9E6A",
         danger: "#D64545",
       },
@@ -63,8 +63,8 @@ export default {
       },
       boxShadow: {
         card: "0 1px 2px rgb(0 0 0 / 0.04), 0 1px 3px rgb(0 0 0 / 0.06)",
-        lift: "0 8px 24px -8px rgba(15, 92, 74, 0.18)",
-        hero: "0 20px 40px -16px rgba(20, 33, 61, 0.35)",
+        lift: "0 8px 24px -8px rgba(26, 58, 143, 0.22)",
+        hero: "0 20px 40px -16px rgba(26, 58, 143, 0.35)",
       },
       transitionTimingFunction: {
         "out-smooth": "cubic-bezier(0.22, 1, 0.36, 1)",

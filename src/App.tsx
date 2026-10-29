@@ -30,9 +30,9 @@ export const App = () => (
     <Route path="/login" element={<LoginPage />} />
     <Route path="/login/forgot" element={<ForgotPasswordPage />} />
     <Route path="/legal/:kind" element={<LegalPage />} />
+    <Route path="/onboarding/account" element={<AccountStep />} />
     <Route path="/onboarding" element={<OnboardingLayout />}>
-      <Route index element={<Navigate to="account" replace />} />
-      <Route path="account" element={<AccountStep />} />
+      <Route index element={<Navigate to="type" replace />} />
       <Route path="type" element={<TypeStep />} />
       <Route path="living" element={<LivingStep />} />
       <Route path="done" element={<DoneStep />} />

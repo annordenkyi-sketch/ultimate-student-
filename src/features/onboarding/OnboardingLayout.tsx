@@ -30,10 +30,9 @@ export const useOnboardingDraft = () => {
 };
 
 const PATH_INDEX: Record<string, number> = {
-  "/onboarding/account": 0,
-  "/onboarding/type": 1,
-  "/onboarding/living": 2,
-  "/onboarding/done": 3,
+  "/onboarding/type": 0,
+  "/onboarding/living": 1,
+  "/onboarding/done": 2,
 };
 
 export const OnboardingLayout = () => {

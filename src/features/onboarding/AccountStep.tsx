@@ -2,6 +2,7 @@ import { useState, type FormEvent } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { AtSign, Eye, EyeOff, Lock, User } from "lucide-react";
 import { ActionButton } from "@/components/ActionButton";
+import { Stagger, StaggerChild } from "@/components/Motion";
 import { AuthLayout } from "@/features/auth/AuthLayout";
 import { AuthSuccess } from "@/features/auth/AuthSuccess";
 import { FEATURE_IMAGES } from "@/lib/images";
@@ -114,33 +115,45 @@ export const AccountStep = () => {
     );
   }
 
+  const formComplete =
+    name.trim().length >= 2 &&
+    isValidIdentifier(identifier) &&
+    password.length >= 8 &&
+    termsAccepted;
+
   return (
     <AuthLayout
       active="signup"
       title="Start your journey."
       subtitle="One account unlocks classes, hostels, events and more."
       photo={FEATURE_IMAGES.onboardingAccount}
+      hideSwitchLink={formComplete}
     >
       <form onSubmit={onSubmit} noValidate aria-labelledby="signup-heading">
-        <h1
-          id="signup-heading"
-          className="font-display text-2xl font-bold tracking-tight text-ink md:text-3xl"
-        >
-          Create your account.
-        </h1>
+        <Stagger staggerChildren={0.06} delayChildren={0.28}>
+          <StaggerChild>
+            <h1
+              id="signup-heading"
+              className="font-display text-2xl font-bold tracking-tight text-ink md:text-3xl"
+            >
+              Create your account.
+            </h1>
+          </StaggerChild>
 
-        {errors.form && (
-          <div
-            role="alert"
-            className="mt-4 rounded-xl border border-rose-200 bg-rose-50 px-3 py-2 text-sm text-rose-700"
-          >
-            {errors.form}
-          </div>
-        )}
+          {errors.form && (
+            <StaggerChild className="mt-4">
+              <div
+                role="alert"
+                className="rounded-xl border border-rose-200 bg-rose-50 px-3 py-2 text-sm text-rose-700"
+              >
+                {errors.form}
+              </div>
+            </StaggerChild>
+          )}
 
-        <div className="mt-6 space-y-4">
-          {/* Full name */}
-          <div>
+          <StaggerChild className="mt-6">
+            {/* Full name */}
+            <div>
             <label htmlFor="name" className="text-sm font-semibold text-ink">
               Full name
             </label>
@@ -173,10 +186,12 @@ export const AccountStep = () => {
                 {errors.name}
               </p>
             )}
-          </div>
+            </div>
+          </StaggerChild>
 
-          {/* Identifier */}
-          <div>
+          <StaggerChild className="mt-4">
+            {/* Identifier */}
+            <div>
             <label
               htmlFor="identifier"
               className="text-sm font-semibold text-ink"
@@ -214,10 +229,12 @@ export const AccountStep = () => {
                 {errors.identifier}
               </p>
             )}
-          </div>
+            </div>
+          </StaggerChild>
 
-          {/* Password */}
-          <div>
+          <StaggerChild className="mt-4">
+            {/* Password */}
+            <div>
             <label htmlFor="password" className="text-sm font-semibold text-ink">
               Password
             </label>
@@ -264,12 +281,13 @@ export const AccountStep = () => {
                 {errors.password}
               </p>
             )}
-          </div>
-        </div>
+            </div>
+          </StaggerChild>
 
-        {/* Terms */}
-        <div className="mt-4">
-          <label className="flex cursor-pointer items-start gap-2.5 text-sm text-ink">
+          <StaggerChild className="mt-4">
+            {/* Terms */}
+            <div>
+            <label className="flex cursor-pointer items-start gap-2.5 text-sm text-ink">
             <input
               type="checkbox"
               checked={termsAccepted}
@@ -301,19 +319,23 @@ export const AccountStep = () => {
               .
             </span>
           </label>
-          {errors.terms && (
-            <p className="ml-6 mt-1 text-xs text-rose-600">{errors.terms}</p>
-          )}
-        </div>
+            {errors.terms && (
+              <p className="ml-6 mt-1 text-xs text-rose-600">{errors.terms}</p>
+            )}
+            </div>
+          </StaggerChild>
 
-        <ActionButton
-          type="submit"
-          fullWidth
-          loading={loading}
-          className="mt-6 tracking-wider"
-        >
-          {loading ? "Creating account" : "SIGN UP"}
-        </ActionButton>
+          <StaggerChild className="mt-6">
+            <ActionButton
+              type="submit"
+              fullWidth
+              loading={loading}
+              className="tracking-wider"
+            >
+              {loading ? "Creating account" : "SIGN UP"}
+            </ActionButton>
+          </StaggerChild>
+        </Stagger>
       </form>
     </AuthLayout>
   );

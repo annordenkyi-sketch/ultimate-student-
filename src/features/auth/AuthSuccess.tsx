@@ -35,6 +35,7 @@ export const AuthSuccess = ({ variant, firstName, email, photo }: Props) => {
       title={paneTitle}
       subtitle={paneSubtitle}
       photo={photo}
+      hideSwitchLink
     >
       <motion.div
         role="status"

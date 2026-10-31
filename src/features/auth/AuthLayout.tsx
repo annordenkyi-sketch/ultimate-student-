@@ -27,7 +27,11 @@ interface Props {
   subtitle?: string;
   photo: UnsplashImage;
   children: ReactNode;
+  /** Hide the "Don't have an account? Sign Up" (or inverse) link in the form card. */
+  hideSwitchLink?: boolean;
 }
+
+const EASE = [0.22, 1, 0.36, 1];
 
 export const AuthLayout = ({
   active,
@@ -35,8 +39,10 @@ export const AuthLayout = ({
   subtitle,
   photo,
   children,
+  hideSwitchLink = false,
 }: Props) => {
   const reduce = useReducedMotion();
+  const slideY = reduce ? 0 : 14;
   const other = active === "signin" ? "signup" : "signin";
   const otherMeta = TAB_META[other];
 
@@ -53,27 +59,24 @@ export const AuthLayout = ({
 
       <div className="mx-auto flex min-h-screen max-w-6xl items-stretch justify-center px-4 pb-10 pt-6 md:px-6 lg:items-center lg:gap-5 lg:px-8 lg:py-12">
         {/* Left rail (desktop only) */}
-        <DesktopRail active={active} />
+        <DesktopRail active={active} slideY={slideY} />
 
         {/* Center illustration pane (desktop only) */}
-        <section className="relative hidden overflow-hidden rounded-3xl bg-brand-700 shadow-xl shadow-brand-900/15 lg:flex lg:w-[360px] lg:flex-col lg:justify-end lg:self-stretch">
+        <motion.section
+          initial={{ opacity: 0, y: slideY }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.42, delay: 0.1, ease: EASE }}
+          className="relative hidden overflow-hidden rounded-3xl bg-brand-700 shadow-xl shadow-brand-900/15 lg:flex lg:w-[360px] lg:flex-col lg:justify-end lg:self-stretch"
+        >
           <motion.img
             src={unsplash(photo.photoId, 1200, 65)}
             srcSet={unsplashSrcSet(photo.photoId)}
             sizes="360px"
             alt=""
             className="absolute inset-0 h-full w-full object-cover will-change-transform"
-            initial={{ opacity: 0, scale: 1 }}
-            animate={
-              reduce
-                ? { opacity: 1 }
-                : { opacity: 1, scale: [1, 1.06, 1], x: ["0%", "-1%", "0%"] }
-            }
-            transition={{
-              opacity: { duration: 1, ease: "easeOut" },
-              scale: { duration: 20, ease: "easeInOut", repeat: Infinity },
-              x: { duration: 24, ease: "easeInOut", repeat: Infinity },
-            }}
+            initial={{ opacity: 0, scale: reduce ? 1 : 1.03 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.9, ease: "easeOut" }}
           />
           <div
             aria-hidden="true"
@@ -87,27 +90,34 @@ export const AuthLayout = ({
               <p className="max-w-xs text-sm text-brand-100">{subtitle}</p>
             )}
           </div>
-        </section>
+        </motion.section>
 
         {/* Form card */}
-        <section className="relative w-full max-w-md rounded-3xl bg-white shadow-xl shadow-brand-900/10 lg:w-[400px] lg:self-stretch">
+        <motion.section
+          initial={{ opacity: 0, y: slideY }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.42, delay: 0.2, ease: EASE }}
+          className="relative w-full max-w-md rounded-3xl bg-white shadow-xl shadow-brand-900/10 lg:w-[400px] lg:self-stretch"
+        >
           <div className="flex h-full flex-col px-6 pb-8 pt-8 md:px-10 md:pt-10 md:pb-10">
-            <div className="mb-6 flex items-center justify-end text-sm">
-              <span className="text-muted">
-                {active === "signin"
-                  ? "Don't have an account?"
-                  : "Already a member?"}
-              </span>
-              <Link
-                to={otherMeta.to}
-                className="ml-1.5 font-semibold text-brand-700 hover:text-brand-800 hover:underline"
-              >
-                {otherMeta.label}
-              </Link>
-            </div>
+            {!hideSwitchLink && (
+              <div className="mb-6 flex items-center justify-end text-sm">
+                <span className="text-muted">
+                  {active === "signin"
+                    ? "Don't have an account?"
+                    : "Already a member?"}
+                </span>
+                <Link
+                  to={otherMeta.to}
+                  className="ml-1.5 font-semibold text-brand-700 hover:text-brand-800 hover:underline"
+                >
+                  {otherMeta.label}
+                </Link>
+              </div>
+            )}
             {children}
           </div>
-        </section>
+        </motion.section>
       </div>
     </div>
   );
@@ -115,12 +125,17 @@ export const AuthLayout = ({
 
 /* ───────── Desktop left rail ───────── */
 
-const DesktopRail = ({ active }: { active: Tab }) => (
-  <aside className="hidden flex-col items-center self-stretch rounded-3xl bg-white px-3 py-8 shadow-xl shadow-brand-900/10 lg:flex lg:w-24">
+const DesktopRail = ({ active, slideY }: { active: Tab; slideY: number }) => (
+  <motion.aside
+    initial={{ opacity: 0, y: slideY }}
+    animate={{ opacity: 1, y: 0 }}
+    transition={{ duration: 0.42, delay: 0, ease: EASE }}
+    className="hidden flex-col items-center self-stretch rounded-3xl bg-white px-3 py-8 shadow-xl shadow-brand-900/10 lg:flex lg:w-24"
+  >
     <Link
       to="/welcome"
       aria-label="Ultimate Student home"
-      className="flex h-11 w-11 items-center justify-center rounded-xl bg-brand-600 text-white transition hover:bg-brand-500"
+      className="flex h-11 w-11 items-center justify-center rounded-xl bg-brand-600 text-white transition duration-200 hover:bg-brand-500 motion-safe:hover:-translate-y-0.5"
     >
       <GraduationCap className="h-5 w-5" aria-hidden="true" />
     </Link>
@@ -132,7 +147,7 @@ const DesktopRail = ({ active }: { active: Tab }) => (
         <DesktopTab key={tab} tab={tab} active={active} />
       ))}
     </nav>
-  </aside>
+  </motion.aside>
 );
 
 const DesktopTab = ({ tab, active }: { tab: Tab; active: Tab }) => {
@@ -145,10 +160,10 @@ const DesktopTab = ({ tab, active }: { tab: Tab; active: Tab }) => {
       type="button"
       onClick={() => navigate(meta.to)}
       aria-current={isActive ? "page" : undefined}
-      className={`group relative flex flex-col items-center gap-1 rounded-xl px-2 py-3 text-[11px] font-semibold transition ${
+      className={`group relative flex flex-col items-center gap-1 rounded-xl px-2 py-3 text-[11px] font-semibold transition duration-200 ${
         isActive
           ? "text-brand-700"
-          : "text-muted hover:bg-brand-50 hover:text-brand-700"
+          : "text-muted hover:bg-brand-50 hover:text-brand-700 motion-safe:hover:-translate-y-0.5"
       }`}
     >
       {isActive && (
@@ -162,6 +177,8 @@ const DesktopTab = ({ tab, active }: { tab: Tab; active: Tab }) => {
     </button>
   );
 };
+
+/* ───────── Rail aside close ───────── */
 
 /* ───────── Mobile top bar ───────── */
 

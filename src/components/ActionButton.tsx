@@ -10,7 +10,7 @@ interface Props extends ButtonHTMLAttributes<HTMLButtonElement> {
 }
 
 const base =
-  "inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold transition duration-150 motion-safe:active:scale-[0.97] disabled:cursor-not-allowed disabled:opacity-60";
+  "inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold transition duration-200 ease-out motion-safe:hover:-translate-y-0.5 motion-safe:active:scale-[0.97] disabled:cursor-not-allowed disabled:opacity-60 disabled:motion-safe:hover:translate-y-0";
 
 const variants: Record<Variant, string> = {
   primary: "bg-brand-600 text-white hover:bg-accent-500 hover:text-brand-900",

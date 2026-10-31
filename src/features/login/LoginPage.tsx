@@ -2,6 +2,7 @@ import { useState, type FormEvent } from "react";
 import { Link } from "react-router-dom";
 import { AtSign, Eye, EyeOff, Lock } from "lucide-react";
 import { ActionButton } from "@/components/ActionButton";
+import { Stagger, StaggerChild } from "@/components/Motion";
 import { AuthLayout } from "@/features/auth/AuthLayout";
 import { AuthSuccess } from "@/features/auth/AuthSuccess";
 import { FEATURE_IMAGES } from "@/lib/images";
@@ -81,33 +82,42 @@ export const LoginPage = () => {
     );
   }
 
+  const formComplete =
+    identifier.trim().length > 0 && password.trim().length >= 4;
+
   return (
     <AuthLayout
       active="signin"
       title="Welcome back."
-      subtitle="Pick up where you left off — classes, hostels, events and more."
+      subtitle="Pick up where you left off classes, hostels, events and more."
       photo={FEATURE_IMAGES.loginHero}
+      hideSwitchLink={formComplete}
     >
       <form onSubmit={onSubmit} noValidate aria-labelledby="login-heading">
-        <h1
-          id="login-heading"
-          className="font-display text-2xl font-bold tracking-tight text-ink md:text-3xl"
-        >
-          Sign in to your account.
-        </h1>
+        <Stagger staggerChildren={0.07} delayChildren={0.28}>
+          <StaggerChild>
+            <h1
+              id="login-heading"
+              className="font-display text-2xl font-bold tracking-tight text-ink md:text-3xl"
+            >
+              Sign in to your account.
+            </h1>
+          </StaggerChild>
 
-        {errors.form && (
-          <div
-            role="alert"
-            className="mt-4 rounded-xl border border-rose-200 bg-rose-50 px-3 py-2 text-sm text-rose-700"
-          >
-            {errors.form}
-          </div>
-        )}
+          {errors.form && (
+            <StaggerChild className="mt-4">
+              <div
+                role="alert"
+                className="rounded-xl border border-rose-200 bg-rose-50 px-3 py-2 text-sm text-rose-700"
+              >
+                {errors.form}
+              </div>
+            </StaggerChild>
+          )}
 
-        <div className="mt-6 space-y-4">
-          {/* Identifier */}
-          <div>
+          <StaggerChild className="mt-6">
+            {/* Identifier */}
+            <div>
             <label
               htmlFor="identifier"
               className="text-sm font-semibold text-ink"
@@ -144,10 +154,12 @@ export const LoginPage = () => {
                 {errors.identifier}
               </p>
             )}
-          </div>
+            </div>
+          </StaggerChild>
 
-          {/* Password */}
-          <div>
+          <StaggerChild className="mt-4">
+            {/* Password */}
+            <div>
             <label htmlFor="password" className="text-sm font-semibold text-ink">
               Password
             </label>
@@ -194,46 +206,53 @@ export const LoginPage = () => {
                 {errors.password}
               </p>
             )}
-          </div>
-        </div>
+            </div>
+          </StaggerChild>
 
-        <div className="mt-4 flex items-center justify-between">
-          <label className="inline-flex cursor-pointer items-center gap-2 text-sm text-ink">
-            <input
-              type="checkbox"
-              checked={remember}
-              onChange={(e) => setRemember(e.target.checked)}
-              className="h-4 w-4 rounded border-line text-brand-600 focus:ring-brand-500"
-            />
-            Remember me
-          </label>
-          <Link
-            to="/login/forgot"
-            className="text-sm font-semibold text-brand-700 hover:text-brand-800 hover:underline"
-          >
-            Forgot password?
-          </Link>
-        </div>
+          <StaggerChild className="mt-4">
+            <div className="flex items-center justify-between">
+              <label className="inline-flex cursor-pointer items-center gap-2 text-sm text-ink">
+                <input
+                  type="checkbox"
+                  checked={remember}
+                  onChange={(e) => setRemember(e.target.checked)}
+                  className="h-4 w-4 rounded border-line text-brand-600 focus:ring-brand-500"
+                />
+                Remember me
+              </label>
+              <Link
+                to="/login/forgot"
+                className="text-sm font-semibold text-brand-700 hover:text-brand-800 hover:underline"
+              >
+                Forgot password?
+              </Link>
+            </div>
+          </StaggerChild>
 
-        <ActionButton
-          type="submit"
-          fullWidth
-          loading={loading}
-          className="mt-6 tracking-wider"
-        >
-          {loading ? "Signing in" : "SIGN IN"}
-        </ActionButton>
+          <StaggerChild className="mt-6">
+            <ActionButton
+              type="submit"
+              fullWidth
+              loading={loading}
+              className="tracking-wider"
+            >
+              {loading ? "Signing in" : "SIGN IN"}
+            </ActionButton>
+          </StaggerChild>
 
-        <p className="mt-5 text-center text-xs text-muted">
-          By clicking the Sign In button, you agree to the{" "}
-          <Link
-            to="/legal/privacy"
-            className="font-semibold text-brand-700 hover:text-brand-800 hover:underline"
-          >
-            Privacy Policy
-          </Link>
-          .
-        </p>
+          <StaggerChild className="mt-5">
+            <p className="text-center text-xs text-muted">
+              By clicking the Sign In button, you agree to the{" "}
+              <Link
+                to="/legal/privacy"
+                className="font-semibold text-brand-700 hover:text-brand-800 hover:underline"
+              >
+                Privacy Policy
+              </Link>
+              .
+            </p>
+          </StaggerChild>
+        </Stagger>
       </form>
     </AuthLayout>
   );

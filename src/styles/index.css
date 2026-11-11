@@ -17,6 +17,11 @@ body {
   @apply bg-paper text-muted antialiased font-sans;
 }
 
+/* Landing page override — body matches the oxford-paper cream used on /welcome */
+body:has([data-landing="oxford"]) {
+  @apply bg-oxford-paper text-oxford-ink;
+}
+
 h1,
 h2,
 h3,

@@ -1,4 +1,4 @@
-import { Bookmark, Grid3x3, Home, Search, User } from "lucide-react";
+﻿import { Bookmark, Grid3x3, Home, Search, User } from "lucide-react";
 import { NavLink } from "react-router-dom";
 
 interface TabDef {

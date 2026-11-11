@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+﻿import { useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { AppHeader } from "@/components/AppHeader";
 import { ListItem } from "@/components/ListItem";
@@ -60,7 +60,7 @@ export const SavedPage = () => {
 
   return (
     <>
-      <AppHeader title="Saved" showSearch={false} />
+      <AppHeader title="Saved" showSearch={false} showBack />
       <div
         role="tablist"
         aria-label="Saved views"

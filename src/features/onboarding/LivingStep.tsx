@@ -1,4 +1,4 @@
-import { useState } from "react";
+﻿import { useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import {
   ArrowLeft,
@@ -22,7 +22,7 @@ import type { LivingSituation } from "@/data/types";
 import { useOnboardingDraft } from "./OnboardingLayout";
 import { INTERESTS, MIN_INTERESTS, type InterestOption } from "./interests";
 
-/* ───────────────────────────── Data ───────────────────────────── */
+/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ Data â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 
 const ON_CAMPUS_HALLS = [
   "Legon Hall",
@@ -53,7 +53,7 @@ const LIVING_TILES: LivingTile[] = [
   },
 ];
 
-/* ──────────────────────── Floating background ──────────────────────── */
+/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ Floating background â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 
 interface FloatIcon {
   icon: LucideIcon;
@@ -143,7 +143,7 @@ const FloatingBackdrop = ({ reduce }: { reduce: boolean | null }) => (
   </div>
 );
 
-/* ───────────────────────────── Interest tiles ───────────────────────────── */
+/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ Interest tiles â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 
 interface InterestsGridProps {
   selectedLabels: string[];
@@ -192,7 +192,7 @@ const InterestsGrid = ({
       {selectedCount} selected
       {!canContinueB && (
         <>
-          {" · "}
+          {" Â· "}
           <span className="text-muted">
             pick {MIN_INTERESTS - selectedCount} more
           </span>
@@ -302,7 +302,7 @@ const InterestTile = ({
   );
 };
 
-/* ───────────────────────────── Component ───────────────────────────── */
+/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ Component â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 
 export const LivingStep = () => {
   const { draft, setDraft } = useOnboardingDraft();
@@ -382,7 +382,7 @@ export const LivingStep = () => {
     <div className="relative min-h-[calc(100vh-120px)] bg-paper">
       <FloatingBackdrop reduce={reduce} />
 
-      {/* Column — narrow for Part A, full-width for Part B */}
+      {/* Column â€” narrow for Part A, full-width for Part B */}
       <div
         className={`relative mx-auto w-full px-5 pb-32 pt-8 md:px-10 md:pt-14 ${
           part === "A" ? "max-w-[720px]" : "max-w-7xl"
@@ -605,7 +605,7 @@ export const LivingStep = () => {
 
       </div>
 
-      {/* Sticky footer — always visible on both breakpoints */}
+      {/* Sticky footer â€” always visible on both breakpoints */}
       <div
         className="fixed inset-x-0 bottom-0 z-20 border-t border-line bg-white shadow-[0_-6px_20px_-10px_rgba(15,23,42,0.15)]"
         style={{

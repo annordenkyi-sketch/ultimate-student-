@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+﻿import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import {
   AlarmClock,
@@ -15,8 +15,9 @@ import {
 } from "lucide-react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { Highlight } from "@/lib/highlight";
+import { MobileBackButton } from "@/components/MobileBackButton";
 
-/* ───────────────────────────── Mock data ───────────────────────────── */
+/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ Mock data â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 
 const TODAY = new Date();
 
@@ -36,10 +37,10 @@ const CAL_EVENTS: CalEvent[] = [
   { id: "e4", dateIso: "2026-11-14", title: "Course registration closes", type: "deadline" },
   { id: "e5", dateIso: "2026-11-24", title: "Reading week", type: "calendar" },
   { id: "e6", dateIso: "2026-11-30", title: "Tuition instalment 2 due", type: "deadline" },
-  { id: "e7", dateIso: "2026-12-05", title: "Exam · CPEN 312 Software Engineering", type: "exam" },
-  { id: "e8", dateIso: "2026-12-07", title: "Exam · CPEN 403 Database Systems", type: "exam" },
-  { id: "e9", dateIso: "2026-12-10", title: "Exam · MATH 300 Discrete Mathematics", type: "exam" },
-  { id: "e10", dateIso: "2026-12-14", title: "Exam · ENGL 250 Academic Writing", type: "exam" },
+  { id: "e7", dateIso: "2026-12-05", title: "Exam Â· CPEN 312 Software Engineering", type: "exam" },
+  { id: "e8", dateIso: "2026-12-07", title: "Exam Â· CPEN 403 Database Systems", type: "exam" },
+  { id: "e9", dateIso: "2026-12-10", title: "Exam Â· MATH 300 Discrete Mathematics", type: "exam" },
+  { id: "e10", dateIso: "2026-12-14", title: "Exam Â· ENGL 250 Academic Writing", type: "exam" },
   { id: "e11", dateIso: "2026-12-20", title: "Semester ends", type: "calendar" },
 ];
 
@@ -57,28 +58,28 @@ const COURSES: Course[] = [
     name: "Software Engineering",
     lecturer: "Dr. Ama Boateng",
     venue: "Science Block R401",
-    schedule: "Tue & Thu · 10:00",
+    schedule: "Tue & Thu Â· 10:00",
   },
   {
     code: "CPEN 403",
     name: "Database Systems",
     lecturer: "Prof. Kofi Mensah",
     venue: "ICT Lab 2",
-    schedule: "Mon & Wed · 14:00",
+    schedule: "Mon & Wed Â· 14:00",
   },
   {
     code: "MATH 300",
     name: "Discrete Mathematics",
     lecturer: "Prof. Yaa Addo",
     venue: "Math Block R210",
-    schedule: "Mon · 11:00",
+    schedule: "Mon Â· 11:00",
   },
   {
     code: "ENGL 250",
     name: "Academic Writing",
     lecturer: "Dr. Nana Owusu",
     venue: "Humanities Hall",
-    schedule: "Fri · 09:00",
+    schedule: "Fri Â· 09:00",
   },
 ];
 
@@ -90,10 +91,10 @@ interface Exam {
 }
 
 const EXAMS: Exam[] = [
-  { course: "CPEN 312 · Software Engineering", dateIso: "2026-12-05T09:00", duration: "3 hours", venue: "Science Block Hall" },
-  { course: "CPEN 403 · Database Systems", dateIso: "2026-12-07T14:00", duration: "2 hours", venue: "ICT Lab 2" },
-  { course: "MATH 300 · Discrete Mathematics", dateIso: "2026-12-10T09:00", duration: "2 hours", venue: "Main Hall" },
-  { course: "ENGL 250 · Academic Writing", dateIso: "2026-12-14T14:00", duration: "2 hours", venue: "Great Hall" },
+  { course: "CPEN 312 Â· Software Engineering", dateIso: "2026-12-05T09:00", duration: "3 hours", venue: "Science Block Hall" },
+  { course: "CPEN 403 Â· Database Systems", dateIso: "2026-12-07T14:00", duration: "2 hours", venue: "ICT Lab 2" },
+  { course: "MATH 300 Â· Discrete Mathematics", dateIso: "2026-12-10T09:00", duration: "2 hours", venue: "Main Hall" },
+  { course: "ENGL 250 Â· Academic Writing", dateIso: "2026-12-14T14:00", duration: "2 hours", venue: "Great Hall" },
 ];
 
 interface Step {
@@ -137,7 +138,7 @@ const CONTACTS: Contact[] = [
   },
 ];
 
-/* ───────────────────────────── Helpers ───────────────────────────── */
+/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ Helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 
 const daysUntil = (iso: string): number => {
   const d = new Date(iso);
@@ -165,7 +166,7 @@ const toIsoDate = (year: number, month: number, day: number): string => {
   return `${yyyy}-${mm}-${dd}`;
 };
 
-/* ───────────────────────────── Collapsible section ───────────────────────────── */
+/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ Collapsible section â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 
 interface CollapsibleProps {
   id: string;
@@ -235,7 +236,7 @@ const Collapsible = ({
   );
 };
 
-/* ───────────────────────────── Coming up ───────────────────────────── */
+/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ Coming up â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 
 const ComingUp = () => {
   const items = useMemo(
@@ -304,7 +305,7 @@ const ComingUp = () => {
   );
 };
 
-/* ───────────────────────────── Calendar ───────────────────────────── */
+/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ Calendar â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 
 const WEEKDAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
@@ -488,7 +489,7 @@ const Calendar = () => {
   );
 };
 
-/* ───────────────────────────── Courses ───────────────────────────── */
+/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ Courses â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 
 const CoursesList = () => (
   <ul className="divide-y divide-line/60 overflow-hidden rounded-xl border border-line bg-white">
@@ -518,7 +519,7 @@ const CoursesList = () => (
   </ul>
 );
 
-/* ───────────────────────────── Registration ───────────────────────────── */
+/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ Registration â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 
 const RegistrationGuide = () => {
   const nextIndex = STEPS.findIndex((s) => !s.done);
@@ -542,7 +543,7 @@ const RegistrationGuide = () => {
                     : "bg-paper text-muted"
               }`}
             >
-              {step.done ? "✓" : i + 1}
+              {step.done ? "âœ“" : i + 1}
             </span>
             <div className="min-w-0 flex-1">
               <p
@@ -570,7 +571,7 @@ const RegistrationGuide = () => {
   );
 };
 
-/* ───────────────────────────── Exams ───────────────────────────── */
+/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ Exams â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 
 const ExamList = () => (
   <ul className="divide-y divide-line/60 overflow-hidden rounded-xl border border-line bg-white">
@@ -588,7 +589,7 @@ const ExamList = () => (
         <p className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted">
           <span className="inline-flex items-center gap-1">
             <Clock className="h-3 w-3" aria-hidden="true" />
-            {formatTime(e.dateIso)} · {e.duration}
+            {formatTime(e.dateIso)} Â· {e.duration}
           </span>
           <span className="inline-flex items-center gap-1">
             <MapPin className="h-3 w-3" aria-hidden="true" />
@@ -600,7 +601,7 @@ const ExamList = () => (
   </ul>
 );
 
-/* ───────────────────────────── Contacts ───────────────────────────── */
+/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ Contacts â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 
 const Contacts = () => (
   <ul className="space-y-2">
@@ -635,7 +636,7 @@ const Contacts = () => (
   </ul>
 );
 
-/* ───────────────────────────── Search ───────────────────────────── */
+/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ Search â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 
 interface Hit {
   type: "Deadline" | "Exam" | "Course" | "Step" | "Contact";
@@ -667,8 +668,8 @@ const runSearch = (q: string): Hit[] => {
       hits.push({
         type: "Course",
         key: `course-${c.code}`,
-        title: `${c.code} · ${c.name}`,
-        detail: `${c.lecturer} · ${c.venue}`,
+        title: `${c.code} Â· ${c.name}`,
+        detail: `${c.lecturer} Â· ${c.venue}`,
       });
     }
   }
@@ -679,7 +680,7 @@ const runSearch = (q: string): Hit[] => {
         type: "Exam",
         key: `exam-${x.course}`,
         title: x.course,
-        detail: `${formatFullDate(x.dateIso)} · ${formatTime(x.dateIso)} · ${x.venue}`,
+        detail: `${formatFullDate(x.dateIso)} Â· ${formatTime(x.dateIso)} Â· ${x.venue}`,
       });
     }
   }
@@ -700,7 +701,7 @@ const runSearch = (q: string): Hit[] => {
         type: "Contact",
         key: `contact-${c.department}`,
         title: c.department,
-        detail: `${c.office} · ${c.email}`,
+        detail: `${c.office} Â· ${c.email}`,
       });
     }
   }
@@ -729,7 +730,7 @@ const SearchResults = ({ query }: { query: string }) => {
           to={`/search?q=${encodeURIComponent(query)}`}
           className="mt-2 inline-block text-xs font-semibold text-brand-700 hover:text-brand-800 hover:underline"
         >
-          Search all of Ultimate Student →
+          Search all of Ultimate Student â†’
         </Link>
       </div>
     );
@@ -760,7 +761,7 @@ const SearchResults = ({ query }: { query: string }) => {
   );
 };
 
-/* ───────────────────────────── Page ───────────────────────────── */
+/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ Page â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 
 const FadeInSection = ({
   children,
@@ -788,15 +789,18 @@ export const AcademicPage = () => {
   return (
     <div className="pb-4">
       {/* Header */}
-      <header className="mb-4">
-        <div className="flex items-center gap-2 text-xs font-semibold text-muted">
-          <GraduationCap className="h-3.5 w-3.5" aria-hidden="true" />
-          Academic
+      <header className="mb-4 flex items-start gap-3">
+        <MobileBackButton className="mt-0.5" />
+        <div>
+          <div className="flex items-center gap-2 text-xs font-semibold text-muted">
+            <GraduationCap className="h-3.5 w-3.5" aria-hidden="true" />
+            Academic
+          </div>
+          <h1 className="mt-1 text-2xl font-bold text-ink">Academic</h1>
+          <p className="mt-1 text-sm text-muted">
+            Your deadlines, courses, registration and exams.
+          </p>
         </div>
-        <h1 className="mt-1 text-2xl font-bold text-ink">Academic</h1>
-        <p className="mt-1 text-sm text-muted">
-          Your deadlines, courses, registration and exams.
-        </p>
       </header>
 
       {/* Search */}
@@ -814,7 +818,7 @@ export const AcademicPage = () => {
             type="search"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="Search deadlines, courses, exams…"
+            placeholder="Search deadlines, courses, examsâ€¦"
             className="w-full rounded-xl border border-line bg-white py-2.5 pl-9 pr-3 text-sm text-ink placeholder:text-muted focus:border-brand-500"
           />
         </div>

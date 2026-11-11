@@ -4,6 +4,7 @@ import { Search } from "lucide-react";
 import { FilterBar } from "@/components/FilterBar";
 import { LoadingState } from "@/components/LoadingState";
 import { ListItem } from "@/components/ListItem";
+import { MobileBackButton } from "@/components/MobileBackButton";
 import { SECTIONS, sectionById } from "@/lib/sectionConfig";
 import { dataService } from "@/data/service";
 import type { SectionId, SectionItem } from "@/data/types";
@@ -64,9 +65,12 @@ export const SectionListPage = () => {
 
   return (
     <div className="pb-4">
-      <header className="mb-4">
-        <h1 className="text-2xl font-bold text-ink">{meta.label}</h1>
-        <p className="mt-1 text-sm text-muted">{meta.description}.</p>
+      <header className="mb-4 flex items-start gap-3">
+        <MobileBackButton className="mt-0.5" />
+        <div>
+          <h1 className="text-2xl font-bold text-ink">{meta.label}</h1>
+          <p className="mt-1 text-sm text-muted">{meta.description}.</p>
+        </div>
       </header>
 
       <div className="mb-4 space-y-3">

@@ -1,4 +1,4 @@
-import {
+﻿import {
   useEffect,
   useRef,
   useState,
@@ -18,6 +18,7 @@ import {
 } from "lucide-react";
 import { useProfile } from "@/hooks/useProfile";
 import { useToast } from "@/hooks/useToast";
+import { MobileBackButton } from "@/components/MobileBackButton";
 import type {
   LivingSituation,
   NotificationPrefs,
@@ -26,7 +27,7 @@ import type {
 } from "@/data/types";
 import { INTERESTS } from "@/features/onboarding/interests";
 
-/* ───────────────────────────── Options ───────────────────────────── */
+/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ Options â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 
 const TYPE_OPTIONS: Array<{ id: StudentType; label: string }> = [
   { id: "new", label: "First-year" },
@@ -69,7 +70,7 @@ const DEFAULT_PREFS: NotificationPrefs = {
   savedUpdates: true,
 };
 
-/* ───────────────────────────── Shared bits ───────────────────────────── */
+/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ Shared bits â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 
 type SectionId =
   | "personal"
@@ -134,7 +135,7 @@ const Field = ({
     <p className="text-[11px] font-semibold uppercase tracking-wider text-muted">
       {label}
     </p>
-    <div className="mt-0.5 text-sm text-ink">{children ?? "—"}</div>
+    <div className="mt-0.5 text-sm text-ink">{children ?? "â€”"}</div>
   </div>
 );
 
@@ -169,7 +170,7 @@ const SaveBar = ({
   </div>
 );
 
-/* ───────────────────────────── Header ───────────────────────────── */
+/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ Header â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 
 const ProfileHeader = ({
   profile,
@@ -269,7 +270,7 @@ const ProfileHeader = ({
   );
 };
 
-/* ───────────────────────────── Personal details ───────────────────────────── */
+/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ Personal details â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 
 const PersonalDetails = ({
   profile,
@@ -402,7 +403,7 @@ const PersonalDetails = ({
   );
 };
 
-/* ───────────────────────────── Student details ───────────────────────────── */
+/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ Student details â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 
 const StudentDetails = ({
   profile,
@@ -544,7 +545,7 @@ const StudentDetails = ({
                 I'm an international student
               </span>
               <span className="block text-xs text-muted">
-                Studying from outside Ghana — unlocks visa and ISO content.
+                Studying from outside Ghana â€” unlocks visa and ISO content.
               </span>
             </span>
           </label>
@@ -569,7 +570,7 @@ const StudentDetails = ({
   );
 };
 
-/* ───────────────────────────── Living ───────────────────────────── */
+/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ Living â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 
 const LivingSection = ({
   profile,
@@ -690,7 +691,7 @@ const LivingSection = ({
   );
 };
 
-/* ───────────────────────────── Interests ───────────────────────────── */
+/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ Interests â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 
 const InterestsSection = ({
   profile,
@@ -793,7 +794,7 @@ const InterestsSection = ({
   );
 };
 
-/* ───────────────────────────── Notifications ───────────────────────────── */
+/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ Notifications â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 
 const NotificationsSection = ({
   profile,
@@ -901,7 +902,7 @@ const NotificationsSection = ({
   );
 };
 
-/* ───────────────────────────── Account ───────────────────────────── */
+/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ Account â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 
 const AccountSection = () => {
   const { clearProfile } = useProfile();
@@ -1113,7 +1114,7 @@ const AccountSection = () => {
   );
 };
 
-/* ───────────────────────────── Page ───────────────────────────── */
+/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ Page â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 
 export const ProfilePage = () => {
   const { profile, updateProfile } = useProfile();
@@ -1133,6 +1134,9 @@ export const ProfilePage = () => {
 
   return (
     <div className="pb-4">
+      <div className="mb-3 lg:hidden">
+        <MobileBackButton />
+      </div>
       <ProfileHeader
         profile={profile}
         updateProfile={updateProfile}

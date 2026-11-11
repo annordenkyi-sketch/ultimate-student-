@@ -1,18 +1,19 @@
-import { useMemo, useState } from "react";
+﻿import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { services as ALL } from "@/data/mocks/services";
 import type { SectionItem } from "@/data/types";
 import { Highlight } from "@/lib/highlight";
+import { MobileBackButton } from "@/components/MobileBackButton";
 
 /** Mock opening hours (not in the shared mock yet). */
 const HOURS: Record<string, string> = {
-  "svc-1": "Mon–Sun · 24 hours · Emergency triage overnight",
-  "svc-2": "Mon–Fri · 09:00–17:00",
-  "svc-3": "Mon–Fri · 08:30–18:00",
-  "svc-4": "Mon–Fri · 09:00–16:00",
-  "svc-5": "24/7 · Call for immediate help",
-  "svc-6": "Mon–Fri · 09:00–17:00",
-  "svc-7": "Mon–Fri · 10:00–16:00",
+  "svc-1": "Monâ€“Sun Â· 24 hours Â· Emergency triage overnight",
+  "svc-2": "Monâ€“Fri Â· 09:00â€“17:00",
+  "svc-3": "Monâ€“Fri Â· 08:30â€“18:00",
+  "svc-4": "Monâ€“Fri Â· 09:00â€“16:00",
+  "svc-5": "24/7 Â· Call for immediate help",
+  "svc-6": "Monâ€“Fri Â· 09:00â€“17:00",
+  "svc-7": "Monâ€“Fri Â· 10:00â€“16:00",
 };
 
 const matches = (item: SectionItem, q: string): boolean => {
@@ -170,11 +171,14 @@ export const ServicesPage = () => {
 
   return (
     <div className="pb-4">
-      <header className="mb-4">
-        <h1 className="text-2xl font-bold text-ink">Student services</h1>
-        <p className="mt-1 text-sm text-muted">
-          Health, counselling, ICT, finance and emergency support.
-        </p>
+      <header className="mb-4 flex items-start gap-3">
+        <MobileBackButton className="mt-0.5" />
+        <div>
+          <h1 className="text-2xl font-bold text-ink">Student services</h1>
+          <p className="mt-1 text-sm text-muted">
+            Health, counselling, ICT, finance and emergency support.
+          </p>
+        </div>
       </header>
 
       <div className="mb-6">
@@ -186,7 +190,7 @@ export const ServicesPage = () => {
           type="search"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          placeholder="Search services…"
+          placeholder="Search servicesâ€¦"
           className="w-full rounded-xl border border-line bg-white px-3 py-2.5 text-sm text-ink placeholder:text-muted focus:border-brand-500"
         />
       </div>
@@ -201,7 +205,7 @@ export const ServicesPage = () => {
             to={`/search?q=${encodeURIComponent(query)}`}
             className="mt-2 inline-block text-xs font-semibold text-brand-700 hover:text-brand-800 hover:underline"
           >
-            Search all of Ultimate Student →
+            Search all of Ultimate Student â†’
           </Link>
         </div>
       ) : (

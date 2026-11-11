@@ -37,6 +37,32 @@ export default {
         line: "#DDE3EC",     // card border — soft blue-gray
         success: "#1E9E6A",
         danger: "#D64545",
+        // Landing palette (teal/ocean) — kept for reference; no longer the active landing scheme.
+        ocean: {
+          50: "#F7FFFD",
+          100: "#E0F7F4",
+          200: "#BFEDE6",
+          300: "#A8DADC",
+          400: "#5EBAB0",
+          500: "#2A9D8F",
+          600: "#228085",
+          700: "#187C81",
+          800: "#125F63",
+          900: "#0F4C5C",
+        },
+        // Landing palette v2 (oxford-style cream + navy) — active on the public landing page.
+        oxford: {
+          paper: "#FAF7EF",   // page background — soft off-white cream
+          cream: "#F3EDDE",   // section background — warmer cream
+          sand: "#E6DBC2",    // stat card primary — tan/sand
+          sandSoft: "#EEE6CF",// stat card secondary — softer sand
+          rule: "#D8CFB8",    // dividers, hairlines on cream
+          ink: "#0E1B3A",     // headings, logo wordmark, Login button
+          ink2: "#1C2746",    // sub-headings, body copy strong
+          mute: "#6C6A62",    // body copy, meta text
+          gold: "#A88B5A",    // accent label text (eyebrows on stat cards)
+          wine: "#5E2528",    // rare dark accent (never used as small text on light bg)
+        },
       },
       fontFamily: {
         sans: [
@@ -54,6 +80,13 @@ export default {
           "Inter",
           "system-ui",
           "sans-serif",
+        ],
+        serif: [
+          "Playfair Display",
+          "Cormorant Garamond",
+          "Georgia",
+          "Times New Roman",
+          "serif",
         ],
       },
       borderRadius: {

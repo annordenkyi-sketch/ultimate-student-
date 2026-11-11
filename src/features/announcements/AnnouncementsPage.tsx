@@ -1,13 +1,14 @@
-import { useEffect, useMemo, useState } from "react";
+﻿import { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { ArrowLeft, CheckCheck, ChevronLeft, Search } from "lucide-react";
 import { dataService } from "@/data/service";
+import { MobileBackButton } from "@/components/MobileBackButton";
 import type { Announcement, AnnouncementCategory } from "@/data/types";
 import { useProfile } from "@/hooks/useProfile";
 import { useAnnouncementReads } from "@/hooks/useAnnouncementReads";
 import { Highlight } from "@/lib/highlight";
 
-/* ───────────────────────────── Tabs ───────────────────────────── */
+/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ Tabs â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 
 type Tab = "All" | "Unread" | "Academic" | "Hostels" | "Events" | "Services" | "General";
 
@@ -45,7 +46,7 @@ const CATEGORY_LABEL: Record<AnnouncementCategory, string> = {
   general: "General",
 };
 
-/* ───────────────────────────── Helpers ───────────────────────────── */
+/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ Helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 
 const formatDate = (iso: string): string =>
   new Date(iso).toLocaleDateString(undefined, {
@@ -55,7 +56,7 @@ const formatDate = (iso: string): string =>
     year: "numeric",
   });
 
-/* ───────────────────────────── Row ───────────────────────────── */
+/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ Row â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 
 interface RowProps {
   a: Announcement;
@@ -115,7 +116,7 @@ const AnnouncementRow = ({ a, isActive, isUnread, query, onClick }: RowProps) =>
   </li>
 );
 
-/* ───────────────────────────── Detail panel ───────────────────────────── */
+/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ Detail panel â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 
 const DetailPanel = ({
   announcement,
@@ -155,7 +156,7 @@ const DetailPanel = ({
             <span className="font-medium text-ink">
               {announcement.source}
             </span>
-            {" · "}
+            {" Â· "}
           </>
         )}
         {formatDate(announcement.date)}
@@ -167,7 +168,7 @@ const DetailPanel = ({
   </article>
 );
 
-/* ───────────────────────────── Page ───────────────────────────── */
+/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ Page â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 
 export const AnnouncementsPage = () => {
   const { id: paramId } = useParams<{ id: string }>();
@@ -231,27 +232,30 @@ export const AnnouncementsPage = () => {
     markAllRead(all.map((a) => a.id));
   };
 
-  // Mobile — detail replaces the list
+  // Mobile â€” detail replaces the list
   const detailViewVisible = Boolean(active);
 
   return (
     <div className="pb-4">
       {/* Header */}
-      <header className="mb-4 flex items-start justify-between gap-3">
-        <div className="min-w-0">
-          <Link
-            to="/"
-            className="inline-flex items-center gap-1 text-xs font-semibold text-brand-700 hover:text-brand-800 hover:underline"
-          >
-            <ArrowLeft className="h-3 w-3" aria-hidden="true" />
-            Back to Home
-          </Link>
-          <h1 className="mt-1 text-2xl font-bold text-ink">
-            Announcements
-          </h1>
-          <p className="mt-1 text-sm text-muted">
-            {unreadCount} unread · {all?.length ?? 0} total
-          </p>
+      <header className="mb-4 flex flex-wrap items-start justify-between gap-3">
+        <div className="flex items-start gap-3">
+          <MobileBackButton className="mt-0.5" />
+          <div>
+            <Link
+              to="/"
+              className="hidden items-center gap-1 text-xs font-semibold text-brand-700 hover:text-brand-800 hover:underline lg:inline-flex"
+            >
+              <ArrowLeft className="h-3 w-3" aria-hidden="true" />
+              Back to Home
+            </Link>
+            <h1 className="mt-1 text-2xl font-bold text-ink">
+              Announcements
+            </h1>
+            <p className="mt-1 text-sm text-muted">
+              {unreadCount} unread Â· {all?.length ?? 0} total
+            </p>
+          </div>
         </div>
         <button
           type="button"
@@ -275,7 +279,7 @@ export const AnnouncementsPage = () => {
             type="search"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="Search announcements…"
+            placeholder="Search announcementsâ€¦"
             aria-label="Search announcements"
             className="w-full rounded-xl border border-line bg-white py-2.5 pl-9 pr-3 text-sm text-ink placeholder:text-muted focus:border-brand-500"
           />

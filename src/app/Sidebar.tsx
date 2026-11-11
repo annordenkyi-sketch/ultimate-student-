@@ -1,4 +1,4 @@
-import {
+﻿import {
   Bookmark,
   Briefcase,
   GraduationCap,
@@ -40,7 +40,7 @@ const linkClass = ({ isActive }: { isActive: boolean }): string =>
   `flex items-center gap-3 rounded-xl px-3 py-2 text-sm font-medium transition ${
     isActive
       ? "bg-brand-50 text-brand-700"
-      : "text-ink hover:bg-brand-50/60"
+      : "text-ink hover:bg-brand-50"
   }`;
 
 export const Sidebar = () => {

@@ -1,868 +1,1226 @@
-import type { ComponentType, ReactNode } from "react";
-import { useEffect, useRef, useState } from "react";
+import {
+  useEffect,
+  useState,
+} from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import {
   ArrowRight,
-  ChevronDown,
-  ChevronLeft,
-  ChevronRight,
+  AtSign,
+  BookOpen,
+  Building2,
+  Check,
   GraduationCap,
-  LogIn,
+  Lock,
+  MapPin,
+  UserPlus,
+  Users,
+  Wifi,
+  type LucideIcon,
 } from "lucide-react";
-import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
-import HTMLFlipBook from "react-pageflip";
-import { FadeIn } from "@/components/Motion";
-import { unsplash, unsplashSrcSet, type UnsplashImage } from "@/lib/images";
+import {
+  FEATURE_IMAGES,
+  MOSAIC_IMAGES,
+  unsplash,
+  unsplashSrcSet,
+  type UnsplashImage,
+} from "@/lib/images";
 
-/* The library's TS types mark every FlipSetting prop as required even though
-   the runtime supplies defaults. Cast to a loose component to pass only what
-   we care about. */
-const FlipBook = HTMLFlipBook as unknown as ComponentType<Record<string, unknown>>;
+/* ─────────────────────────────── Top nav ─────────────────────────────── */
 
-/* Match Tailwind's lg: breakpoint for picking book vs card stack. */
-const useIsDesktop = (): boolean => {
-  const [isDesktop, setIsDesktop] = useState<boolean>(() => {
-    if (typeof window === "undefined") return false;
-    return window.matchMedia("(min-width: 1024px)").matches;
-  });
+const TopNav = ({ onStart }: { onStart: () => void }) => {
+  const [scrolled, setScrolled] = useState(false);
   useEffect(() => {
-    const mq = window.matchMedia("(min-width: 1024px)");
-    const handler = () => setIsDesktop(mq.matches);
-    mq.addEventListener("change", handler);
-    return () => mq.removeEventListener("change", handler);
+    const onScroll = () => setScrolled(window.scrollY > 24);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
   }, []);
-  return isDesktop;
-};
-
-/* ─────────────────── Highlight pill behind one word ─────────────────── */
-
-interface HighlightProps {
-  children: ReactNode;
-  tone: "sage" | "amber" | "blush";
-  tilt?: number;
-}
-
-const TONE: Record<HighlightProps["tone"], string> = {
-  sage: "bg-brand-200/70 text-ink",
-  amber: "bg-accent-200/90 text-ink",
-  blush: "bg-rose-200/70 text-ink",
-};
-
-const WordHighlight = ({ children, tone, tilt = -2 }: HighlightProps) => (
-  <span className="relative inline-block px-[0.35em] py-[0.05em]">
-    <span
-      aria-hidden="true"
-      className={`absolute inset-0 -z-[1] rounded-[0.75em] ${TONE[tone]}`}
-      style={{ transform: `rotate(${tilt}deg)` }}
-    />
-    <span className="relative">{children}</span>
-  </span>
-);
-
-/* ─────────────────── Hero photos (free Unsplash License) ─────────────────── */
-
-const HERO_PHOTOS: UnsplashImage[] = [
-  {
-    id: "hero-grads",
-    photoId: "photo-1769905226600-1d447fe7d020",
-    alt: "African graduates in caps and gowns gathered in an auditorium",
-    credit: { name: "Blessfield John", profile: "https://unsplash.com/@blessfield" },
-  },
-  {
-    id: "hero-campus",
-    photoId: "photo-1616428394230-ba242d33e3ba",
-    alt: "African students walking together across a university campus",
-    credit: { name: "Jonah Brown", profile: "https://unsplash.com/@jonahbrown" },
-  },
-  {
-    id: "hero-study",
-    photoId: "photo-1761370981247-1dfd749ec96b",
-    alt: "Three African women reviewing study notes together, laughing",
-    credit: { name: "Muhammad-Taha Ibrahim", profile: "https://unsplash.com/@planeteelevene" },
-  },
-  {
-    id: "hero-phones",
-    photoId: "photo-1758270704464-f980b03b9633",
-    alt: "Students looking at their phones together in a lecture hall",
-    credit: { name: "Vitaly Gariev", profile: "https://unsplash.com/@silverkblack" },
-  },
-  {
-    id: "hero-sports",
-    photoId: "photo-1600077063877-22118d6290eb",
-    alt: "A group of young African men playing football on a university pitch",
-    credit: { name: "Omar Ramadan", profile: "https://unsplash.com/@omarvellous14" },
-  },
-];
-
-const SLIDE_MS = 5500;
-
-/* ─────────────────── Hero carousel ─────────────────── */
-
-const HeroCarousel = ({
-  i,
-  onPick,
-  paused,
-}: {
-  i: number;
-  onPick: (n: number) => void;
-  paused: boolean;
-}) => {
-  const reduce = useReducedMotion();
 
   return (
-    <>
-      {/* Preload the rest so cross-fade never flickers */}
-      <div aria-hidden="true" className="hidden">
-        {HERO_PHOTOS.map((p) => (
-          <img key={p.id} src={unsplash(p.photoId, 2000, 70)} alt="" />
-        ))}
-      </div>
-
-      <div className="absolute inset-0 overflow-hidden">
-        <AnimatePresence initial={false} mode="sync">
-          <motion.div
-            key={HERO_PHOTOS[i].id}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: reduce ? 0 : 1.1, ease: "easeInOut" }}
-            className="absolute inset-0"
-          >
-            <motion.img
-              src={unsplash(HERO_PHOTOS[i].photoId, 2000, 70)}
-              srcSet={unsplashSrcSet(HERO_PHOTOS[i].photoId)}
-              sizes="100vw"
-              alt={HERO_PHOTOS[i].alt}
-              loading="eager"
-              decoding="async"
-              className="h-full w-full object-cover"
-              initial={reduce ? undefined : { scale: 1.02, x: 0, y: 0 }}
-              animate={
-                reduce
-                  ? undefined
-                  : paused
-                    ? { scale: 1.02, x: 0, y: 0 }
-                    : { scale: 1.14, x: -24, y: -12 }
-              }
-              transition={{ duration: SLIDE_MS / 1000 + 0.5, ease: "linear" }}
-            />
-          </motion.div>
-        </AnimatePresence>
-
-        {/* Dark gradient overlay for readability */}
-        <div
-          aria-hidden="true"
-          className="absolute inset-0 bg-gradient-to-b from-brand-900/40 via-brand-900/55 to-brand-900/85"
-        />
-      </div>
-
-      {/* Dot indicators */}
-      <div
-        role="tablist"
-        aria-label="Hero slides"
-        className="absolute inset-x-0 bottom-20 z-10 flex items-center justify-center gap-2 md:bottom-24"
-      >
-        {HERO_PHOTOS.map((p, idx) => {
-          const active = idx === i;
-          return (
-            <button
-              key={p.id}
-              type="button"
-              role="tab"
-              aria-selected={active}
-              aria-label={`Show photo ${idx + 1} of ${HERO_PHOTOS.length}`}
-              onClick={() => onPick(idx)}
-              className={`h-2 rounded-full transition-all duration-500 ${
-                active
-                  ? "w-10 bg-white"
-                  : "w-2 bg-white/50 hover:bg-white/80"
-              }`}
-            />
-          );
-        })}
-      </div>
-
-    </>
-  );
-};
-
-/* ─────────────────── Hero overlay nav ─────────────────── */
-
-const HeroNav = () => (
-  <div
-    className="absolute inset-x-0 top-0 z-40 flex h-16 items-center justify-between gap-3 md:h-20"
-    style={{
-      paddingLeft: "max(16px, env(safe-area-inset-left))",
-      paddingRight: "max(16px, env(safe-area-inset-right))",
-    }}
-  >
-    <div className="md:pl-4">
-      <Link
-        to="/welcome"
-        className="inline-flex items-center gap-2 font-display text-sm font-bold text-white sm:text-base md:text-lg"
-      >
-        <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-white/15 ring-1 ring-white/40 backdrop-blur-sm">
-          <GraduationCap className="h-4 w-4" aria-hidden="true" />
-        </span>
-        <span className="whitespace-nowrap">Ultimate Student</span>
-      </Link>
-    </div>
-    <div className="md:pr-4">
-      <Link
-        to="/login"
-        aria-label="Log in"
-        className="inline-flex shrink-0 items-center gap-2 whitespace-nowrap rounded-full bg-brand-600 px-6 py-3 text-sm font-bold text-white shadow-xl shadow-brand-900/50 transition hover:bg-accent-500 hover:text-brand-900 motion-safe:hover:-translate-y-0.5 motion-safe:active:scale-[0.97]"
-      >
-        <LogIn className="h-4 w-4" aria-hidden="true" />
-        Log in
-      </Link>
-    </div>
-  </div>
-);
-
-/* ─────────────────── Scroll-down arrow ─────────────────── */
-
-const ScrollDown = () => {
-  const reduce = useReducedMotion();
-  const onClick = () => {
-    const next = document.getElementById("after-hero");
-    next?.scrollIntoView({ behavior: reduce ? "auto" : "smooth" });
-  };
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      aria-label="Scroll to see more"
-      className="absolute inset-x-0 bottom-6 z-10 mx-auto flex w-12 flex-col items-center text-white/80 transition hover:text-white"
-    >
-      <motion.span
-        animate={reduce ? undefined : { y: [0, 8, 0] }}
-        transition={{ duration: 1.8, repeat: Infinity, ease: "easeInOut" }}
-        className="flex h-10 w-10 items-center justify-center rounded-full ring-1 ring-white/40 backdrop-blur-sm"
-      >
-        <ChevronDown className="h-5 w-5" aria-hidden="true" />
-      </motion.span>
-    </button>
-  );
-};
-
-/* ─────────────────── Campus life (image strip) ─────────────────── */
-
-interface CampusPhoto {
-  id: string;
-  photoId: string;
-  alt: string;
-  caption: string;
-}
-
-/* Credits for these photographers are already registered in
-   src/lib/images.ts (ALL_CREDITS) and surfaced on /profile. */
-const CAMPUS_LIFE_PHOTOS: CampusPhoto[] = [
-  {
-    id: "campus-together",
-    photoId: "photo-1616428394230-ba242d33e3ba",
-    alt: "African students walking together across a university campus",
-    caption: "Life on campus",
-  },
-  {
-    id: "campus-study",
-    photoId: "photo-1761370981247-1dfd749ec96b",
-    alt: "Three African women reviewing study notes together, laughing",
-    caption: "Learn together",
-  },
-  {
-    id: "campus-event",
-    photoId: "photo-1769905226600-1d447fe7d020",
-    alt: "African graduates in caps and gowns gathered in an auditorium",
-    caption: "Never miss out",
-  },
-];
-
-/* ─── Photo face (image + caption overlay) ─── */
-const PhotoFace = ({
-  photo,
-  compact = false,
-}: {
-  photo: CampusPhoto;
-  compact?: boolean;
-}) => (
-  <div
-    className={`relative h-full w-full overflow-hidden bg-paper ${
-      compact ? "rounded-xl" : "rounded-[24px]"
-    }`}
-  >
-    <img
-      src={unsplash(photo.photoId, compact ? 800 : 1600, 70)}
-      srcSet={unsplashSrcSet(photo.photoId)}
-      sizes={compact ? "400px" : "100vw"}
-      alt={photo.alt}
-      draggable={false}
-      decoding="async"
-      className="pointer-events-none h-full w-full select-none object-cover"
-    />
-    <div
-      aria-hidden="true"
-      className="pointer-events-none absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-brand-900/85 via-brand-900/40 to-transparent"
-    />
-    <p
-      className={`pointer-events-none absolute inset-x-0 font-display font-bold tracking-tight text-white ${
-        compact
-          ? "bottom-3 px-4 text-base md:text-lg"
-          : "bottom-6 px-6 text-2xl md:bottom-8 md:px-10 md:text-3xl lg:text-4xl"
+    <header
+      className={`sticky top-0 z-40 w-full transition-colors duration-300 ${
+        scrolled
+          ? "border-b border-oxford-rule/80 bg-oxford-paper/95 backdrop-blur"
+          : "border-b border-transparent bg-transparent"
       }`}
     >
-      {photo.caption}
-    </p>
-  </div>
-);
-
-/* ─── Preload all photos so a flip never shows a blank page ─── */
-const PhotoPreload = () => (
-  <div aria-hidden="true" className="hidden">
-    {CAMPUS_LIFE_PHOTOS.map((p) => (
-      <img key={`pre-${p.id}`} src={unsplash(p.photoId, 1600, 70)} alt="" />
-    ))}
-  </div>
-);
-
-/* ─── Small floating hint pill (first view only) ─── */
-const HintPill = ({ text }: { text: string }) => (
-  <motion.div
-    role="status"
-    initial={{ opacity: 0, y: 8 }}
-    animate={{ opacity: 1, y: 0 }}
-    exit={{ opacity: 0, y: 8 }}
-    transition={{ duration: 0.3 }}
-    className="pointer-events-none absolute left-1/2 top-3 z-30 -translate-x-1/2 whitespace-nowrap rounded-full bg-brand-900/85 px-4 py-1.5 text-xs font-semibold text-white shadow-lg backdrop-blur-sm"
-  >
-    {text}
-  </motion.div>
-);
-
-/* ─── Arrow controls shared by book & fade fallback ─── */
-const PagerControls = ({
-  page,
-  total,
-  onPrev,
-  onNext,
-  loop = false,
-}: {
-  page: number;
-  total: number;
-  onPrev: () => void;
-  onNext: () => void;
-  loop?: boolean;
-}) => (
-  <div className="mt-5 flex items-center justify-center gap-5">
-    <button
-      type="button"
-      onClick={onPrev}
-      disabled={!loop && page === 0}
-      aria-label="Previous page"
-      className="flex h-11 w-11 items-center justify-center rounded-full border border-line bg-white text-ink shadow-sm transition hover:border-brand-500 hover:text-brand-700 disabled:opacity-30 motion-safe:active:scale-95"
-    >
-      <ChevronLeft className="h-5 w-5" aria-hidden="true" />
-    </button>
-    <span className="min-w-[3rem] text-center text-xs font-semibold text-muted">
-      {page + 1} / {total}
-    </span>
-    <button
-      type="button"
-      onClick={onNext}
-      disabled={!loop && page >= total - 1}
-      aria-label="Next page"
-      className="flex h-11 w-11 items-center justify-center rounded-full border border-line bg-white text-ink shadow-sm transition hover:border-brand-500 hover:text-brand-700 disabled:opacity-30 motion-safe:active:scale-95"
-    >
-      <ChevronRight className="h-5 w-5" aria-hidden="true" />
-    </button>
-  </div>
-);
-
-/* ─── Desktop: realistic book-flip ─── */
-const BookGallery = () => {
-  const bookRef = useRef<{
-    pageFlip?: () => {
-      flipNext: () => void;
-      flipPrev: () => void;
-    };
-  }>(null);
-  const [page, setPage] = useState(0);
-  const [showHint, setShowHint] = useState(true);
-  const total = CAMPUS_LIFE_PHOTOS.length;
-
-  useEffect(() => {
-    const t = window.setTimeout(() => setShowHint(false), 5500);
-    return () => window.clearTimeout(t);
-  }, []);
-
-  const flipNext = () => {
-    bookRef.current?.pageFlip?.()?.flipNext();
-    setShowHint(false);
-  };
-  const flipPrev = () => {
-    bookRef.current?.pageFlip?.()?.flipPrev();
-    setShowHint(false);
-  };
-
-  const onKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
-    if (e.key === "ArrowLeft") {
-      flipPrev();
-      e.preventDefault();
-    } else if (e.key === "ArrowRight") {
-      flipNext();
-      e.preventDefault();
-    }
-  };
-
-  return (
-    <div
-      tabIndex={0}
-      role="group"
-      aria-label="Campus life book — use arrow keys to flip pages"
-      onKeyDown={onKeyDown}
-      className="mx-auto flex w-full max-w-[800px] flex-col items-center outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-4 focus-visible:ring-offset-paper"
-    >
-      <div className="relative w-full">
-        <AnimatePresence>
-          {showHint && <HintPill text="Flip through campus life →" />}
-        </AnimatePresence>
-        <FlipBook
-          ref={bookRef}
-          width={400}
-          height={500}
-          size="stretch"
-          minWidth={320}
-          maxWidth={400}
-          minHeight={400}
-          maxHeight={500}
-          drawShadow={true}
-          flippingTime={700}
-          usePortrait={true}
-          startZIndex={0}
-          autoSize={true}
-          maxShadowOpacity={0.4}
-          showCover={false}
-          mobileScrollSupport={true}
-          clickEventForward={true}
-          useMouseEvents={true}
-          swipeDistance={30}
-          showPageCorners={true}
-          disableFlipByClick={false}
-          startPage={0}
-          className=""
-          style={{}}
-          onFlip={(e: { data: number }) => {
-            setPage(e.data);
-            setShowHint(false);
-          }}
+      <div className="mx-auto flex h-16 max-w-[1280px] items-center gap-4 px-5 md:h-20 md:px-8">
+        <Link
+          to="/welcome"
+          aria-label="Ultimate Student — home"
+          className="group flex items-center gap-2.5"
         >
-          {CAMPUS_LIFE_PHOTOS.map((p) => (
-            <div key={p.id} className="h-full w-full">
-              <PhotoFace photo={p} compact />
-            </div>
-          ))}
-        </FlipBook>
-      </div>
-      <PagerControls
-        page={page}
-        total={total}
-        onPrev={flipPrev}
-        onNext={flipNext}
-      />
-    </div>
-  );
-};
-
-/* ─── Mobile: swipeable card stack (loops) ─── */
-const CardStack = () => {
-  const [index, setIndex] = useState(0);
-  const [showHint, setShowHint] = useState(true);
-  const total = CAMPUS_LIFE_PHOTOS.length;
-
-  useEffect(() => {
-    const t = window.setTimeout(() => setShowHint(false), 4500);
-    return () => window.clearTimeout(t);
-  }, []);
-
-  const advance = () => {
-    setIndex((i) => (i + 1) % total);
-    setShowHint(false);
-  };
-  const previous = () => {
-    setIndex((i) => (i - 1 + total) % total);
-    setShowHint(false);
-  };
-  const goTo = (i: number) => {
-    setIndex(i);
-    setShowHint(false);
-  };
-
-  const onKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
-    if (e.key === "ArrowLeft") {
-      previous();
-      e.preventDefault();
-    } else if (e.key === "ArrowRight") {
-      advance();
-      e.preventDefault();
-    }
-  };
-
-  return (
-    <div
-      tabIndex={0}
-      role="group"
-      aria-label="Campus life — swipe or use arrow keys"
-      onKeyDown={onKeyDown}
-      className="w-full outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-4 focus-visible:ring-offset-paper"
-    >
-      <div className="relative aspect-[16/9] w-full">
-        <AnimatePresence>
-          {showHint && <HintPill text="Swipe to explore" />}
-        </AnimatePresence>
-        {CAMPUS_LIFE_PHOTOS.map((p, i) => {
-          const offset = (i - index + total) % total;
-          const isTop = offset === 0;
-          const visible = offset <= 2;
-          return (
-            <motion.div
-              key={p.id}
-              drag={isTop ? "x" : false}
-              dragConstraints={{ left: 0, right: 0 }}
-              dragElastic={0.7}
-              onDragEnd={(_, info) => {
-                if (info.offset.x < -80) advance();
-                else if (info.offset.x > 80) previous();
-              }}
-              initial={false}
-              animate={{
-                scale: 1 - offset * 0.04,
-                y: offset * 12,
-                opacity: visible ? 1 : 0,
-                zIndex: visible ? total - offset : 0,
-                rotate: isTop ? 0 : offset * 1.4,
-              }}
-              transition={{ type: "spring", stiffness: 260, damping: 28 }}
-              className={`absolute inset-0 overflow-hidden rounded-[24px] bg-paper shadow-xl shadow-brand-900/25 ${
-                isTop ? "cursor-grab active:cursor-grabbing" : ""
-              }`}
-              style={{ touchAction: isTop ? "pan-y" : undefined }}
-            >
-              <PhotoFace photo={p} />
-            </motion.div>
-          );
-        })}
-      </div>
-
-      <div
-        role="tablist"
-        aria-label="Campus life photos"
-        className="mt-6 flex justify-center gap-2"
-      >
-        {CAMPUS_LIFE_PHOTOS.map((p, i) => {
-          const active = i === index;
-          return (
-            <button
-              key={p.id}
-              type="button"
-              role="tab"
-              aria-selected={active}
-              aria-label={`Show photo ${i + 1} of ${total}`}
-              onClick={() => goTo(i)}
-              className={`h-2 rounded-full transition-all duration-300 ${
-                active ? "w-8 bg-brand-700" : "w-2 bg-brand-900/20 hover:bg-brand-900/40"
-              }`}
-            />
-          );
-        })}
-      </div>
-    </div>
-  );
-};
-
-/* ─── Reduced-motion fallback: plain crossfade ─── */
-const FadeGallery = () => {
-  const [index, setIndex] = useState(0);
-  const total = CAMPUS_LIFE_PHOTOS.length;
-
-  const next = () => setIndex((i) => (i + 1) % total);
-  const prev = () => setIndex((i) => (i - 1 + total) % total);
-
-  const onKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
-    if (e.key === "ArrowLeft") {
-      prev();
-      e.preventDefault();
-    } else if (e.key === "ArrowRight") {
-      next();
-      e.preventDefault();
-    }
-  };
-
-  const current = CAMPUS_LIFE_PHOTOS[index];
-  return (
-    <div
-      tabIndex={0}
-      role="group"
-      aria-label="Campus life gallery"
-      onKeyDown={onKeyDown}
-      className="w-full outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
-    >
-      <div className="relative aspect-[16/9] w-full overflow-hidden rounded-[24px] bg-paper shadow-xl shadow-brand-900/20">
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={current.id}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.25 }}
-            className="absolute inset-0"
+          <span
+            aria-hidden="true"
+            className="flex h-10 w-10 items-center justify-center rounded-full border border-oxford-ink/15 bg-oxford-paper"
           >
-            <PhotoFace photo={current} />
-          </motion.div>
-        </AnimatePresence>
+            <GraduationCap className="h-5 w-5 text-oxford-ink" aria-hidden="true" />
+          </span>
+          <span className="flex flex-col leading-none">
+            <span className="font-serif text-[11px] font-semibold uppercase tracking-[0.18em] text-oxford-ink">
+              Ultimate
+            </span>
+            <span className="font-serif text-[15px] font-bold uppercase tracking-[0.22em] text-oxford-ink">
+              Student
+            </span>
+          </span>
+        </Link>
+
+        <div className="ml-auto flex items-center gap-2 md:gap-3">
+          <Link
+            to="/login"
+            className="hidden items-center whitespace-nowrap rounded-md border border-oxford-ink/15 bg-white px-4 py-2 text-sm font-semibold text-oxford-ink transition hover:bg-oxford-cream sm:inline-flex"
+          >
+            Log in
+          </Link>
+          <button
+            type="button"
+            onClick={onStart}
+            className="inline-flex items-center whitespace-nowrap rounded-md bg-oxford-ink px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-oxford-ink2 motion-safe:active:scale-[0.97]"
+          >
+            Join
+          </button>
+        </div>
       </div>
-      <PagerControls
-        page={index}
-        total={total}
-        loop
-        onPrev={prev}
-        onNext={next}
+    </header>
+  );
+};
+
+/* ─────────────────────────────── Hero ─────────────────────────────── */
+
+const HERO_PHOTOS = [
+  MOSAIC_IMAGES[0],                      // Graduates in caps and gowns in an auditorium
+  MOSAIC_IMAGES[2],                      // Group of students sitting together outside a building
+  MOSAIC_IMAGES[4],                      // Students on a university campus (Jonah Brown)
+  FEATURE_IMAGES.onboardingInterests,    // Group of students laughing together outdoors
+  FEATURE_IMAGES.loginHero,              // Students talking and laughing in a lecture hall
+];
+
+const PHOTO_MS = 5000;
+
+const RotatingPhotos = ({ reduce }: { reduce: boolean }) => {
+  const [idx, setIdx] = useState(0);
+
+  // Preload photos so there's no flicker on first cycle
+  useEffect(() => {
+    HERO_PHOTOS.forEach((p) => {
+      const img = new Image();
+      img.src = unsplash(p.photoId, 2000, 70);
+    });
+  }, []);
+
+  useEffect(() => {
+    if (reduce) return;
+    const t = window.setInterval(
+      () => setIdx((i) => (i + 1) % HERO_PHOTOS.length),
+      PHOTO_MS,
+    );
+    return () => window.clearInterval(t);
+  }, [reduce]);
+
+  if (reduce) {
+    const only = HERO_PHOTOS[0];
+    return (
+      <img
+        src={unsplash(only.photoId, 2000, 70)}
+        srcSet={unsplashSrcSet(only.photoId)}
+        sizes="(min-width:1024px) 1200px, 100vw"
+        alt=""
+        aria-hidden="true"
+        className="absolute inset-0 h-full w-full object-cover"
       />
+    );
+  }
+
+  return (
+    <div aria-hidden="true" className="absolute inset-0">
+      <AnimatePresence initial={false}>
+        <motion.img
+          key={idx}
+          src={unsplash(HERO_PHOTOS[idx].photoId, 2000, 70)}
+          srcSet={unsplashSrcSet(HERO_PHOTOS[idx].photoId)}
+          sizes="(min-width:1024px) 1200px, 100vw"
+          alt=""
+          initial={{ opacity: 0, scale: 1 }}
+          animate={{ opacity: 1, scale: 1.08 }}
+          exit={{ opacity: 0 }}
+          transition={{
+            opacity: { duration: 1.4, ease: [0.22, 1, 0.36, 1] },
+            scale: { duration: 7, ease: "linear" },
+          }}
+          className="absolute inset-0 h-full w-full object-cover"
+        />
+      </AnimatePresence>
     </div>
   );
 };
 
-const CampusLife = () => {
-  const reduce = useReducedMotion();
-  const isDesktop = useIsDesktop();
+const Hero = ({ reduce, onStart }: { reduce: boolean; onStart: () => void }) => {
+  const [walkStep, setWalkStep] = useState(0);
+
+  useEffect(() => {
+    if (reduce) return;
+    const t = window.setInterval(
+      () => setWalkStep((s) => (s + 1) % WALK_STEPS.length),
+      2600,
+    );
+    return () => window.clearInterval(t);
+  }, [reduce]);
 
   return (
-    <section
-      aria-labelledby="life-heading"
-      className="mx-auto w-full max-w-6xl px-4 py-14 md:px-8 md:py-20"
-    >
-      <FadeIn>
-        <p className="text-[11px] font-semibold uppercase tracking-widest text-accent-700">
-          On campus
-        </p>
-        <h2
-          id="life-heading"
-          className="mt-1.5 max-w-2xl font-display text-3xl font-bold tracking-tight text-ink md:text-5xl"
-        >
-          This is student life.
-        </h2>
-      </FadeIn>
+    <section aria-label="Welcome" className="relative bg-oxford-paper">
+      <div className="mx-auto max-w-[1280px] px-5 pb-6 pt-6 md:px-8 md:pb-10 md:pt-8">
+        <div className="relative overflow-hidden rounded-[18px] bg-oxford-ink">
+          <RotatingPhotos reduce={reduce} />
+          <div
+            aria-hidden="true"
+            className="absolute inset-0 bg-gradient-to-br from-oxford-ink/85 via-oxford-ink/55 to-oxford-ink/70"
+          />
 
-      <PhotoPreload />
-      <div className="mt-10 md:mt-14">
-        {reduce ? <FadeGallery /> : isDesktop ? <BookGallery /> : <CardStack />}
+          <div className="relative z-10 grid grid-cols-1 gap-10 px-6 pb-10 pt-12 md:gap-16 md:px-12 md:pb-14 md:pt-20 lg:grid-cols-[1fr_auto] lg:items-center lg:gap-14 lg:px-16 lg:py-24">
+            <div className="max-w-2xl">
+              <motion.p
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6 }}
+                className="font-sans text-xs font-medium uppercase tracking-[0.3em] text-oxford-sand"
+              >
+                Ultimate Student · 2026
+              </motion.p>
+              <motion.h1
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.7, delay: 0.1 }}
+                className="mt-4 font-serif text-[42px] font-medium leading-[1.02] text-white md:text-[72px] lg:text-[88px]"
+              >
+                Your whole university{" "}
+                <span className="italic text-oxford-sand">in one app</span>.
+              </motion.h1>
+              <motion.p
+                initial={{ opacity: 0, y: 16 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.25 }}
+                className="mt-6 max-w-xl text-base leading-relaxed text-white/85 md:text-lg"
+              >
+                Lectures, hostels, announcements, campus life — one account, one calm app.
+              </motion.p>
+              <motion.div
+                initial={{ opacity: 0, y: 16 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.4 }}
+                className="mt-9 flex flex-wrap items-center gap-3"
+              >
+                <button
+                  type="button"
+                  onClick={onStart}
+                  className="inline-flex items-center gap-2 rounded-md bg-oxford-sand px-6 py-3.5 text-sm font-semibold text-oxford-ink transition hover:bg-oxford-sandSoft motion-safe:hover:-translate-y-0.5 motion-safe:active:scale-[0.97]"
+                >
+                  Get started
+                  <ArrowRight className="h-4 w-4" aria-hidden="true" />
+                </button>
+                <Link
+                  to="/login"
+                  className="inline-flex items-center gap-2 rounded-md border border-white/30 bg-white/5 px-6 py-3.5 text-sm font-semibold text-white backdrop-blur-sm transition hover:bg-white/15"
+                >
+                  Log in
+                </Link>
+              </motion.div>
+            </div>
+
+            {/* Desktop phone — beside hero text */}
+            <div className="hidden w-[220px] shrink-0 lg:block">
+              <WalkPhoneUI step={walkStep} reduce={reduce} size="md" />
+            </div>
+          </div>
+        </div>
+
+        {/* Mobile phone — under hero */}
+        <div className="mt-8 flex justify-center lg:hidden">
+          <WalkPhoneUI step={walkStep} reduce={reduce} size="md" />
+        </div>
       </div>
     </section>
   );
 };
 
-/* ─────────────────── How it works ─────────────────── */
+/* ─────────────────────────────── Walkthrough phone ─────────────────────────────── */
 
-const STEPS = [
-  {
-    n: "01",
-    title: "Create your account",
-    body: "Name, email, a password nothing else to install.",
-  },
-  {
-    n: "02",
-    title: "Tell us about you",
-    body: "Student type, where you live, interests. We use it to filter what you see.",
-  },
-  {
-    n: "03",
-    title: "Get your personalised home",
-    body: "Announcements, events, hostels and services that match you  nothing you don't need.",
-  },
-];
+interface WalkStep {
+  id: string;
+  flow: "login" | "signup";
+  Scene: (p: SceneProps) => JSX.Element;
+}
 
-const HowItWorks = () => (
-  <section
-    id="after-hero"
-    aria-labelledby="steps-heading"
-    className="mx-auto w-full max-w-6xl px-4 py-14 md:px-8 md:py-20"
-  >
-    <div className="overflow-hidden rounded-[28px] bg-brand-50 px-5 py-7 md:px-10 md:py-12 lg:px-14 lg:py-14">
-      <div className="grid grid-cols-1 items-center gap-6 lg:grid-cols-5 lg:gap-14">
-        {/* Left — eyebrow + headline */}
-        <div className="lg:col-span-2">
-          <FadeIn>
-            <p className="text-[11px] font-semibold uppercase tracking-widest text-accent-700">
-              How it works
-            </p>
-            <h2
-              id="steps-heading"
-              className="mt-1.5 font-display text-2xl font-bold leading-[1.05] tracking-tight text-ink md:text-4xl lg:text-5xl"
-            >
-              Three steps and{" "}
-              <WordHighlight tone="blush" tilt={2}>you're in</WordHighlight>.
-            </h2>
-          </FadeIn>
-        </div>
+interface SceneProps {
+  reduce: boolean;
+  active: boolean;
+}
 
-        {/* Right — stacked step cards */}
-        <ol className="relative space-y-2.5 lg:col-span-3 lg:space-y-3">
-          {STEPS.map((s, i) => (
-            <li key={s.n}>
-              <FadeIn delay={0.08 * (i + 1)} y={6}>
-                <div className="flex items-start gap-3 rounded-2xl border border-line bg-white p-3 md:gap-4 md:p-5">
-                  <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-brand-700 font-display text-xs font-bold text-white shadow-md shadow-brand-700/20 md:h-11 md:w-11 md:text-sm">
-                    {s.n}
-                  </span>
-                  <div className="min-w-0">
-                    <h3 className="font-display text-sm font-bold tracking-tight text-ink md:text-lg">
-                      {s.title}
-                    </h3>
-                    <p className="mt-0.5 text-xs leading-relaxed text-muted md:mt-1 md:text-sm">
-                      {s.body}
-                    </p>
-                  </div>
-                </div>
-              </FadeIn>
-            </li>
-          ))}
-        </ol>
-      </div>
-    </div>
-  </section>
-);
-
-const FinalCTA = ({ onStart }: { onStart: () => void }) => (
-  <section className="mx-auto w-full max-w-6xl px-4 py-16 md:px-8 md:py-24">
-    <FadeIn>
-      <div className="overflow-hidden rounded-[32px] bg-brand-800 px-6 py-12 text-center md:px-16 md:py-20">
-        <p className="text-[11px] font-semibold uppercase tracking-widest text-accent-300">
-          Ready when you are
-        </p>
-        <h2 className="mx-auto mt-3 max-w-3xl font-display text-3xl font-bold leading-tight tracking-tight text-white md:text-5xl">
-          Your campus is a lot. Your app shouldn't be.{" "}
-          <WordHighlight tone="amber" tilt={-2}>Get started</WordHighlight>.
-        </h2>
-        <p className="mx-auto mt-4 max-w-xl text-sm text-brand-100 md:text-base">
-          Set up takes a minute. No credit card. No install.
-        </p>
-        <div className="mt-8">
-          <button
-            type="button"
-            onClick={onStart}
-            className="inline-flex items-center gap-2 rounded-full bg-brand-600 px-7 py-3 text-sm font-semibold text-white shadow-xl shadow-brand-900/40 transition hover:bg-accent-500 hover:text-brand-900 motion-safe:hover:-translate-y-0.5 motion-safe:active:scale-[0.97]"
-          >
-            Get started
-            <ArrowRight className="h-4 w-4" aria-hidden="true" />
-          </button>
-        </div>
-      </div>
-    </FadeIn>
-  </section>
-);
-
-const SiteFooter = () => (
-  <footer className="border-t border-line bg-paper">
-    <div className="mx-auto flex max-w-6xl flex-col items-start justify-between gap-6 px-4 py-10 text-sm md:flex-row md:items-center md:px-8">
-      <Link
-        to="/welcome"
-        className="inline-flex items-center gap-2 font-display font-semibold text-ink"
-      >
-        <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-brand-600 text-white">
-          <GraduationCap className="h-4 w-4" aria-hidden="true" />
-        </span>
-        Ultimate Student
-      </Link>
-      <nav className="flex flex-wrap gap-x-6 gap-y-2 text-muted">
-        <a href="#about" className="hover:text-brand-700 hover:underline">About</a>
-        <a href="#contact" className="hover:text-brand-700 hover:underline">Contact</a>
-        <a href="#privacy" className="hover:text-brand-700 hover:underline">Privacy</a>
-        <a href="#terms" className="hover:text-brand-700 hover:underline">Terms</a>
-      </nav>
-      <p className="text-xs text-muted">© 2026 IID Global</p>
-    </div>
-  </footer>
-);
-
-/* ─────────────────── Page ─────────────────── */
-
-export const WelcomePage = () => {
-  const navigate = useNavigate();
-  const goStart = () => navigate("/onboarding/account");
-
-  const [i, setI] = useState(0);
-  const [paused, setPaused] = useState(false);
-  const reduce = useReducedMotion();
-
-  useEffect(() => {
-    if (reduce || paused) return;
-    const id = window.setInterval(
-      () => setI((n) => (n + 1) % HERO_PHOTOS.length),
-      SLIDE_MS,
-    );
-    return () => window.clearInterval(id);
-  }, [reduce, paused]);
+const WalkPhoneUI = ({
+  step,
+  reduce,
+  size,
+}: {
+  step: number;
+  reduce: boolean;
+  size: "sm" | "md";
+}) => {
+  const current = WALK_STEPS[step];
+  const SceneComponent = current.Scene;
+  const flowLabel = current.flow === "login" ? "Log in" : "Sign up";
+  const isLogin = current.flow === "login";
 
   return (
-    <div className="min-h-screen bg-paper text-muted">
-      {/* ─── Full-screen hero ─── */}
-      <section
-        aria-labelledby="hero-heading"
-        onMouseEnter={() => setPaused(true)}
-        onMouseLeave={() => setPaused(false)}
-        className="relative isolate h-screen min-h-[640px] w-full overflow-hidden"
-      >
-        <HeroCarousel i={i} onPick={setI} paused={paused} />
-        <HeroNav />
+    <div className="flex flex-col items-center gap-2">
+      <AnimatePresence mode="wait">
+        <motion.span
+          key={current.flow}
+          initial={reduce ? { opacity: 1 } : { opacity: 0, y: -6 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={reduce ? { opacity: 1 } : { opacity: 0, y: -6 }}
+          transition={{ duration: 0.3 }}
+          className="inline-flex items-center gap-1.5 rounded-full border border-white/20 bg-oxford-paper/95 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.2em] text-oxford-ink shadow-sm shadow-oxford-ink/20 backdrop-blur"
+        >
+          <span
+            className={`h-1.5 w-1.5 rounded-full ${isLogin ? "bg-oxford-ink" : "bg-oxford-gold"}`}
+            aria-hidden="true"
+          />
+          {flowLabel}
+        </motion.span>
+      </AnimatePresence>
 
-        {/* Headline + CTAs centred on the image */}
-        <div className="relative z-10 flex h-full items-center">
-          <div className="mx-auto flex w-full max-w-6xl flex-col px-4 pb-24 pt-24 md:px-8">
-            <div className="max-w-3xl">
-              <FadeIn>
-                <p className="text-[11px] font-semibold uppercase tracking-widest text-accent-300">
-                  Ultimate Student
-                </p>
-              </FadeIn>
-              <FadeIn delay={0.1}>
-                <h1
-                  id="hero-heading"
-                  className="mt-3 font-display text-5xl font-bold leading-[1.02] tracking-tight text-white sm:text-6xl md:text-7xl lg:text-8xl"
-                >
-                  Your{" "}
-                  <WordHighlight tone="sage" tilt={-3}>campus</WordHighlight>{" "}
-                  community, in{" "}
-                  <WordHighlight tone="amber" tilt={2}>one app</WordHighlight>.
-                </h1>
-              </FadeIn>
-              <FadeIn delay={0.4}>
-                <div className="mt-8 flex flex-wrap items-center gap-3">
-                  <button
-                    type="button"
-                    onClick={goStart}
-                    className="inline-flex items-center gap-2 rounded-full bg-brand-700 px-7 py-3 text-sm font-semibold text-white shadow-xl shadow-brand-900/40 transition hover:bg-accent-500 hover:text-brand-900 motion-safe:hover:-translate-y-0.5 motion-safe:active:scale-[0.97]"
-                  >
-                    Get started
-                    <ArrowRight className="h-4 w-4" aria-hidden="true" />
-                  </button>
-                  <Link
-                    to="/login"
-                    className="inline-flex items-center gap-2 rounded-full border border-white/40 bg-white/10 px-7 py-3 text-sm font-semibold text-white backdrop-blur-sm transition hover:bg-white/20 motion-safe:active:scale-[0.97]"
-                  >
-                    I have an account
-                  </Link>
-                </div>
-              </FadeIn>
-            </div>
+      <motion.div
+        animate={reduce ? undefined : { y: [0, -6, 0] }}
+        transition={{ duration: 6, ease: "easeInOut", repeat: Infinity }}
+        className={`relative aspect-[9/19.5] rounded-[32px] bg-oxford-ink p-[5px] shadow-[0_28px_60px_-18px_rgba(14,27,58,0.55)] ring-1 ring-white/10 ${
+          size === "sm" ? "w-full" : "w-[220px]"
+        }`}
+      >
+        <div className="absolute left-1/2 top-[5px] z-20 h-5 w-24 -translate-x-1/2 rounded-b-xl bg-oxford-ink" />
+        <div className="relative h-full w-full overflow-hidden rounded-[26px] bg-white">
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={step}
+              initial={reduce ? { opacity: 1 } : { opacity: 0, x: 14 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={reduce ? { opacity: 1 } : { opacity: 0, x: -14 }}
+              transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+              className="h-full w-full"
+            >
+              <SceneComponent reduce={reduce} active />
+            </motion.div>
+          </AnimatePresence>
+        </div>
+      </motion.div>
+    </div>
+  );
+};
+
+/* ─────────────────────────────── Walk mini-screens ─────────────────────────────── */
+
+const MiniStatus = () => (
+  <div className="flex items-center justify-between px-4 pt-5 text-[9px] font-semibold text-oxford-ink">
+    <span>9:41</span>
+    <div className="flex items-center gap-1 text-oxford-ink/70">
+      <Wifi className="h-2.5 w-2.5" aria-hidden="true" />
+      <span className="ml-1 h-1.5 w-3 rounded-sm bg-oxford-ink/70" />
+    </div>
+  </div>
+);
+
+const TapPulse = ({
+  reduce,
+  delay = 0.9,
+}: {
+  reduce: boolean;
+  delay?: number;
+}) => {
+  if (reduce) return null;
+  return (
+    <motion.span
+      aria-hidden="true"
+      className="pointer-events-none absolute left-1/2 top-1/2 flex h-10 w-10 -translate-x-1/2 -translate-y-1/2 items-center justify-center"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ delay: delay * 0.2 }}
+    >
+      <motion.span
+        className="absolute inset-0 rounded-full border-2 border-oxford-ink/50"
+        initial={{ scale: 0.4, opacity: 0 }}
+        animate={{ scale: [0.4, 1.2, 0.4], opacity: [0, 0.8, 0] }}
+        transition={{ duration: 1.4, delay, ease: "easeOut" }}
+      />
+      <span className="relative h-3.5 w-3.5 rounded-full bg-oxford-ink/80" />
+    </motion.span>
+  );
+};
+
+const TypeText = ({
+  text,
+  reduce,
+  delay = 0,
+  speed = 0.05,
+}: {
+  text: string;
+  reduce: boolean;
+  delay?: number;
+  speed?: number;
+}) => {
+  if (reduce) return <span>{text}</span>;
+  return (
+    <span>
+      {text.split("").map((c, i) => (
+        <motion.span
+          key={i}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.05, delay: delay + i * speed }}
+        >
+          {c === " " ? " " : c}
+        </motion.span>
+      ))}
+    </span>
+  );
+};
+
+const MiniLandingTop = () => (
+  <div className="flex items-center justify-between px-4 pt-3">
+    <span className="flex items-center gap-1.5">
+      <span className="flex h-5 w-5 items-center justify-center rounded-full border border-oxford-ink/15">
+        <GraduationCap className="h-2.5 w-2.5 text-oxford-ink" aria-hidden="true" />
+      </span>
+      <span className="font-serif text-[8px] font-bold uppercase tracking-[0.2em] text-oxford-ink">
+        Ultimate
+      </span>
+    </span>
+    <span className="rounded border border-oxford-ink/15 bg-white px-2 py-0.5 text-[8px] font-semibold text-oxford-ink">
+      Menu
+    </span>
+  </div>
+);
+
+const MiniHeroArt = () => (
+  <div className="relative mx-3 mt-3 h-20 overflow-hidden rounded-md bg-oxford-cream">
+    <img
+      src={unsplash(FEATURE_IMAGES.campusGreeting.photoId, 400, 50)}
+      alt=""
+      className="h-full w-full object-cover"
+    />
+    <div className="absolute inset-0 bg-oxford-ink/35" />
+    <span className="pointer-events-none absolute inset-x-0 top-1/2 -translate-y-1/2 text-center font-serif text-base font-medium text-white/75">
+      Ultimate
+    </span>
+  </div>
+);
+
+/* Scene 1 — Log in: Tap Log in */
+const Scene1_TapLogin = ({ reduce }: SceneProps) => (
+  <div className="flex h-full flex-col bg-oxford-paper">
+    <MiniStatus />
+    <MiniLandingTop />
+    <MiniHeroArt />
+    <div className="mt-3 px-4">
+      <h4 className="font-serif text-[12px] font-semibold leading-tight text-oxford-ink">
+        Your campus in one app.
+      </h4>
+      <p className="mt-1 text-[8px] leading-tight text-oxford-mute">
+        Already have an account?
+      </p>
+    </div>
+    <div className="mt-auto flex flex-col gap-2 px-4 pb-5">
+      <button
+        type="button"
+        disabled
+        tabIndex={-1}
+        className="w-full rounded-md bg-oxford-ink py-1.5 text-[9px] font-semibold text-white"
+      >
+        Get started
+      </button>
+      <div className="relative">
+        <button
+          type="button"
+          disabled
+          tabIndex={-1}
+          className="w-full rounded-md border border-oxford-ink/30 bg-white py-1.5 text-[9px] font-semibold text-oxford-ink"
+        >
+          Log in
+        </button>
+        <TapPulse reduce={reduce} />
+      </div>
+    </div>
+  </div>
+);
+
+/* Scene 2 — Log in: Enter email */
+const Scene2_EnterEmail = ({ reduce, active }: SceneProps) => (
+  <div className="flex h-full flex-col bg-white">
+    <MiniStatus />
+    <div className="px-4 pt-3">
+      <p className="text-[8px] font-semibold uppercase tracking-[0.25em] text-oxford-mute">
+        Sign in
+      </p>
+      <h4 className="mt-0.5 font-serif text-[12px] font-semibold text-oxford-ink">
+        Welcome back.
+      </h4>
+    </div>
+    <div className="mt-3 flex flex-1 flex-col gap-2.5 px-4">
+      <div>
+        <p className="text-[7px] font-semibold uppercase tracking-wider text-oxford-mute">
+          Email or ID
+        </p>
+        <div className="relative mt-0.5">
+          <div className="flex items-center gap-1.5 rounded-md border-2 border-oxford-ink bg-white px-2 py-1.5">
+            <AtSign className="h-2.5 w-2.5 text-oxford-ink" aria-hidden="true" />
+            <span className="text-[9px] font-medium text-oxford-ink">
+              {active ? <TypeText text="ama@ug.edu.gh" reduce={reduce} delay={0.5} /> : "ama@ug.edu.gh"}
+            </span>
+            {!reduce && (
+              <motion.span
+                className="ml-0.5 inline-block h-2.5 w-0.5 bg-oxford-ink"
+                animate={{ opacity: [1, 0, 1] }}
+                transition={{ duration: 1, repeat: Infinity }}
+              />
+            )}
+          </div>
+          <TapPulse reduce={reduce} delay={0.1} />
+        </div>
+      </div>
+      <div>
+        <p className="text-[7px] font-semibold uppercase tracking-wider text-oxford-mute">
+          Password
+        </p>
+        <div className="mt-0.5 flex items-center gap-1.5 rounded-md border border-oxford-ink/15 bg-white px-2 py-1.5">
+          <Lock className="h-2.5 w-2.5 text-oxford-ink/40" aria-hidden="true" />
+          <span className="text-[9px] text-oxford-ink/30">Enter password</span>
+        </div>
+      </div>
+    </div>
+    <div className="px-4 pb-5">
+      <button
+        type="button"
+        disabled
+        tabIndex={-1}
+        className="w-full rounded-md bg-oxford-ink/30 py-1.5 text-[9px] font-semibold uppercase tracking-wider text-white"
+      >
+        Sign in
+      </button>
+    </div>
+  </div>
+);
+
+/* Scene 3 — Log in: Enter password and Sign in */
+const Scene3_EnterPassword = ({ reduce, active }: SceneProps) => (
+  <div className="flex h-full flex-col bg-white">
+    <MiniStatus />
+    <div className="px-4 pt-3">
+      <p className="text-[8px] font-semibold uppercase tracking-[0.25em] text-oxford-mute">
+        Sign in
+      </p>
+      <h4 className="mt-0.5 font-serif text-[12px] font-semibold text-oxford-ink">
+        Welcome back.
+      </h4>
+    </div>
+    <div className="mt-3 flex flex-1 flex-col gap-2.5 px-4">
+      <div>
+        <p className="text-[7px] font-semibold uppercase tracking-wider text-oxford-mute">
+          Email or ID
+        </p>
+        <div className="mt-0.5 flex items-center gap-1.5 rounded-md border border-oxford-ink/15 bg-white px-2 py-1.5">
+          <AtSign className="h-2.5 w-2.5 text-oxford-ink/60" aria-hidden="true" />
+          <span className="text-[9px] font-medium text-oxford-ink">ama@ug.edu.gh</span>
+        </div>
+      </div>
+      <div>
+        <p className="text-[7px] font-semibold uppercase tracking-wider text-oxford-mute">
+          Password
+        </p>
+        <div className="mt-0.5 flex items-center gap-1.5 rounded-md border-2 border-oxford-ink bg-white px-2 py-1.5">
+          <Lock className="h-2.5 w-2.5 text-oxford-ink" aria-hidden="true" />
+          <span className="font-mono text-[10px] font-bold tracking-widest text-oxford-ink">
+            {active ? <TypeText text="••••••••" reduce={reduce} delay={0.3} speed={0.08} /> : "••••••••"}
+          </span>
+        </div>
+      </div>
+    </div>
+    <div className="relative px-4 pb-5">
+      <button
+        type="button"
+        disabled
+        tabIndex={-1}
+        className="w-full rounded-md bg-oxford-ink py-1.5 text-[9px] font-semibold uppercase tracking-wider text-white"
+      >
+        Sign in
+      </button>
+      <TapPulse reduce={reduce} delay={1.2} />
+    </div>
+  </div>
+);
+
+/* Scene 4 — Log in: Confirmation */
+const Scene4_SignInConfirm = ({ reduce }: SceneProps) => (
+  <div className="flex h-full flex-col bg-white px-4">
+    <MiniStatus />
+    <div className="flex flex-1 flex-col items-center justify-center text-center">
+      <motion.div
+        initial={reduce ? { scale: 1 } : { scale: 0.5 }}
+        animate={{ scale: 1 }}
+        transition={{ delay: 0.1, duration: 0.5, ease: [0.34, 1.56, 0.64, 1] }}
+        className="flex h-14 w-14 items-center justify-center rounded-2xl bg-oxford-ink shadow-xl shadow-oxford-ink/35"
+      >
+        <Check className="h-8 w-8 text-white" strokeWidth={3} aria-hidden="true" />
+      </motion.div>
+      <h4 className="mt-4 font-serif text-[12px] font-semibold text-oxford-ink">
+        Welcome back, Ama.
+      </h4>
+      <p className="mt-1 text-[8px] leading-tight text-oxford-mute">
+        You're signed in. Head to Home.
+      </p>
+      <p className="mt-2 font-serif text-[9px] font-bold text-oxford-ink">
+        ama@ug.edu.gh
+      </p>
+    </div>
+    <div className="relative pb-5">
+      <button
+        type="button"
+        disabled
+        tabIndex={-1}
+        className="w-full rounded-md bg-oxford-ink py-1.5 text-[9px] font-semibold uppercase tracking-widest text-white"
+      >
+        Proceed
+      </button>
+      <TapPulse reduce={reduce} delay={0.9} />
+    </div>
+  </div>
+);
+
+/* Scene 5 — Home dashboard */
+const Scene5_Home = ({ reduce }: SceneProps) => (
+  <div className="flex h-full flex-col bg-oxford-paper">
+    <MiniStatus />
+    <div className="px-4 pt-3">
+      <p className="text-[8px] font-semibold uppercase tracking-[0.25em] text-oxford-gold">
+        Good morning
+      </p>
+      <h4 className="mt-0.5 font-serif text-base font-bold leading-none text-oxford-ink">
+        Ama
+      </h4>
+      <p className="mt-1 text-[7px] text-oxford-mute">
+        Thursday, 12 November
+      </p>
+    </div>
+
+    <motion.div
+      initial={reduce ? { opacity: 1, y: 0 } : { opacity: 0, y: 8 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: 0.15, duration: 0.4 }}
+      className="mx-3 mt-2.5 rounded-lg bg-oxford-ink p-2 text-white"
+    >
+      <p className="text-[7px] font-semibold uppercase tracking-wider text-oxford-sand">
+        Next class
+      </p>
+      <p className="mt-0.5 text-[10px] font-bold leading-tight">
+        CPEN 312 — Software Eng.
+      </p>
+      <p className="mt-0.5 text-[7px] text-white/80">
+        Tue · 10:00 · R401
+      </p>
+    </motion.div>
+
+    <motion.div
+      initial={reduce ? { opacity: 1, y: 0 } : { opacity: 0, y: 8 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: 0.3, duration: 0.4 }}
+      className="mx-3 mt-1.5 rounded-lg border border-oxford-rule bg-white p-2"
+    >
+      <p className="text-[7px] font-semibold uppercase tracking-wider text-oxford-mute">
+        Today
+      </p>
+      <p className="mt-0.5 text-[9px] font-bold text-oxford-ink">
+        3 classes · 14:00 next
+      </p>
+    </motion.div>
+
+    <motion.div
+      initial={reduce ? { opacity: 1, y: 0 } : { opacity: 0, y: 8 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: 0.45, duration: 0.4 }}
+      className="mx-3 mt-1.5 rounded-lg border border-oxford-rule bg-white p-2"
+    >
+      <p className="text-[7px] font-semibold uppercase tracking-wider text-oxford-mute">
+        Upcoming exam
+      </p>
+      <p className="mt-0.5 text-[9px] font-bold text-oxford-ink">
+        Software Eng. · 05 Dec
+      </p>
+    </motion.div>
+
+    <div className="mx-3 mb-3 mt-auto grid grid-cols-4 gap-1 rounded-lg bg-oxford-ink p-1 text-white">
+      {["Acad.", "Hostel", "Map", "More"].map((label) => (
+        <div key={label} className="flex flex-col items-center gap-0.5 py-0.5">
+          <span className="h-4 w-4 rounded bg-white/15" aria-hidden="true" />
+          <span className="text-[6px] font-semibold">{label}</span>
+        </div>
+      ))}
+    </div>
+  </div>
+);
+
+/* Scene 6 — Sign up: Tap Get started */
+const Scene6_TapGetStarted = ({ reduce }: SceneProps) => (
+  <div className="flex h-full flex-col bg-oxford-paper">
+    <MiniStatus />
+    <MiniLandingTop />
+    <MiniHeroArt />
+    <div className="mt-3 px-4">
+      <h4 className="font-serif text-[12px] font-semibold leading-tight text-oxford-ink">
+        New here? Join the cohort.
+      </h4>
+      <p className="mt-1 text-[8px] leading-tight text-oxford-mute">
+        Create your account in a minute.
+      </p>
+    </div>
+    <div className="mt-auto flex flex-col gap-2 px-4 pb-5">
+      <div className="relative">
+        <button
+          type="button"
+          disabled
+          tabIndex={-1}
+          className="w-full rounded-md bg-oxford-ink py-1.5 text-[9px] font-semibold text-white"
+        >
+          Get started
+        </button>
+        <TapPulse reduce={reduce} />
+      </div>
+      <button
+        type="button"
+        disabled
+        tabIndex={-1}
+        className="w-full rounded-md border border-oxford-ink/30 bg-white py-1.5 text-[9px] font-semibold text-oxford-ink"
+      >
+        Log in
+      </button>
+    </div>
+  </div>
+);
+
+/* Scene 7 — Sign up: Fill in account details */
+const Scene7_SignUpForm = ({ reduce, active }: SceneProps) => (
+  <div className="flex h-full flex-col bg-white">
+    <MiniStatus />
+    <div className="px-4 pt-3">
+      <p className="text-[8px] font-semibold uppercase tracking-[0.25em] text-oxford-mute">
+        Sign up
+      </p>
+      <h4 className="mt-0.5 font-serif text-[12px] font-semibold text-oxford-ink">
+        Create your account.
+      </h4>
+    </div>
+    <div className="mt-2.5 flex flex-1 flex-col gap-1.5 px-4">
+      <div>
+        <p className="text-[7px] font-semibold uppercase tracking-wider text-oxford-mute">
+          Name
+        </p>
+        <div className="mt-0.5 flex items-center gap-1.5 rounded-md border border-oxford-ink/20 bg-white px-2 py-1">
+          <UserPlus className="h-2.5 w-2.5 text-oxford-ink/60" aria-hidden="true" />
+          <span className="text-[9px] font-medium text-oxford-ink">
+            {active ? <TypeText text="Ama Nkrumah" reduce={reduce} delay={0.2} /> : "Ama Nkrumah"}
+          </span>
+        </div>
+      </div>
+      <div>
+        <p className="text-[7px] font-semibold uppercase tracking-wider text-oxford-mute">
+          Email
+        </p>
+        <div className="mt-0.5 flex items-center gap-1.5 rounded-md border border-oxford-ink/20 bg-white px-2 py-1">
+          <AtSign className="h-2.5 w-2.5 text-oxford-ink/60" aria-hidden="true" />
+          <span className="text-[9px] font-medium text-oxford-ink">
+            {active ? <TypeText text="ama@ug.edu.gh" reduce={reduce} delay={0.9} /> : "ama@ug.edu.gh"}
+          </span>
+        </div>
+      </div>
+      <div>
+        <p className="text-[7px] font-semibold uppercase tracking-wider text-oxford-mute">
+          Password
+        </p>
+        <div className="mt-0.5 flex items-center gap-1.5 rounded-md border border-oxford-ink/20 bg-white px-2 py-1">
+          <Lock className="h-2.5 w-2.5 text-oxford-ink/60" aria-hidden="true" />
+          <span className="font-mono text-[10px] font-bold tracking-widest text-oxford-ink">
+            {active ? <TypeText text="••••••••" reduce={reduce} delay={1.8} speed={0.08} /> : "••••••••"}
+          </span>
+        </div>
+      </div>
+    </div>
+    <div className="px-4 pb-5">
+      <button
+        type="button"
+        disabled
+        tabIndex={-1}
+        className="w-full rounded-md bg-oxford-ink/30 py-1.5 text-[9px] font-semibold uppercase tracking-wider text-white"
+      >
+        Sign up
+      </button>
+    </div>
+  </div>
+);
+
+/* Scene 8 — Sign up: Tap Sign up */
+const Scene8_TapSignUp = ({ reduce }: SceneProps) => (
+  <div className="flex h-full flex-col bg-white">
+    <MiniStatus />
+    <div className="px-4 pt-3">
+      <p className="text-[8px] font-semibold uppercase tracking-[0.25em] text-oxford-mute">
+        Sign up
+      </p>
+      <h4 className="mt-0.5 font-serif text-[12px] font-semibold text-oxford-ink">
+        Create your account.
+      </h4>
+    </div>
+    <div className="mt-2.5 flex flex-1 flex-col gap-1.5 px-4">
+      {[
+        { label: "Name", icon: <UserPlus className="h-2.5 w-2.5 text-oxford-ink/60" aria-hidden="true" />, value: "Ama Nkrumah", mono: false },
+        { label: "Email", icon: <AtSign className="h-2.5 w-2.5 text-oxford-ink/60" aria-hidden="true" />, value: "ama@ug.edu.gh", mono: false },
+        { label: "Password", icon: <Lock className="h-2.5 w-2.5 text-oxford-ink/60" aria-hidden="true" />, value: "••••••••", mono: true },
+      ].map((f) => (
+        <div key={f.label}>
+          <p className="text-[7px] font-semibold uppercase tracking-wider text-oxford-mute">
+            {f.label}
+          </p>
+          <div className="mt-0.5 flex items-center gap-1.5 rounded-md border border-oxford-ink/20 bg-white px-2 py-1">
+            {f.icon}
+            <span className={f.mono ? "font-mono text-[10px] font-bold tracking-widest text-oxford-ink" : "text-[9px] font-medium text-oxford-ink"}>
+              {f.value}
+            </span>
+          </div>
+        </div>
+      ))}
+    </div>
+    <div className="relative px-4 pb-5">
+      <button
+        type="button"
+        disabled
+        tabIndex={-1}
+        className="w-full rounded-md bg-oxford-ink py-1.5 text-[9px] font-semibold uppercase tracking-wider text-white"
+      >
+        Sign up
+      </button>
+      <TapPulse reduce={reduce} delay={0.8} />
+    </div>
+  </div>
+);
+
+/* Scene 9 — Sign up: Confirmation */
+const Scene9_SignUpConfirm = ({ reduce }: SceneProps) => (
+  <div className="flex h-full flex-col bg-white px-4">
+    <MiniStatus />
+    <div className="flex flex-1 flex-col items-center justify-center text-center">
+      <motion.div
+        initial={reduce ? { scale: 1 } : { scale: 0.5 }}
+        animate={{ scale: 1 }}
+        transition={{ delay: 0.1, duration: 0.5, ease: [0.34, 1.56, 0.64, 1] }}
+        className="flex h-14 w-14 items-center justify-center rounded-2xl bg-oxford-ink shadow-xl shadow-oxford-ink/35"
+      >
+        <Check className="h-8 w-8 text-white" strokeWidth={3} aria-hidden="true" />
+      </motion.div>
+      <h4 className="mt-4 font-serif text-[12px] font-semibold text-oxford-ink">
+        Account created.
+      </h4>
+      <p className="mt-1 text-[8px] leading-tight text-oxford-mute">
+        Welcome to Ultimate Student.
+      </p>
+      <p className="mt-2 font-serif text-[9px] font-bold text-oxford-ink">
+        ama@ug.edu.gh
+      </p>
+    </div>
+    <div className="relative pb-5">
+      <button
+        type="button"
+        disabled
+        tabIndex={-1}
+        className="w-full rounded-md bg-oxford-ink py-1.5 text-[9px] font-semibold uppercase tracking-widest text-white"
+      >
+        Proceed
+      </button>
+      <TapPulse reduce={reduce} delay={0.9} />
+    </div>
+  </div>
+);
+
+const WALK_STEPS: WalkStep[] = [
+  { id: "li-1", flow: "login", Scene: Scene1_TapLogin },
+  { id: "li-2", flow: "login", Scene: Scene2_EnterEmail },
+  { id: "li-3", flow: "login", Scene: Scene3_EnterPassword },
+  { id: "li-4", flow: "login", Scene: Scene4_SignInConfirm },
+  { id: "li-5", flow: "login", Scene: Scene5_Home },
+  { id: "su-1", flow: "signup", Scene: Scene6_TapGetStarted },
+  { id: "su-2", flow: "signup", Scene: Scene7_SignUpForm },
+  { id: "su-3", flow: "signup", Scene: Scene8_TapSignUp },
+  { id: "su-4", flow: "signup", Scene: Scene9_SignUpConfirm },
+  { id: "su-5", flow: "signup", Scene: Scene5_Home },
+];
+
+/* ─────────────────────────────── About + Stats ─────────────────────────────── */
+
+const AboutStats = () => (
+  <section aria-labelledby="about-heading" className="relative bg-oxford-paper">
+    <div className="mx-auto max-w-[1280px] px-5 pb-16 pt-10 md:px-8 md:pb-24 md:pt-16">
+      <div className="relative grid grid-cols-1 gap-10 lg:grid-cols-[72px_1fr] lg:gap-16">
+        <div className="hidden lg:block">
+          <div className="sticky top-32 flex h-[560px] items-start justify-start">
+            <span className="origin-top-left -rotate-90 translate-y-[220px] font-serif text-[11px] font-medium uppercase tracking-[0.35em] text-oxford-mute">
+              2026&nbsp;&apos;s&nbsp;Recap
+            </span>
           </div>
         </div>
 
-        <ScrollDown />
-      </section>
+        <div>
+          <motion.p
+            initial={{ opacity: 0, y: 12 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.6 }}
+            transition={{ duration: 0.5 }}
+            className="font-sans text-xs font-medium uppercase tracking-[0.3em] text-oxford-mute"
+          >
+          
+          </motion.p>
+          <motion.h2
+            id="about-heading"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.3 }}
+            transition={{ duration: 0.7, delay: 0.1 }}
+            className="mt-4 max-w-4xl font-serif text-[30px] font-medium leading-[1.2] text-oxford-ink md:text-[46px] md:leading-[1.15] lg:text-[54px]"
+          >
+            Our numbers reflect a university life that actually works
+            <span className="text-oxford-mute">
+              {" "}
+               connecting students with what matters most, every single day.
+            </span>
+          </motion.h2>
 
-      <HowItWorks />
-      <CampusLife />
-      <FinalCTA onStart={goStart} />
-      <SiteFooter />
+          <div className="mt-12 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+            <StatCard
+              variant="primary"
+              eyebrow="Students"
+              value="25,000+"
+              body="Across undergraduate and postgraduate levels in Ghana and West Africa."
+            />
+            <StatCard
+              variant="soft"
+              eyebrow="Campus Spots"
+              value="240+"
+              body="Lecture halls, hostels, ATMs and food stops pinned on the in-app map."
+            />
+            <StatCard
+              variant="primary"
+              eyebrow="Partner Hostels"
+              value="180+"
+              body="Compared side-by-side — price, beds, Wi-Fi, laundry and shuttle info."
+            />
+          </div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 16 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.6 }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+            className="mt-14 flex items-center gap-6"
+          >
+            <h3 className="font-serif text-2xl font-medium text-oxford-ink md:text-3xl">
+              Ultimate Student at a Glance
+            </h3>
+            <span className="hidden h-px flex-1 bg-oxford-rule md:block" aria-hidden="true" />
+          </motion.div>
+
+          <GlanceCards />
+        </div>
+      </div>
+    </div>
+  </section>
+);
+
+/* ─────────────────────────────── Glance cards row ─────────────────────────────── */
+
+interface GlanceFeature {
+  id: string;
+  title: string;
+  blurb: string;
+  image: UnsplashImage;
+  Icon: LucideIcon;
+}
+
+const GLANCE_FEATURES: GlanceFeature[] = [
+  {
+    id: "dashboard",
+    title: "Dashboard",
+    blurb: "Today's class, next deadline, who's gathering where one home screen.",
+    image: FEATURE_IMAGES.onboardingAccount,
+    Icon: BookOpen,
+  },
+  {
+    id: "map",
+    title: "Campus Map",
+    blurb: "Every lecture hall, ATM and food stop pinned, with walking times.",
+    image: FEATURE_IMAGES.onboardingTypeHero,
+    Icon: MapPin,
+  },
+  {
+    id: "hostels",
+    title: "Hostels",
+    blurb: "Compare price, beds, Wi-Fi and laundry  then claim your room.",
+    image: FEATURE_IMAGES.onboardingLiving,
+    Icon: Building2,
+  },
+  {
+    id: "life",
+    title: "Campus Life",
+    blurb: "Clubs, events, matchups  RSVP with a tap and show up with friends.",
+    image: FEATURE_IMAGES.onboardingInterests,
+    Icon: Users,
+  },
+];
+
+const GlanceCards = () => {
+  const reduce = useReducedMotion();
+  const r = !!reduce;
+
+  return (
+    <div className="mt-10 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-5 md:mt-12 md:gap-5">
+      <GlanceStat reduce={r} />
+      {GLANCE_FEATURES.map((f, i) => (
+        <GlanceFeatureCard
+          key={f.id}
+          feature={f}
+          index={i}
+          reduce={r}
+        />
+      ))}
+    </div>
+  );
+};
+
+const GlanceStat = ({ reduce }: { reduce: boolean }) => (
+  <motion.article
+    initial={reduce ? { opacity: 1, y: 0 } : { opacity: 0, y: 24 }}
+    whileInView={{ opacity: 1, y: 0 }}
+    viewport={{ once: true, amount: 0.3 }}
+    transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+    className="group relative flex min-h-[220px] flex-col justify-between overflow-hidden rounded-2xl bg-oxford-sandSoft p-6 ring-1 ring-oxford-rule/60 transition hover:ring-oxford-gold/50 sm:col-span-2 sm:min-h-[280px] md:p-7 lg:col-span-1 lg:min-h-0"
+  >
+    <div>
+      <p className="font-sans text-[11px] font-semibold uppercase tracking-[0.25em] text-oxford-gold">
+        Why students stay
+      </p>
+      <p className="mt-6 font-serif text-5xl font-bold leading-none text-oxford-ink md:text-6xl">
+        75%
+      </p>
+      <p className="mt-2 font-serif text-xl font-medium text-oxford-ink md:text-2xl">
+        Less scrolling
+      </p>
+    </div>
+    <p className="mt-6 max-w-xs text-sm leading-relaxed text-oxford-ink2/80">
+      No more hunting for info across eight group chats and five bulletin boards.
+    </p>
+    {/* Soft decorative blob */}
+    <span
+      aria-hidden="true"
+      className="pointer-events-none absolute -right-8 -top-8 h-32 w-32 rounded-full bg-oxford-sand opacity-70 transition duration-500 group-hover:scale-110"
+    />
+  </motion.article>
+);
+
+const GlanceFeatureCard = ({
+  feature,
+  index,
+  reduce,
+}: {
+  feature: GlanceFeature;
+  index: number;
+  reduce: boolean;
+}) => {
+  const Icon = feature.Icon;
+  return (
+    <motion.article
+      initial={reduce ? { opacity: 1, y: 0 } : { opacity: 0, y: 24 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, amount: 0.3 }}
+      transition={{
+        duration: 0.6,
+        delay: reduce ? 0 : 0.08 * (index + 1),
+        ease: [0.22, 1, 0.36, 1],
+      }}
+      className="group relative min-h-[300px] overflow-hidden rounded-2xl bg-oxford-ink shadow-sm shadow-oxford-ink/10 sm:min-h-[360px] lg:min-h-[320px]"
+    >
+      <img
+        src={unsplash(feature.image.photoId, 600, 65)}
+        srcSet={unsplashSrcSet(feature.image.photoId)}
+        sizes="(min-width:1024px) 240px, (min-width:640px) 45vw, 92vw"
+        alt=""
+        loading="lazy"
+        className="absolute inset-0 h-full w-full object-cover transition duration-700 ease-out group-hover:scale-110 motion-reduce:transform-none motion-reduce:transition-none"
+      />
+      <div
+        aria-hidden="true"
+        className="absolute inset-0 bg-gradient-to-t from-oxford-ink via-oxford-ink/45 to-transparent"
+      />
+
+      {/* Icon badge — top-right */}
+      <div className="absolute right-3 top-3 flex h-11 w-11 items-center justify-center rounded-full bg-oxford-gold text-white shadow-md shadow-oxford-ink/40 transition duration-300 group-hover:scale-110 group-hover:bg-oxford-ink motion-reduce:transform-none motion-reduce:transition-none">
+        <Icon className="h-4 w-4" strokeWidth={2.2} aria-hidden="true" />
+      </div>
+
+      {/* Title + blurb at bottom */}
+      <div className="absolute inset-x-0 bottom-0 p-4 md:p-5">
+        <h3 className="font-serif text-lg font-semibold leading-tight text-white md:text-xl">
+          {feature.title}
+        </h3>
+        <p className="mt-1.5 text-[12px] leading-snug text-white/85 md:text-xs">
+          {feature.blurb}
+        </p>
+      </div>
+
+      {/* Hover arrow — subtle hint */}
+      <div className="absolute right-4 bottom-4 flex h-8 w-8 items-center justify-center rounded-full bg-white/0 text-white opacity-0 transition duration-300 group-hover:bg-white/15 group-hover:opacity-100 motion-reduce:transform-none motion-reduce:transition-none">
+        <ArrowRight className="h-4 w-4" aria-hidden="true" />
+      </div>
+    </motion.article>
+  );
+};
+
+const StatCard = ({
+  variant,
+  eyebrow,
+  value,
+  body,
+}: {
+  variant: "primary" | "soft";
+  eyebrow: string;
+  value: string;
+  body: string;
+}) => (
+  <motion.article
+    initial={{ opacity: 0, y: 24 }}
+    whileInView={{ opacity: 1, y: 0 }}
+    viewport={{ once: true, amount: 0.4 }}
+    transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+    className={`rounded-xl p-6 md:p-8 ${
+      variant === "primary" ? "bg-oxford-sand" : "bg-oxford-sandSoft"
+    }`}
+  >
+    <p className="font-serif text-sm font-medium italic text-oxford-gold">
+      {eyebrow}
+    </p>
+    <p className="mt-6 font-serif text-5xl font-semibold tracking-tight text-oxford-ink md:text-6xl">
+      {value}
+    </p>
+    <p className="mt-4 max-w-xs text-sm leading-relaxed text-oxford-ink2/80">
+      {body}
+    </p>
+  </motion.article>
+);
+
+/* ─────────────────────────────── CTA band ─────────────────────────────── */
+
+const CtaBand = ({ onStart }: { onStart: () => void }) => (
+  <section aria-labelledby="cta-heading" className="bg-oxford-paper">
+    <div className="mx-auto max-w-[1280px] px-5 pb-20 md:px-8 md:pb-28">
+      <div className="relative overflow-hidden rounded-[18px] bg-oxford-ink">
+        <div className="relative grid grid-cols-1 gap-10 px-6 py-14 lg:grid-cols-[1fr_320px] lg:items-center lg:gap-12 lg:px-16 lg:py-24">
+          <div>
+            <motion.p
+              initial={{ opacity: 0, y: 12 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, amount: 0.6 }}
+              transition={{ duration: 0.5 }}
+              className="font-sans text-xs font-medium uppercase tracking-[0.3em] text-white/70"
+            >
+              Join the next cohort
+            </motion.p>
+            <motion.h2
+              id="cta-heading"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, amount: 0.3 }}
+              transition={{ duration: 0.6, delay: 0.1 }}
+              className="mt-4 font-serif text-[36px] font-medium leading-[1.1] text-white md:text-[56px]"
+            >
+              Your campus is a lot.
+              <br />
+              <span className="italic text-oxford-sand">Your app shouldn&apos;t be.</span>
+            </motion.h2>
+            <motion.p
+              initial={{ opacity: 0, y: 16 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, amount: 0.5 }}
+              transition={{ duration: 0.6, delay: 0.2 }}
+              className="mt-6 max-w-lg text-base leading-relaxed text-white/80"
+            >
+              Set up takes a minute. Just you, your day, and the campus  in one app.
+            </motion.p>
+            <motion.div
+              initial={{ opacity: 0, y: 16 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, amount: 0.5 }}
+              transition={{ duration: 0.6, delay: 0.3 }}
+              className="mt-10 flex flex-wrap items-center gap-3"
+            >
+              <button
+                type="button"
+                onClick={onStart}
+                className="inline-flex items-center gap-2 rounded-md bg-oxford-sand px-6 py-3.5 text-sm font-semibold text-oxford-ink transition hover:bg-oxford-sandSoft motion-safe:active:scale-[0.97]"
+              >
+                Join now
+                <ArrowRight className="h-4 w-4" aria-hidden="true" />
+              </button>
+              <Link
+                to="/login"
+                className="inline-flex items-center gap-2 rounded-md border border-white/25 bg-white/5 px-6 py-3.5 text-sm font-semibold text-white transition hover:bg-white/15"
+              >
+                Log in
+              </Link>
+            </motion.div>
+          </div>
+
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: true, amount: 0.5 }}
+            transition={{ duration: 0.8 }}
+            className="hidden lg:block"
+            aria-hidden="true"
+          >
+            <div className="relative h-72 w-full overflow-hidden rounded-xl">
+              <img
+                src={unsplash(MOSAIC_IMAGES[2].photoId, 800, 65)}
+                alt=""
+                className="h-full w-full object-cover"
+                loading="lazy"
+              />
+              <div className="absolute inset-0 bg-oxford-ink/20" />
+              <span className="pointer-events-none absolute inset-x-0 top-1/2 -translate-y-1/2 text-center font-serif text-4xl font-medium text-white/70 mix-blend-overlay">
+                Join
+              </span>
+            </div>
+          </motion.div>
+        </div>
+      </div>
+    </div>
+  </section>
+);
+
+/* ─────────────────────────────── Page ─────────────────────────────── */
+
+export const WelcomePage = () => {
+  const navigate = useNavigate();
+  const reduce = useReducedMotion();
+  const goStart = () => navigate("/onboarding/account");
+
+  return (
+    <div data-landing="oxford" className="min-h-screen bg-oxford-paper font-sans text-oxford-ink antialiased">
+      <TopNav onStart={goStart} />
+      <Hero reduce={!!reduce} onStart={goStart} />
+      <AboutStats />
+      <CtaBand onStart={goStart} />
     </div>
   );
 };

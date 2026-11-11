@@ -1,98 +1,32 @@
-import { useEffect, useMemo, useState } from "react";
+﻿import { useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "react-router-dom";
+import type { LatLngTuple } from "leaflet";
 import {
   ArrowUpRight,
+  ChevronDown,
   ChevronRight,
+  ChevronUp,
   Clock,
+  Loader2,
   Locate,
   MapPin,
   Phone,
+  Route,
   Search,
+  X,
 } from "lucide-react";
-import { navigation as PLACES } from "@/data/mocks/navigation";
-import type { SectionItem } from "@/data/types";
+import {
+  CAMPUS_CATEGORIES,
+  CAMPUS_PLACES,
+  type CampusCategory,
+  type CampusPlace,
+} from "@/data/mocks/campusPlaces";
+import { unsplash, unsplashSrcSet } from "@/lib/images";
+import { MobileBackButton } from "@/components/MobileBackButton";
+import { useBackIntercept } from "@/hooks/useBackIntercept";
+import { CampusMap } from "./CampusMap";
 
-type Category =
-  | "All"
-  | "Halls"
-  | "Libraries"
-  | "Services"
-  | "Food"
-  | "ATMs"
-  | "Sports";
-
-interface Meta {
-  mapX: number; // 0–100 % of SVG viewBox for the illustrative map
-  mapY: number;
-  lat: number;
-  lng: number;
-  categories: Category[];
-  hours?: string;
-}
-
-/** Illustrative map positions + approximate University of Ghana (Legon) coords. */
-const META: Record<string, Meta> = {
-  "nav-1": {
-    mapX: 32, mapY: 44,
-    lat: 5.6509, lng: -0.1870,
-    categories: ["Libraries"],
-    hours: "Open daily · 24/7 reading area",
-  },
-  "nav-2": {
-    mapX: 72, mapY: 28,
-    lat: 5.6530, lng: -0.1845,
-    categories: ["Halls"],
-    hours: "Residents only",
-  },
-  "nav-3": {
-    mapX: 54, mapY: 60,
-    lat: 5.6504, lng: -0.1868,
-    categories: ["Services"],
-    hours: "Mon–Fri · 09:00–17:00",
-  },
-  "nav-4": {
-    mapX: 82, mapY: 68,
-    lat: 5.6497, lng: -0.1855,
-    categories: ["ATMs"],
-    hours: "Open 24/7",
-  },
-  "nav-5": {
-    mapX: 20, mapY: 68,
-    lat: 5.6488, lng: -0.1893,
-    categories: ["Services"],
-    hours: "Mon–Sun · 08:00–20:00",
-  },
-  "nav-6": {
-    mapX: 50, mapY: 18,
-    lat: 5.6515, lng: -0.1872,
-    categories: ["Halls"],
-    hours: "Open for scheduled events",
-  },
-  "nav-7": {
-    mapX: 86, mapY: 84,
-    lat: 5.6482, lng: -0.1848,
-    categories: ["Food"],
-    hours: "Daily · 10:00–23:00",
-  },
-  "nav-8": {
-    mapX: 16, mapY: 84,
-    lat: 5.6479, lng: -0.1901,
-    categories: ["Sports"],
-    hours: "Mon–Sat · 06:00–21:00",
-  },
-};
-
-const YOU_ARE_HERE = { x: 48, y: 52 };
-
-const CATEGORIES: Category[] = [
-  "All",
-  "Halls",
-  "Libraries",
-  "Services",
-  "Food",
-  "ATMs",
-  "Sports",
-];
+/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ utilities â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 
 const WALK_SPEED_M_PER_MIN = 80;
 
@@ -127,10 +61,7 @@ const formatDistance = (meters: number): string =>
 const walkMinutes = (meters: number): number =>
   Math.max(1, Math.round(meters / WALK_SPEED_M_PER_MIN));
 
-/* ───────────────────────────── Highlight helper ───────────────────────────── */
-
-const escapeRegExp = (s: string) =>
-  s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+const escapeRegExp = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 
 const Highlight = ({ text, query }: { text: string; query: string }) => {
   if (!query.trim()) return <>{text}</>;
@@ -150,114 +81,116 @@ const Highlight = ({ text, query }: { text: string; query: string }) => {
   );
 };
 
-/* ───────────────────────────── Directions helper ───────────────────────────── */
+/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ walking-route fetch (OSRM foot profile) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 
-const openInMaps = (item: SectionItem, origin: Coord | null) => {
-  const destination =
-    item.location?.mapsQuery ?? item.location?.label ?? item.title;
-  const url = origin
-    ? `https://www.google.com/maps/dir/?api=1&origin=${origin.lat},${origin.lng}&destination=${encodeURIComponent(destination)}&travelmode=walking`
-    : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(destination)}`;
-  window.open(url, "_blank", "noopener,noreferrer");
-};
-
-/* ───────────────────────────── Map SVG ───────────────────────────── */
-
-interface CampusMapProps {
-  places: SectionItem[];
-  selectedId: string;
-  onSelect: (id: string) => void;
+interface RouteResult {
+  path: LatLngTuple[];
+  distanceMeters: number;
+  durationSeconds: number;
 }
 
-const CampusMap = ({ places, selectedId, onSelect }: CampusMapProps) => {
-  const w = 500;
-  const h = 300;
-  return (
-    <div className="relative aspect-[5/3] w-full overflow-hidden rounded-xl border border-line bg-emerald-50 lg:aspect-auto lg:h-[520px]">
-      <svg
-        viewBox={`0 0 ${w} ${h}`}
-        preserveAspectRatio="xMidYMid slice"
-        className="h-full w-full"
-        role="img"
-        aria-label="Illustrative campus map"
-      >
-        <ellipse cx="190" cy="190" rx="150" ry="55" fill="#D7E0F1" />
-        <ellipse cx="380" cy="110" rx="80" ry="50" fill="#D7E0F1" />
-        <ellipse cx="100" cy="90" rx="60" ry="35" fill="#D7E0F1" />
-
-        <path d="M 30 200 L 470 200" stroke="#DDE3EC" strokeWidth="2" strokeDasharray="4 3" fill="none" />
-        <path d="M 250 20 L 250 280" stroke="#DDE3EC" strokeWidth="2" strokeDasharray="4 3" fill="none" />
-        <path d="M 60 60 Q 220 110 440 55" stroke="#DDE3EC" strokeWidth="2" strokeDasharray="4 3" fill="none" />
-
-        <g>
-          <circle cx={(YOU_ARE_HERE.x / 100) * w} cy={(YOU_ARE_HERE.y / 100) * h} r="18" fill="rgba(16, 185, 129, 0.18)" />
-          <circle cx={(YOU_ARE_HERE.x / 100) * w} cy={(YOU_ARE_HERE.y / 100) * h} r="7" fill="#C9A227" stroke="white" strokeWidth="3" />
-          <text x={(YOU_ARE_HERE.x / 100) * w} y={(YOU_ARE_HERE.y / 100) * h + 24} textAnchor="middle" fontSize="10" fontWeight="600" fill="#1E2A4A">
-            You are here
-          </text>
-        </g>
-
-        {places.map((p) => {
-          const m = META[p.id];
-          if (!m) return null;
-          const x = (m.mapX / 100) * w;
-          const y = (m.mapY / 100) * h;
-          const isSelected = selectedId === p.id;
-          return (
-            <g key={p.id} style={{ cursor: "pointer" }} onClick={() => onSelect(p.id)}>
-              {isSelected && <circle cx={x} cy={y} r="18" fill="rgba(79, 70, 229, 0.18)" />}
-              <circle cx={x} cy={y} r={isSelected ? 9 : 7} fill={isSelected ? "#1A3A8F" : "#829DD1"} stroke="white" strokeWidth="2" />
-              <text x={x} y={y - 14} textAnchor="middle" fontSize="9" fontWeight="600" fill={isSelected ? "#0F2256" : "#1E2A4A"}>
-                {p.title}
-              </text>
-            </g>
-          );
-        })}
-      </svg>
-
-      <p className="pointer-events-none absolute bottom-2 left-3 text-[10px] text-muted">
-        Illustrative campus map · not to scale
-      </p>
-    </div>
+const fetchWalkingRoute = async (
+  from: Coord,
+  to: Coord,
+  signal: AbortSignal,
+): Promise<RouteResult | null> => {
+  const url = `https://router.project-osrm.org/route/v1/foot/${from.lng},${from.lat};${to.lng},${to.lat}?overview=full&geometries=geojson`;
+  const res = await fetch(url, { signal });
+  if (!res.ok) return null;
+  const data = (await res.json()) as {
+    routes?: Array<{
+      geometry: { coordinates: [number, number][] };
+      distance: number;
+      duration: number;
+    }>;
+  };
+  const route = data.routes?.[0];
+  if (!route) return null;
+  const path: LatLngTuple[] = route.geometry.coordinates.map(
+    ([lng, lat]) => [lat, lng],
   );
+  return {
+    path,
+    distanceMeters: route.distance,
+    durationSeconds: route.duration,
+  };
 };
 
-/* ───────────────────────────── Selected card ───────────────────────────── */
+/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ Selected card â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 
 interface SelectedCardProps {
-  item: SectionItem;
-  meta: Meta;
+  place: CampusPlace;
   userLocation: Coord | null;
   locationStatus: LocationStatus;
+  routeResult: RouteResult | null;
+  routeLoading: boolean;
+  routeError: string | null;
+  onGetDirections: () => void;
+  onClearRoute: () => void;
+  compact?: boolean;
 }
 
 const SelectedCard = ({
-  item,
-  meta,
+  place,
   userLocation,
   locationStatus,
+  routeResult,
+  routeLoading,
+  routeError,
+  onGetDirections,
+  onClearRoute,
+  compact,
 }: SelectedCardProps) => {
   const canShowWalk =
     userLocation !== null && locationStatus === "granted";
-  const meters = canShowWalk
-    ? haversineMeters(userLocation, { lat: meta.lat, lng: meta.lng })
+  const straightLineMeters = canShowWalk
+    ? haversineMeters(userLocation, { lat: place.lat, lng: place.lng })
+    : null;
+  const routedMinutes = routeResult
+    ? Math.max(1, Math.round(routeResult.durationSeconds / 60))
     : null;
 
   return (
-    <article className="rounded-xl border border-line bg-white p-4 shadow-sm">
-      <p className="text-[11px] font-semibold uppercase tracking-wider text-muted">
-        Explore your campus
-      </p>
-      <h2 className="mt-1 text-xl font-bold text-ink">{item.title}</h2>
-      {item.subtitle && (
-        <p className="text-sm text-muted">{item.subtitle}</p>
-      )}
+    <article className="rounded-2xl border border-line bg-white p-4 shadow-lg shadow-brand-900/10">
+      <div className={`flex gap-3 ${compact ? "items-center" : "items-start"}`}>
+        <div
+          className={`shrink-0 overflow-hidden rounded-xl bg-brand-50 ${
+            compact ? "h-14 w-14" : "h-20 w-20"
+          }`}
+        >
+          <img
+            src={unsplash(place.photoId, 400)}
+            srcSet={unsplashSrcSet(place.photoId)}
+            sizes="80px"
+            alt={place.photoAlt}
+            className="h-full w-full object-cover"
+            loading="lazy"
+          />
+        </div>
+        <div className="min-w-0 flex-1">
+          <p className="text-[10px] font-semibold uppercase tracking-wider text-accent-700">
+            {place.category}
+          </p>
+          <h2 className="truncate text-lg font-bold text-ink">
+            {place.name}
+          </h2>
+          {place.subtitle && (
+            <p className="truncate text-xs text-muted">{place.subtitle}</p>
+          )}
+        </div>
+      </div>
 
       <p className="mt-3 flex items-center gap-2 text-sm text-ink">
-        <Clock className="h-4 w-4 text-muted" aria-hidden="true" />
-        {meters !== null ? (
+        <Route className="h-4 w-4 text-muted" aria-hidden="true" />
+        {routeResult ? (
           <>
-            {formatDistance(meters)} · {walkMinutes(meters)} min walk
+            {formatDistance(routeResult.distanceMeters)} Â· {routedMinutes} min
+            walk
+          </>
+        ) : straightLineMeters !== null ? (
+          <>
+            {formatDistance(straightLineMeters)} Â·{" "}
+            {walkMinutes(straightLineMeters)} min walk
           </>
         ) : (
           <span className="text-muted">
@@ -266,37 +199,69 @@ const SelectedCard = ({
         )}
       </p>
 
-      <button
-        type="button"
-        onClick={() => openInMaps(item, userLocation)}
-        className="mt-4 flex w-full items-center justify-center gap-2 rounded-xl bg-brand-600 px-4 py-3 text-sm font-semibold text-white transition hover:bg-accent-500 hover:text-brand-900 motion-safe:active:scale-[0.98]"
-      >
-        Get directions
-        <ArrowUpRight className="h-4 w-4" aria-hidden="true" />
-      </button>
+      <div className="mt-3 flex gap-2">
+        <button
+          type="button"
+          onClick={onGetDirections}
+          disabled={routeLoading}
+          className="flex flex-1 items-center justify-center gap-2 rounded-xl bg-brand-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-accent-500 hover:text-brand-900 disabled:cursor-not-allowed disabled:opacity-70 motion-safe:active:scale-[0.98]"
+        >
+          {routeLoading ? (
+            <>
+              <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
+              Finding route
+            </>
+          ) : (
+            <>
+              Get directions
+              <ArrowUpRight className="h-4 w-4" aria-hidden="true" />
+            </>
+          )}
+        </button>
+        {routeResult && (
+          <button
+            type="button"
+            onClick={onClearRoute}
+            className="rounded-xl border border-line bg-white px-3 py-2.5 text-sm font-semibold text-ink hover:bg-paper"
+            aria-label="Clear route"
+          >
+            <X className="h-4 w-4" aria-hidden="true" />
+          </button>
+        )}
+      </div>
 
-      {(meta.hours || item.contact?.phone) && (
+      {routeError && (
+        <p className="mt-2 text-xs text-rose-600">{routeError}</p>
+      )}
+
+      {(place.hours || place.phone) && (
         <dl className="mt-4 space-y-2 border-t border-line/60 pt-3 text-xs text-muted">
-          {meta.hours && (
+          {place.hours && (
             <div className="flex items-start gap-2">
-              <Clock className="mt-0.5 h-3.5 w-3.5 shrink-0 text-muted" aria-hidden="true" />
+              <Clock
+                className="mt-0.5 h-3.5 w-3.5 shrink-0 text-muted"
+                aria-hidden="true"
+              />
               <div>
                 <dt className="sr-only">Opening hours</dt>
-                <dd>{meta.hours}</dd>
+                <dd>{place.hours}</dd>
               </div>
             </div>
           )}
-          {item.contact?.phone && (
+          {place.phone && (
             <div className="flex items-start gap-2">
-              <Phone className="mt-0.5 h-3.5 w-3.5 shrink-0 text-muted" aria-hidden="true" />
+              <Phone
+                className="mt-0.5 h-3.5 w-3.5 shrink-0 text-muted"
+                aria-hidden="true"
+              />
               <div>
                 <dt className="sr-only">Phone</dt>
                 <dd>
                   <a
-                    href={`tel:${item.contact.phone.replace(/\s/g, "")}`}
-                    className="font-medium text-ink hover:text-brand-700"
+                    href={`tel:${place.phone.replace(/\s/g, "")}`}
+                    className="font-medium text-ink hover:text-brand-700 hover:underline"
                   >
-                    {item.contact.phone}
+                    {place.phone}
                   </a>
                 </dd>
               </div>
@@ -306,111 +271,67 @@ const SelectedCard = ({
       )}
 
       <Link
-        to={`/section/navigation/${item.id}`}
+        to={`/section/navigation/${place.id}`}
         className="mt-3 inline-block text-xs font-semibold text-brand-700 hover:text-brand-800 hover:underline"
       >
-        View full details →
+        View full details â†’
       </Link>
     </article>
   );
 };
 
-/* ───────────────────────────── Places list ───────────────────────────── */
+/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ List row â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 
-interface PlacesListProps {
-  places: SectionItem[];
-  selectedId: string;
-  onSelect: (id: string) => void;
+interface PlaceRowProps {
+  place: CampusPlace;
   query: string;
-  userLocation: Coord | null;
-  locationStatus: LocationStatus;
+  isSelected: boolean;
+  distanceLabel: string | null;
+  onSelect: () => void;
 }
 
-const PlacesList = ({
-  places,
-  selectedId,
-  onSelect,
+const PlaceRow = ({
+  place,
   query,
-  userLocation,
-  locationStatus,
-}: PlacesListProps) => {
-  const canShowWalk =
-    userLocation !== null && locationStatus === "granted";
-  return (
-    <section>
-      <h3 className="mb-2 text-sm font-semibold text-ink">
-        Places on campus
-      </h3>
-      {places.length === 0 ? (
-        <div className="rounded-xl border border-line bg-white p-4 text-sm text-muted">
-          No results for{" "}
-          <strong className="text-ink">"{query}"</strong> in Campus map.
-          <Link
-            to={`/search?q=${encodeURIComponent(query)}`}
-            className="mt-1 block text-xs font-semibold text-brand-700 hover:text-brand-800 hover:underline"
-          >
-            Search all of Ultimate Student
-          </Link>
-        </div>
-      ) : (
-        <ul className="divide-y divide-line/60 overflow-hidden rounded-xl border border-line bg-white">
-          {places.map((p) => {
-            const m = META[p.id];
-            const isSelected = selectedId === p.id;
-            const meters =
-              canShowWalk && m
-                ? haversineMeters(userLocation, { lat: m.lat, lng: m.lng })
-                : null;
-            return (
-              <li key={p.id}>
-                <button
-                  type="button"
-                  onClick={() => onSelect(p.id)}
-                  aria-pressed={isSelected}
-                  className={`flex w-full items-center gap-3 p-3 text-left transition ${
-                    isSelected ? "bg-brand-50" : "hover:bg-paper"
-                  }`}
-                >
-                  <span
-                    className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg ${
-                      isSelected
-                        ? "bg-brand-100 text-brand-700"
-                        : "bg-paper text-muted"
-                    }`}
-                  >
-                    <MapPin className="h-4 w-4" aria-hidden="true" />
-                  </span>
-                  <span className="min-w-0 flex-1">
-                    <span className="block truncate text-sm font-semibold text-ink">
-                      <Highlight text={p.title} query={query} />
-                    </span>
-                    {meters !== null ? (
-                      <span className="block truncate text-xs text-muted">
-                        {formatDistance(meters)} · {walkMinutes(meters)} min walk
-                      </span>
-                    ) : (
-                      p.location?.label && (
-                        <span className="block truncate text-xs text-muted">
-                          {p.location.label}
-                        </span>
-                      )
-                    )}
-                  </span>
-                  <ChevronRight
-                    className="h-4 w-4 shrink-0 text-muted"
-                    aria-hidden="true"
-                  />
-                </button>
-              </li>
-            );
-          })}
-        </ul>
-      )}
-    </section>
-  );
-};
+  isSelected,
+  distanceLabel,
+  onSelect,
+}: PlaceRowProps) => (
+  <li>
+    <button
+      type="button"
+      onClick={onSelect}
+      aria-pressed={isSelected}
+      className={`flex w-full items-center gap-3 p-3 text-left transition ${
+        isSelected ? "bg-brand-50" : "hover:bg-paper"
+      }`}
+    >
+      <span
+        className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-lg ${
+          isSelected
+            ? "bg-brand-600 text-white"
+            : "bg-paper text-muted"
+        }`}
+      >
+        <MapPin className="h-4 w-4" aria-hidden="true" />
+      </span>
+      <span className="min-w-0 flex-1">
+        <span className="block truncate text-sm font-semibold text-ink">
+          <Highlight text={place.name} query={query} />
+        </span>
+        <span className="block truncate text-xs text-muted">
+          {distanceLabel ?? place.subtitle ?? place.category}
+        </span>
+      </span>
+      <ChevronRight
+        className="h-4 w-4 shrink-0 text-muted"
+        aria-hidden="true"
+      />
+    </button>
+  </li>
+);
 
-/* ───────────────────────────── Location banner ───────────────────────────── */
+/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ Location banner â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 
 const LocationBanner = ({
   status,
@@ -422,72 +343,51 @@ const LocationBanner = ({
   if (status === "granted") return null;
   const title =
     status === "denied"
-      ? "Location permission is off"
+      ? "Location is off"
       : status === "unavailable"
         ? "Location isn't available on this device"
-        : "Allow location to see how far each place is from you";
-  const buttonLabel = status === "denied" ? "Try again" : "Allow location";
+        : "Allow location to see walking times";
+  const buttonLabel = status === "denied" ? "Try again" : "Allow";
   const showButton = status !== "unavailable";
 
   return (
-    <div className="mb-4 flex items-start justify-between gap-3 rounded-xl border border-line bg-white p-3 shadow-sm">
-      <div className="flex items-start gap-3">
-        <span className="mt-0.5 inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-brand-100 text-brand-700">
-          <Locate className="h-4 w-4" aria-hidden="true" />
-        </span>
-        <p className="text-sm text-ink">{title}</p>
-      </div>
+    <div className="flex items-center gap-2 rounded-xl border border-line bg-white px-3 py-2 shadow-sm">
+      <span className="inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-brand-100 text-brand-700">
+        <Locate className="h-4 w-4" aria-hidden="true" />
+      </span>
+      <p className="min-w-0 flex-1 truncate text-xs text-ink">{title}</p>
       {showButton && (
         <button
           type="button"
           onClick={onAllow}
           disabled={status === "requesting"}
-          className="shrink-0 rounded-lg bg-brand-600 px-3 py-1.5 text-xs font-semibold text-white transition hover:bg-accent-500 hover:text-brand-900 disabled:cursor-not-allowed disabled:opacity-60"
+          className="shrink-0 rounded-lg bg-brand-600 px-2.5 py-1 text-xs font-semibold text-white transition hover:bg-accent-500 hover:text-brand-900 disabled:cursor-not-allowed disabled:opacity-60"
         >
-          {status === "requesting" ? "Asking…" : buttonLabel}
+          {status === "requesting" ? "â€¦" : buttonLabel}
         </button>
       )}
     </div>
   );
 };
 
-/* ───────────────────────────── Page ───────────────────────────── */
+/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ Page â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+
+type CategoryChoice = "All" | CampusCategory;
 
 export const NavigationPage = () => {
   const [query, setQuery] = useState("");
-  const [category, setCategory] = useState<Category>("All");
-  const [selectedId, setSelectedId] = useState<string>(PLACES[0].id);
-  const [sort, setSort] = useState<"nearest" | "alpha">("nearest");
+  const [category, setCategory] = useState<CategoryChoice>("All");
+  const [selectedId, setSelectedId] = useState<string>(CAMPUS_PLACES[0].id);
   const [userLocation, setUserLocation] = useState<Coord | null>(null);
-  const [locationStatus, setLocationStatus] =
-    useState<LocationStatus>("idle");
+  const [locationStatus, setLocationStatus] = useState<LocationStatus>("idle");
+  const [routeResult, setRouteResult] = useState<RouteResult | null>(null);
+  const [routeLoading, setRouteLoading] = useState(false);
+  const [routeError, setRouteError] = useState<string | null>(null);
+  const [sheetOpen, setSheetOpen] = useState(false);
+  const watchIdRef = useRef<number | null>(null);
+  const routeAbortRef = useRef<AbortController | null>(null);
 
-  // Check permission state up-front; auto-start watch if already granted.
-  useEffect(() => {
-    if (typeof navigator === "undefined" || !navigator.geolocation) {
-      setLocationStatus("unavailable");
-      return;
-    }
-    const permissions = navigator.permissions;
-    if (!permissions || typeof permissions.query !== "function") {
-      // Can't query without triggering a prompt — leave the banner visible.
-      return;
-    }
-    permissions
-      .query({ name: "geolocation" as PermissionName })
-      .then((result) => {
-        if (result.state === "granted") {
-          startWatching();
-        } else if (result.state === "denied") {
-          setLocationStatus("denied");
-        }
-      })
-      .catch(() => {
-        /* ignore — leave as idle */
-      });
-    // startWatching never changes
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  /* ---------- geolocation ---------- */
 
   const startWatching = () => {
     if (!navigator.geolocation) {
@@ -495,7 +395,7 @@ export const NavigationPage = () => {
       return;
     }
     setLocationStatus("requesting");
-    const watchId = navigator.geolocation.watchPosition(
+    const id = navigator.geolocation.watchPosition(
       (pos) => {
         setUserLocation({
           lat: pos.coords.latitude,
@@ -509,181 +409,471 @@ export const NavigationPage = () => {
       },
       { enableHighAccuracy: false, maximumAge: 15000, timeout: 15000 },
     );
-    // Store watchId on window so hot reloads don't leak — small MVP concession
-    (window as unknown as { __locWatch?: number }).__locWatch = watchId;
+    watchIdRef.current = id;
   };
 
-  // Cleanup
   useEffect(() => {
-    return () => {
-      const id = (window as unknown as { __locWatch?: number }).__locWatch;
-      if (id != null && navigator.geolocation) {
-        navigator.geolocation.clearWatch(id);
-      }
-    };
+    if (typeof navigator === "undefined" || !navigator.geolocation) {
+      setLocationStatus("unavailable");
+      return;
+    }
+    const permissions = navigator.permissions;
+    if (!permissions || typeof permissions.query !== "function") return;
+    permissions
+      .query({ name: "geolocation" as PermissionName })
+      .then((result) => {
+        if (result.state === "granted") startWatching();
+        else if (result.state === "denied") setLocationStatus("denied");
+      })
+      .catch(() => {});
+    // startWatching is stable
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  useEffect(
+    () => () => {
+      if (watchIdRef.current != null && navigator.geolocation) {
+        navigator.geolocation.clearWatch(watchIdRef.current);
+      }
+    },
+    [],
+  );
+
+  /* ---------- filtering ---------- */
+
+  const filtered = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    return CAMPUS_PLACES.filter((p) => {
+      if (category !== "All" && p.category !== category) return false;
+      if (!q) return true;
+      const hay = `${p.name} ${p.subtitle ?? ""} ${p.summary} ${p.tags.join(" ")} ${p.category}`.toLowerCase();
+      return hay.includes(q);
+    });
+  }, [query, category]);
 
   const canSortByNearest =
     locationStatus === "granted" && userLocation !== null;
 
-  const filtered = useMemo(() => {
-    const q = query.trim().toLowerCase();
-    let list = PLACES.filter((p) => {
-      const m = META[p.id];
-      if (!m) return false;
-      if (category !== "All" && !m.categories.includes(category)) return false;
-      if (q) {
-        const hay = `${p.title} ${p.summary} ${p.tags.join(" ")}`.toLowerCase();
-        if (!hay.includes(q)) return false;
-      }
-      return true;
-    });
-
-    if (sort === "nearest" && canSortByNearest && userLocation) {
-      list = [...list].sort((a, b) => {
-        const ma = META[a.id];
-        const mb = META[b.id];
-        return (
-          haversineMeters(userLocation, { lat: ma.lat, lng: ma.lng }) -
-          haversineMeters(userLocation, { lat: mb.lat, lng: mb.lng })
-        );
-      });
-    } else {
-      list = [...list].sort((a, b) => a.title.localeCompare(b.title));
+  const sorted = useMemo(() => {
+    if (!canSortByNearest || !userLocation) {
+      return [...filtered].sort((a, b) => a.name.localeCompare(b.name));
     }
-    return list;
-  }, [query, category, sort, canSortByNearest, userLocation]);
+    return [...filtered].sort(
+      (a, b) =>
+        haversineMeters(userLocation, { lat: a.lat, lng: a.lng }) -
+        haversineMeters(userLocation, { lat: b.lat, lng: b.lng }),
+    );
+  }, [filtered, canSortByNearest, userLocation]);
 
   const selected =
-    PLACES.find((p) => p.id === selectedId) ?? filtered[0] ?? PLACES[0];
-  const selectedMeta = META[selected.id];
+    CAMPUS_PLACES.find((p) => p.id === selectedId) ??
+    sorted[0] ??
+    CAMPUS_PLACES[0];
 
-  const visibleIds = filtered.map((p) => p.id);
+  // If the current selection falls outside the filter, fall through to first visible.
   const effectiveSelected =
-    visibleIds.includes(selectedId) || visibleIds.length === 0
+    sorted.some((p) => p.id === selected.id) || sorted.length === 0
       ? selected
-      : filtered[0];
-  const effectiveMeta = META[effectiveSelected.id] ?? selectedMeta;
+      : sorted[0];
+
+  /* ---------- selection changes clear any route ---------- */
+
+  useEffect(() => {
+    setRouteResult(null);
+    setRouteError(null);
+    if (routeAbortRef.current) routeAbortRef.current.abort();
+  }, [selectedId]);
+
+  /* ---------- directions ---------- */
+
+  const handleGetDirections = async () => {
+    if (!userLocation) {
+      setRouteError("Allow location to see walking directions.");
+      startWatching();
+      return;
+    }
+    if (routeAbortRef.current) routeAbortRef.current.abort();
+    const controller = new AbortController();
+    routeAbortRef.current = controller;
+    setRouteLoading(true);
+    setRouteError(null);
+    try {
+      const res = await fetchWalkingRoute(
+        userLocation,
+        { lat: effectiveSelected.lat, lng: effectiveSelected.lng },
+        controller.signal,
+      );
+      if (controller.signal.aborted) return;
+      if (!res) {
+        setRouteError("Couldn't load a walking route. Try again.");
+        setRouteResult(null);
+      } else {
+        setRouteResult(res);
+      }
+    } catch (err) {
+      if ((err as Error).name === "AbortError") return;
+      setRouteError("Couldn't load a walking route. Check your connection.");
+    } finally {
+      setRouteLoading(false);
+    }
+  };
+
+  const handleClearRoute = () => {
+    if (routeAbortRef.current) routeAbortRef.current.abort();
+    setRouteResult(null);
+    setRouteError(null);
+  };
+
+  /* ---------- derived values ---------- */
+
+  const rowDistanceLabel = (p: CampusPlace): string | null => {
+    if (!canSortByNearest || !userLocation) return null;
+    const m = haversineMeters(userLocation, { lat: p.lat, lng: p.lng });
+    return `${formatDistance(m)} Â· ${walkMinutes(m)} min walk`;
+  };
+
+  const handleSelect = (id: string) => {
+    setSelectedId(id);
+    setSheetOpen(true);
+  };
+
+  const userLatLng: LatLngTuple | null = userLocation
+    ? [userLocation.lat, userLocation.lng]
+    : null;
+
+  /* ---------- back-button intercept ---------- */
+
+  const handleMobileBack = (): boolean => {
+    if (routeResult || routeLoading) {
+      handleClearRoute();
+      return true;
+    }
+    if (sheetOpen) {
+      setSheetOpen(false);
+      return true;
+    }
+    return false;
+  };
+
+  // Phone back / swipe mirrors the visible back button.
+  useBackIntercept(sheetOpen || routeResult !== null, () => {
+    if (routeResult) handleClearRoute();
+    else if (sheetOpen) setSheetOpen(false);
+  });
+
+  /* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ render â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 
   return (
-    <div>
-      <header className="mb-4">
+    <div className="-mx-4 -mt-4 sm:-mx-6 lg:mx-0 lg:mt-0">
+      {/* Desktop header (list / map share the page width) */}
+      <header className="hidden lg:block lg:mb-4">
         <h1 className="text-2xl font-bold text-ink">Campus map</h1>
         <p className="mt-1 text-sm text-muted">
-          Find buildings, halls, offices, ATMs and clinics on campus.
+          Find halls, libraries, offices, food, health, ATMs, transport and
+          emergency points on campus.
         </p>
       </header>
 
-      <LocationBanner status={locationStatus} onAllow={startWatching} />
-
-      <div className="mb-4 space-y-3">
-        <label htmlFor="place-search" className="sr-only">
-          Search places on campus
-        </label>
-        <div className="relative">
-          <Search
-            className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted"
-            aria-hidden="true"
-          />
-          <input
-            id="place-search"
-            type="search"
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            placeholder="Search places on campus…"
-            className="w-full rounded-xl border border-line bg-white py-2.5 pl-9 pr-3 text-sm text-ink placeholder:text-muted focus:border-brand-500"
-          />
-        </div>
-
-        <div className="flex items-center justify-between gap-3">
-          <div
-            role="group"
-            aria-label="Category filter"
-            className="scrollbar-hide -mx-1 flex min-w-0 gap-2 overflow-x-auto px-1 pb-1"
-          >
-            {CATEGORIES.map((c) => {
-              const isActive = category === c;
-              return (
-                <button
-                  key={c}
-                  type="button"
-                  aria-pressed={isActive}
-                  onClick={() => setCategory(c)}
-                  className={`shrink-0 rounded-full border px-3 py-1 text-xs font-medium transition ${
-                    isActive
-                      ? "border-brand-600 bg-brand-600 text-white"
-                      : "border-line bg-white text-ink hover:border-line hover:bg-paper"
-                  }`}
-                >
-                  {c}
-                </button>
-              );
-            })}
-          </div>
-
-          {/* Sort toggle */}
-          <div
-            role="group"
-            aria-label="Sort places"
-            className="shrink-0 overflow-hidden rounded-full border border-line bg-white text-xs font-medium"
-          >
-            <button
-              type="button"
-              onClick={() => setSort("nearest")}
-              disabled={!canSortByNearest}
-              aria-pressed={sort === "nearest" && canSortByNearest}
-              className={`px-3 py-1 transition ${
-                sort === "nearest" && canSortByNearest
-                  ? "bg-brand-900 text-white"
-                  : "text-ink hover:bg-paper disabled:cursor-not-allowed disabled:text-muted"
-              }`}
-            >
-              Nearest
-            </button>
-            <button
-              type="button"
-              onClick={() => setSort("alpha")}
-              aria-pressed={sort === "alpha" || !canSortByNearest}
-              className={`border-l border-line px-3 py-1 transition ${
-                sort === "alpha" || !canSortByNearest
-                  ? "bg-brand-900 text-white"
-                  : "text-ink hover:bg-paper"
-              }`}
-            >
-              A–Z
-            </button>
-          </div>
-        </div>
-      </div>
-
       <div className="lg:grid lg:grid-cols-[360px_1fr] lg:gap-6">
-        <div className="space-y-4 lg:order-2">
-          <CampusMap
-            places={filtered}
-            selectedId={effectiveSelected.id}
-            onSelect={setSelectedId}
-          />
-          {effectiveMeta && (
-            <SelectedCard
-              item={effectiveSelected}
-              meta={effectiveMeta}
-              userLocation={userLocation}
-              locationStatus={locationStatus}
-            />
-          )}
-        </div>
+        {/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ Desktop: left list column â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
+        <aside className="hidden lg:flex lg:flex-col lg:gap-3 lg:self-start">
+          <LocationBanner status={locationStatus} onAllow={startWatching} />
 
-        <aside className="mt-6 lg:order-1 lg:mt-0">
-          <PlacesList
-            places={filtered}
-            selectedId={effectiveSelected.id}
-            onSelect={setSelectedId}
-            query={query}
+          <div className="relative">
+            <Search
+              className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted"
+              aria-hidden="true"
+            />
+            <input
+              type="search"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder="Search places on campusâ€¦"
+              aria-label="Search places on campus"
+              className="w-full rounded-xl border border-line bg-white py-2.5 pl-9 pr-3 text-sm text-ink placeholder:text-muted focus:border-brand-500"
+            />
+          </div>
+
+          <CategoryChips
+            selected={category}
+            onChange={setCategory}
+          />
+
+          <SelectedCard
+            place={effectiveSelected}
             userLocation={userLocation}
             locationStatus={locationStatus}
+            routeResult={routeResult}
+            routeLoading={routeLoading}
+            routeError={routeError}
+            onGetDirections={handleGetDirections}
+            onClearRoute={handleClearRoute}
           />
+
+          <section>
+            <h3 className="mb-2 mt-2 text-sm font-semibold text-ink">
+              {sorted.length === 0
+                ? "No places match"
+                : `Places on campus (${sorted.length})`}
+            </h3>
+            {sorted.length === 0 ? (
+              <div className="rounded-xl border border-line bg-white p-4 text-sm text-muted">
+                No results in Campus map.
+                <Link
+                  to={`/search?q=${encodeURIComponent(query)}`}
+                  className="mt-1 block text-xs font-semibold text-brand-700 hover:text-brand-800 hover:underline"
+                >
+                  Search all of Ultimate Student
+                </Link>
+              </div>
+            ) : (
+              <ul
+                className="max-h-[420px] divide-y divide-line/60 overflow-y-auto rounded-xl border border-line bg-white"
+                role="listbox"
+                aria-label="Places on campus"
+              >
+                {sorted.map((p) => (
+                  <PlaceRow
+                    key={p.id}
+                    place={p}
+                    query={query}
+                    isSelected={p.id === effectiveSelected.id}
+                    distanceLabel={rowDistanceLabel(p)}
+                    onSelect={() => handleSelect(p.id)}
+                  />
+                ))}
+              </ul>
+            )}
+          </section>
         </aside>
+
+        {/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ Map column (both desktop + mobile) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
+        <div className="relative">
+          {/* Mobile header overlay above the map */}
+          <div className="relative z-[1050] border-b border-line bg-paper/95 px-4 py-3 backdrop-blur lg:hidden">
+            <MobileBackButton
+              onBeforeNavigate={handleMobileBack}
+              className="absolute left-3 top-3"
+            />
+            <h1 className="pl-14 text-lg font-bold text-ink">Campus map</h1>
+            <div className="relative mt-2">
+              <Search
+                className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted"
+                aria-hidden="true"
+              />
+              <input
+                type="search"
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                placeholder="Search placesâ€¦"
+                aria-label="Search places on campus"
+                className="min-h-[40px] w-full rounded-xl border border-line bg-white py-2 pl-9 pr-3 text-sm text-ink placeholder:text-muted focus:border-brand-500"
+              />
+            </div>
+            <div className="mt-2">
+              <LocationBanner
+                status={locationStatus}
+                onAllow={startWatching}
+              />
+            </div>
+            <div className="mt-2">
+              <CategoryChips
+                selected={category}
+                onChange={setCategory}
+                compact
+              />
+            </div>
+          </div>
+
+          {/* The map itself â€” fills the remaining viewport on mobile,
+             fixed-height on desktop. */}
+          <div
+            className="relative h-[calc(100dvh-14.5rem)] min-h-[320px] lg:h-[640px]"
+            aria-label="Interactive campus map"
+          >
+            <CampusMap
+              places={sorted}
+              selectedId={effectiveSelected.id}
+              onSelect={handleSelect}
+              userLocation={userLatLng}
+              routePath={routeResult?.path ?? null}
+              resizeToken={sheetOpen}
+              className="h-full w-full"
+            />
+          </div>
+
+          {/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ Mobile pull-up sheet â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
+          <MobileSheet
+            open={sheetOpen}
+            onToggle={() => setSheetOpen((v) => !v)}
+            selectedCard={
+              <SelectedCard
+                place={effectiveSelected}
+                userLocation={userLocation}
+                locationStatus={locationStatus}
+                routeResult={routeResult}
+                routeLoading={routeLoading}
+                routeError={routeError}
+                onGetDirections={handleGetDirections}
+                onClearRoute={handleClearRoute}
+              />
+            }
+            places={sorted}
+            selectedId={effectiveSelected.id}
+            onSelect={handleSelect}
+            query={query}
+            rowDistanceLabel={rowDistanceLabel}
+          />
+        </div>
       </div>
     </div>
   );
 };
+
+/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ Category chips â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+
+interface CategoryChipsProps {
+  selected: CategoryChoice;
+  onChange: (c: CategoryChoice) => void;
+  compact?: boolean;
+}
+
+const CategoryChips = ({
+  selected,
+  onChange,
+  compact,
+}: CategoryChipsProps) => {
+  const chips: CategoryChoice[] = ["All", ...CAMPUS_CATEGORIES];
+  return (
+    <div
+      role="group"
+      aria-label="Category filter"
+      className={`scrollbar-hide -mx-1 flex min-w-0 gap-2 overflow-x-auto px-1 ${
+        compact ? "pb-0" : "pb-1"
+      }`}
+    >
+      {chips.map((c) => {
+        const isActive = selected === c;
+        return (
+          <button
+            key={c}
+            type="button"
+            aria-pressed={isActive}
+            onClick={() => onChange(c)}
+            className={`shrink-0 rounded-full border px-3 py-1 text-xs font-medium transition ${
+              isActive
+                ? "border-brand-600 bg-brand-600 text-white"
+                : "border-line bg-white text-ink hover:border-brand-400 hover:bg-paper"
+            }`}
+          >
+            {c}
+          </button>
+        );
+      })}
+    </div>
+  );
+};
+
+/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ Mobile pull-up sheet â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+
+interface MobileSheetProps {
+  open: boolean;
+  onToggle: () => void;
+  selectedCard: React.ReactNode;
+  places: CampusPlace[];
+  selectedId: string;
+  onSelect: (id: string) => void;
+  query: string;
+  rowDistanceLabel: (p: CampusPlace) => string | null;
+}
+
+const MobileSheet = ({
+  open,
+  onToggle,
+  selectedCard,
+  places,
+  selectedId,
+  onSelect,
+  query,
+  rowDistanceLabel,
+}: MobileSheetProps) => (
+  <div
+    className={`fixed inset-x-0 bottom-0 z-[1100] mx-auto flex max-h-[80dvh] w-full max-w-[720px] flex-col rounded-t-2xl border border-line bg-white shadow-2xl shadow-brand-900/15 transition-transform duration-300 ease-out lg:hidden ${
+      open ? "translate-y-0" : "translate-y-[calc(100%-13rem)]"
+    }`}
+    style={{
+      paddingBottom:
+        "calc(env(safe-area-inset-bottom) + 4.25rem)" /* clears bottom tab bar */,
+    }}
+    role="dialog"
+    aria-label="Places on campus"
+    aria-expanded={open}
+  >
+    <button
+      type="button"
+      onClick={onToggle}
+      className="flex w-full items-center justify-center gap-2 py-2 text-xs font-semibold text-muted hover:text-ink"
+      aria-label={open ? "Collapse list" : "Expand list"}
+    >
+      <span
+        aria-hidden="true"
+        className="block h-1 w-10 rounded-full bg-line"
+      />
+    </button>
+    <div className="px-4 pb-2">
+      <div className="flex items-center justify-between">
+        <h3 className="text-sm font-semibold text-ink">
+          {places.length === 0 ? "No places match" : `${places.length} places`}
+        </h3>
+        <button
+          type="button"
+          onClick={onToggle}
+          className="inline-flex items-center gap-1 rounded-full border border-line bg-white px-2.5 py-1 text-xs font-semibold text-ink hover:bg-paper"
+          aria-label={open ? "Collapse list" : "Expand list"}
+        >
+          {open ? (
+            <>
+              Hide <ChevronDown className="h-3.5 w-3.5" aria-hidden="true" />
+            </>
+          ) : (
+            <>
+              See all <ChevronUp className="h-3.5 w-3.5" aria-hidden="true" />
+            </>
+          )}
+        </button>
+      </div>
+      <div className="mt-2">{selectedCard}</div>
+    </div>
+
+    <div className="min-h-0 flex-1 overflow-y-auto px-4 pb-4">
+      {places.length === 0 ? (
+        <div className="rounded-xl border border-line bg-white p-4 text-sm text-muted">
+          No results in Campus map.
+          <Link
+            to={`/search?q=${encodeURIComponent(query)}`}
+            className="mt-1 block text-xs font-semibold text-brand-700 hover:text-brand-800 hover:underline"
+          >
+            Search all of Ultimate Student
+          </Link>
+        </div>
+      ) : (
+        <ul
+          className="divide-y divide-line/60 overflow-hidden rounded-xl border border-line bg-white"
+          role="listbox"
+          aria-label="Places on campus"
+        >
+          {places.map((p) => (
+            <PlaceRow
+              key={p.id}
+              place={p}
+              query={query}
+              isSelected={p.id === selectedId}
+              distanceLabel={rowDistanceLabel(p)}
+              onSelect={() => onSelect(p.id)}
+            />
+          ))}
+        </ul>
+      )}
+    </div>
+  </div>
+);

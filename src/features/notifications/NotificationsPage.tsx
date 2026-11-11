@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+﻿import { Link } from "react-router-dom";
 import { Bell } from "lucide-react";
 import { AppHeader } from "@/components/AppHeader";
 import { EmptyState } from "@/components/EmptyState";
@@ -25,7 +25,7 @@ export const NotificationsPage = () => {
 
   return (
     <>
-      <AppHeader title="Notifications" showSearch={false} />
+      <AppHeader title="Notifications" showSearch={false} showBack />
       <div className="px-4 pb-6">
         {unreadCount > 0 && (
           <div className="mb-3 flex items-center justify-between">

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+﻿import { useEffect, useMemo, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import {
   ChevronDown,
@@ -10,6 +10,7 @@ import {
   X,
 } from "lucide-react";
 import { Highlight } from "@/lib/highlight";
+import { MobileBackButton } from "@/components/MobileBackButton";
 import {
   HOSTELS,
   type Availability,
@@ -22,7 +23,7 @@ import {
   type RoomType,
 } from "./data";
 
-/* ───────────────────────────── Types & options ───────────────────────────── */
+/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ Types & options â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 
 type SortKey =
   | "recommended"
@@ -89,8 +90,8 @@ const NEARBY_OPTIONS: Nearby[] = ["Shuttle stop", "Market/shops", "Clinic", "ATM
 
 const SORT_LABEL: Record<SortKey, string> = {
   recommended: "Recommended",
-  "price-asc": "Price · low to high",
-  "price-desc": "Price · high to low",
+  "price-asc": "Price Â· low to high",
+  "price-desc": "Price Â· high to low",
   nearest: "Nearest to campus",
   newest: "Newest",
 };
@@ -106,7 +107,7 @@ const PRICE_RANGES = {
   },
 };
 
-/* ───────────────────────────── URL sync ───────────────────────────── */
+/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ URL sync â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 
 const splitList = (v: string | null): string[] =>
   v ? v.split(",").filter(Boolean) : [];
@@ -147,7 +148,7 @@ const toParams = (s: FilterState): URLSearchParams => {
   return p;
 };
 
-/* ───────────────────────────── Filter matching ───────────────────────────── */
+/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ Filter matching â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 
 const matchesFilter = (h: Hostel, s: FilterState): boolean => {
   if (s.locations.length && !s.locations.includes(h.location)) return false;
@@ -217,7 +218,7 @@ const sortHostels = (list: Hostel[], sort: SortKey, priceMode: "year" | "semeste
   return sorted;
 };
 
-/* ───────────────────────────── Count helpers ───────────────────────────── */
+/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ Count helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 
 const countFor = (
   facet: keyof FilterState,
@@ -248,7 +249,7 @@ const countFor = (
   }
 };
 
-/* ───────────────────────────── UI pieces ───────────────────────────── */
+/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ UI pieces â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 
 interface GroupProps {
   title: string;
@@ -534,7 +535,7 @@ const FilterPanel = ({ state, update }: FilterPanelProps) => {
   );
 };
 
-/* ───────────────────────────── Active chips ───────────────────────────── */
+/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ Active chips â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 
 interface Chip {
   key: string;
@@ -562,7 +563,7 @@ const buildChips = (
     const w = WALK_OPTIONS.find((o) => o.value === state.maxWalk);
     chips.push({
       key: "walk",
-      label: w?.label ?? `≤ ${state.maxWalk} min walk`,
+      label: w?.label ?? `â‰¤ ${state.maxWalk} min walk`,
       onRemove: () => update({ maxWalk: null }),
     });
   }
@@ -593,7 +594,7 @@ const buildChips = (
   return chips;
 };
 
-/* ───────────────────────────── Hostel card ───────────────────────────── */
+/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ Hostel card â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 
 interface CardProps {
   hostel: Hostel;
@@ -685,7 +686,7 @@ const HostelCard = ({ hostel, priceMode, query }: CardProps) => {
   );
 };
 
-/* ───────────────────────────── Page ───────────────────────────── */
+/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ Page â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 
 export const AccommodationPage = () => {
   const [params, setParams] = useSearchParams();
@@ -723,11 +724,14 @@ export const AccommodationPage = () => {
 
   return (
     <div className="pb-4">
-      <header className="mb-4">
-        <h1 className="text-2xl font-bold text-ink">Accommodation</h1>
-        <p className="mt-1 text-sm text-muted">
-          Compare on-campus halls and private hostels near the university.
-        </p>
+      <header className="mb-4 flex items-start gap-3">
+        <MobileBackButton className="mt-0.5" />
+        <div>
+          <h1 className="text-2xl font-bold text-ink">Accommodation</h1>
+          <p className="mt-1 text-sm text-muted">
+            Compare on-campus halls and private hostels near the university.
+          </p>
+        </div>
       </header>
 
       {/* Search + toolbar */}
@@ -741,7 +745,7 @@ export const AccommodationPage = () => {
             type="search"
             value={state.search}
             onChange={(e) => update({ search: e.target.value })}
-            placeholder="Search hostels…"
+            placeholder="Search hostelsâ€¦"
             className="w-full rounded-xl border border-line bg-white py-2.5 pl-9 pr-3 text-sm text-ink placeholder:text-muted focus:border-brand-500"
             aria-label="Search within filtered results"
           />

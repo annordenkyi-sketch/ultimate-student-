@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+﻿import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import {
   AlarmClock,
@@ -49,7 +49,7 @@ const formatDate = (iso: string): string =>
     month: "short",
   });
 
-/* ───────────────────────────── Check with confetti ───────────────────────────── */
+/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ Check with confetti â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 
 interface ConfettiParticle {
   x: number;
@@ -116,7 +116,7 @@ const SuccessCheck = ({ reduce }: { reduce: boolean | null }) => {
           />
         ))}
 
-      {/* Check inside circle — draws itself */}
+      {/* Check inside circle â€” draws itself */}
       <svg
         viewBox="0 0 100 100"
         className="relative h-24 w-24 text-brand-600"
@@ -164,7 +164,7 @@ const SuccessCheck = ({ reduce }: { reduce: boolean | null }) => {
   );
 };
 
-/* ───────────────────────────── Profile summary ───────────────────────────── */
+/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ Profile summary â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 
 interface SummaryRowProps {
   icon: typeof HomeIcon;
@@ -194,7 +194,7 @@ const SummaryRow = ({ icon: Icon, label, value, editTo }: SummaryRowProps) => (
   </li>
 );
 
-/* ───────────────────────────── Sneak peek ───────────────────────────── */
+/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ Sneak peek â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 
 interface SneakPeek {
   deadline: Deadline | null;
@@ -256,7 +256,7 @@ const useSneakPeek = (
   return peek;
 };
 
-/* ───────────────────────────── Component ───────────────────────────── */
+/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ Component â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 
 export const DoneStep = () => {
   const navigate = useNavigate();
@@ -275,13 +275,13 @@ export const DoneStep = () => {
 
   const studentTypeText = draft.studentType ? typeLabel[draft.studentType] : "";
   const typeLine = draft.isInternational
-    ? `${studentTypeText} · International`
+    ? `${studentTypeText} Â· International`
     : studentTypeText;
 
   const livingLine = (() => {
     if (!draft.living) return "";
     const where = draft.living === "on-campus" ? "On campus" : "Off campus";
-    return draft.hostel ? `${where} · ${draft.hostel}` : where;
+    return draft.hostel ? `${where} Â· ${draft.hostel}` : where;
   })();
 
   const toggleReminders = async (checked: boolean) => {
@@ -302,7 +302,7 @@ export const DoneStep = () => {
         showToast("Reminders are on", "success");
       } else {
         setRemindersOn(false);
-        showToast("Permission denied — reminders stay off", "info");
+        showToast("Permission denied â€” reminders stay off", "info");
       }
     } catch {
       setRemindersOn(false);
@@ -385,13 +385,13 @@ export const DoneStep = () => {
               <SummaryRow
                 icon={GraduationCap}
                 label="Student type"
-                value={typeLine || "—"}
+                value={typeLine || "â€”"}
                 editTo="/onboarding/type"
               />
               <SummaryRow
                 icon={draft.living === "on-campus" ? HomeIcon : Building2}
                 label="Living"
-                value={livingLine || "—"}
+                value={livingLine || "â€”"}
                 editTo="/onboarding/living"
               />
               <li className="flex items-start gap-3 py-3">
@@ -564,7 +564,7 @@ export const DoneStep = () => {
   );
 };
 
-/* ───────────────────────────── Peek sub-cards ───────────────────────────── */
+/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ Peek sub-cards â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 
 const DeadlinePeek = ({ deadline }: { deadline: Deadline }) => (
   <div className="flex items-center gap-3 rounded-xl border border-line bg-white p-3 shadow-sm">
@@ -579,7 +579,7 @@ const DeadlinePeek = ({ deadline }: { deadline: Deadline }) => (
         {deadline.title}
       </p>
       <p className="text-xs text-muted">
-        {formatDate(deadline.date)} · {relativeDays(deadline.date)}
+        {formatDate(deadline.date)} Â· {relativeDays(deadline.date)}
       </p>
     </div>
   </div>
@@ -598,7 +598,7 @@ const EventPeek = ({ event }: { event: EventItem }) => (
         {event.title}
       </p>
       <p className="text-xs text-muted">
-        {formatDate(event.date)} · {event.location}
+        {formatDate(event.date)} Â· {event.location}
       </p>
     </div>
   </div>

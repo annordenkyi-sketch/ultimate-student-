@@ -1,4 +1,4 @@
-import { useNavigate } from "react-router-dom";
+﻿import { useNavigate } from "react-router-dom";
 import { Check } from "lucide-react";
 import { motion, useReducedMotion } from "framer-motion";
 import { AuthLayout } from "@/features/auth/AuthLayout";
@@ -97,7 +97,7 @@ export const AuthSuccess = ({ variant, firstName, email, photo }: Props) => {
           type="button"
           onClick={() => navigate("/", { replace: true })}
           autoFocus
-          className="mt-8 w-full rounded-xl bg-brand-900 px-6 py-3 text-sm font-bold tracking-wider text-white transition hover:bg-accent-500 hover:text-brand-900 motion-safe:active:scale-[0.97]"
+          className="mt-8 w-full rounded-xl bg-brand-600 px-6 py-3 text-sm font-bold tracking-wider text-white transition hover:bg-accent-500 hover:text-brand-900 motion-safe:active:scale-[0.97]"
         >
           PROCEED
         </button>

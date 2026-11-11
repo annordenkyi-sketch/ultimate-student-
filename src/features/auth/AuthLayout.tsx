@@ -1,4 +1,4 @@
-import type { ReactNode } from "react";
+﻿import type { ReactNode } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import {
   GraduationCap,
@@ -123,7 +123,7 @@ export const AuthLayout = ({
   );
 };
 
-/* ───────── Desktop left rail ───────── */
+/* â”€â”€â”€â”€â”€â”€â”€â”€â”€ Desktop left rail â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 
 const DesktopRail = ({ active, slideY }: { active: Tab; slideY: number }) => (
   <motion.aside
@@ -178,9 +178,9 @@ const DesktopTab = ({ tab, active }: { tab: Tab; active: Tab }) => {
   );
 };
 
-/* ───────── Rail aside close ───────── */
+/* â”€â”€â”€â”€â”€â”€â”€â”€â”€ Rail aside close â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 
-/* ───────── Mobile top bar ───────── */
+/* â”€â”€â”€â”€â”€â”€â”€â”€â”€ Mobile top bar â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 
 const MobileTopBar = ({ active }: { active: Tab }) => (
   <header

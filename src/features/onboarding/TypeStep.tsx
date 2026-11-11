@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+﻿import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   AlarmClock,
@@ -85,7 +85,7 @@ const CAPTIONS: Record<PhotoKey, string> = {
 
 const ROTATION_INTERVAL_MS = 4000;
 
-/* ───────────────────────── Phone mockup ───────────────────────── */
+/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ Phone mockup â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 
 const PhoneMockup = () => (
   <div className="w-[200px] rounded-[32px] bg-brand-900 p-2 shadow-2xl ring-1 ring-brand-900/60">
@@ -137,7 +137,7 @@ const PhoneMockup = () => (
           <p className="text-[8px] font-semibold leading-tight text-ink">
             Fresher's party
           </p>
-          <p className="text-[7px] text-muted">Great Hall · Sat</p>
+          <p className="text-[7px] text-muted">Great Hall Â· Sat</p>
         </div>
       </div>
       <div className="mt-2 flex items-center justify-around border-t border-line pt-1.5">
@@ -154,7 +154,7 @@ const PhoneMockup = () => (
   </div>
 );
 
-/* ───────────────────────── Slideshow ───────────────────────── */
+/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ Slideshow â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 
 interface SlideshowProps {
   activeKey: PhotoKey;
@@ -267,7 +267,7 @@ const Slideshow = ({
   </div>
 );
 
-/* ───────────────────────── PhotoCard ───────────────────────── */
+/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ PhotoCard â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 
 interface PhotoCardProps {
   option: TypeOption;
@@ -303,7 +303,7 @@ const PhotoCard = ({
     >
       {/* Row: photo + content */}
       <div className="flex flex-row items-center md:flex-col md:items-stretch">
-        {/* Photo — round thumbnail on mobile, cover on desktop */}
+        {/* Photo â€” round thumbnail on mobile, cover on desktop */}
         <div className="relative m-3 h-16 w-16 shrink-0 overflow-hidden rounded-full md:m-0 md:aspect-[16/10] md:h-auto md:w-full md:rounded-none">
           <img
             src={unsplash(option.photo.photoId, 500, 65)}
@@ -363,7 +363,7 @@ const PhotoCard = ({
         </div>
       </div>
 
-      {/* Context line — slides open under the selected card only */}
+      {/* Context line â€” slides open under the selected card only */}
       <AnimatePresence initial={false}>
         {isSelected && CONTEXT_LINES[option.id] && (
           <motion.div
@@ -389,7 +389,7 @@ const PhotoCard = ({
   </label>
 );
 
-/* ───────────────────────── Component ───────────────────────── */
+/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ Component â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 
 export const TypeStep = () => {
   const { draft, setDraft } = useOnboardingDraft();
@@ -431,7 +431,7 @@ export const TypeStep = () => {
 
   return (
     <div className="md:grid md:min-h-[calc(100vh-120px)] md:grid-cols-[9fr_11fr]">
-      {/* ─────── Desktop photo pane (45%) ─────── */}
+      {/* â”€â”€â”€â”€â”€â”€â”€ Desktop photo pane (45%) â”€â”€â”€â”€â”€â”€â”€ */}
       <aside className="relative hidden overflow-hidden md:block">
         <Slideshow
           activeKey={activeKey}
@@ -476,7 +476,7 @@ export const TypeStep = () => {
         </div>
       </aside>
 
-      {/* ─────── Content pane (55%) ─────── */}
+      {/* â”€â”€â”€â”€â”€â”€â”€ Content pane (55%) â”€â”€â”€â”€â”€â”€â”€ */}
       <section className="relative">
         {/* Mobile slideshow strip */}
         <div className="relative h-[200px] overflow-hidden md:hidden">

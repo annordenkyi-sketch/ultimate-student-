@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+﻿import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import {
   Activity,
@@ -22,7 +22,7 @@ import { FadeIn } from "@/components/Motion";
 import { EventsBlock } from "./EventsBlock";
 import { SavedBlock } from "./SavedBlock";
 
-/* ───────────────────────────── Helpers ───────────────────────────── */
+/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ Helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 
 const greeting = (): string => {
   const h = new Date().getHours();
@@ -42,12 +42,12 @@ const formatToday = (): string =>
 const daysUntil = (iso: string): number =>
   Math.ceil((new Date(iso).getTime() - Date.now()) / (24 * 60 * 60 * 1000));
 
-/* ───────────────────────────── Highlight data (mock) ───────────────────────────── */
+/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ Highlight data (mock) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 
 const NEXT_CLASS = {
   code: "CPEN 312",
   name: "Software Engineering",
-  time: "Tue · 10:00",
+  time: "Tue Â· 10:00",
   venue: "Science Block R401",
 };
 
@@ -58,7 +58,7 @@ const UPCOMING_EXAM = {
   dateIso: "2026-12-05T09:00",
 };
 
-/* ───────────────────────────── Mobile header ───────────────────────────── */
+/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ Mobile header â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 
 const MobileHeader = ({ firstName }: { firstName: string }) => {
   const { unreadCount } = useNotifications();
@@ -94,13 +94,13 @@ const MobileHeader = ({ firstName }: { firstName: string }) => {
         </Link>
       </div>
       <div className="mt-4">
-        <SearchBar placeholder="Search campus, services, events…" />
+        <SearchBar placeholder="Search campus, services, eventsâ€¦" />
       </div>
     </header>
   );
 };
 
-/* ───────────────────────────── Desktop greeting ───────────────────────────── */
+/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ Desktop greeting â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 
 const GreetingHeader = ({ firstName }: { firstName: string }) => (
   <header className="hidden lg:block">
@@ -114,7 +114,7 @@ const GreetingHeader = ({ firstName }: { firstName: string }) => (
   </header>
 );
 
-/* ───────────────────────────── Highlight cards ───────────────────────────── */
+/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ Highlight cards â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 
 interface Highlight {
   key: string;
@@ -136,7 +136,7 @@ const HighlightCards = ({ campusEventsCount }: { campusEventsCount: number }) =>
       icon: CalendarClock,
       iconTint: "bg-brand-100 text-brand-700",
       primary: NEXT_CLASS.name,
-      secondary: `${NEXT_CLASS.time} · ${NEXT_CLASS.venue}`,
+      secondary: `${NEXT_CLASS.time} Â· ${NEXT_CLASS.venue}`,
       to: "/section/academic",
       cta: "Open timetable",
     },
@@ -221,7 +221,7 @@ const HighlightCards = ({ campusEventsCount }: { campusEventsCount: number }) =>
   );
 };
 
-/* ───────────────────────────── At a Glance ───────────────────────────── */
+/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ At a Glance â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 
 interface Stat {
   key: string;
@@ -273,7 +273,7 @@ const AtAGlance = ({ stats }: { stats: Stat[] }) => (
                 {s.value}
               </span>
               <span className="text-xs font-semibold text-brand-700 group-hover:text-brand-800 hover:underline">
-                →
+                â†’
               </span>
             </Link>
             <p className="mt-2 text-xs text-muted">{s.caption}</p>
@@ -284,7 +284,7 @@ const AtAGlance = ({ stats }: { stats: Stat[] }) => (
   </section>
 );
 
-/* ───────────────────────────── Announcements panel ───────────────────────────── */
+/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ Announcements panel â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 
 const AnnouncementsPanel = () => {
   const { profile } = useProfile();
@@ -328,7 +328,7 @@ const AnnouncementsPanel = () => {
           to="/announcements"
           className="text-xs font-semibold text-brand-700 hover:text-brand-800 hover:underline"
         >
-          See all →
+          See all â†’
         </Link>
       </header>
 
@@ -389,7 +389,7 @@ const AnnouncementsPanel = () => {
   );
 };
 
-/* ───────────────────────────── Page ───────────────────────────── */
+/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ Page â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 
 export const HomePage = () => {
   const { profile } = useProfile();

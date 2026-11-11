@@ -1,14 +1,18 @@
 import { ChevronRight } from "lucide-react";
 import { Link } from "react-router-dom";
 import { SECTIONS } from "@/lib/sectionConfig";
+import { MobileBackButton } from "@/components/MobileBackButton";
 
 export const SectionsPage = () => (
   <div className="pb-4">
-    <header className="mb-5">
-      <h1 className="text-2xl font-bold text-ink">Sections</h1>
-      <p className="mt-1 text-sm text-muted">
-        Everything on campus, by category.
-      </p>
+    <header className="mb-5 flex items-start gap-3">
+      <MobileBackButton className="mt-0.5" />
+      <div>
+        <h1 className="text-2xl font-bold text-ink">Sections</h1>
+        <p className="mt-1 text-sm text-muted">
+          Everything on campus, by category.
+        </p>
+      </div>
     </header>
 
     <ul className="space-y-2.5 md:grid md:grid-cols-2 md:gap-2.5 md:space-y-0">

@@ -1,4 +1,4 @@
-interface Props {
+﻿interface Props {
   tags: string[];
   active: string | null;
   onChange: (tag: string | null) => void;

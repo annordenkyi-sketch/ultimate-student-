@@ -1,66 +1,171 @@
+import { lazy, Suspense } from "react";
 import { Navigate, Route, Routes } from "react-router-dom";
-import { AppShell } from "@/app/AppShell";
-import { ProtectedRoute } from "@/app/ProtectedRoute";
+import { MotionConfig } from "framer-motion";
 import { WelcomePage } from "@/features/welcome/WelcomePage";
-import { LoginPage } from "@/features/login/LoginPage";
-import { ForgotPasswordPage } from "@/features/login/ForgotPasswordPage";
-import { LegalPage } from "@/features/legal/LegalPage";
-import { OnboardingLayout } from "@/features/onboarding/OnboardingLayout";
-import { AccountStep } from "@/features/onboarding/AccountStep";
-import { TypeStep } from "@/features/onboarding/TypeStep";
-import { LivingStep } from "@/features/onboarding/LivingStep";
-import { DoneStep } from "@/features/onboarding/DoneStep";
-import { HomePage } from "@/features/home/HomePage";
-import { AnnouncementsPage } from "@/features/announcements/AnnouncementsPage";
-import { SearchPage } from "@/features/search/SearchPage";
-import { SectionsPage } from "@/features/sections/SectionsPage";
-import { AcademicPage } from "@/features/academic/AcademicPage";
-import { AccommodationPage } from "@/features/accommodation/AccommodationPage";
-import { NavigationPage } from "@/features/navigation/NavigationPage";
-import { ServicesPage } from "@/features/services/ServicesPage";
-import { SectionListPage } from "@/features/section/SectionListPage";
-import { DetailsPage } from "@/features/details/DetailsPage";
-import { SavedPage } from "@/features/saved/SavedPage";
-import { NotificationsPage } from "@/features/notifications/NotificationsPage";
-import { ProfilePage } from "@/features/profile/ProfilePage";
+import { AcademicProfileScreen } from "@/screens/auth/AcademicProfileScreen";
+import { ChooseEntry } from "@/screens/auth/ChooseEntry";
+import { ForgotCode } from "@/screens/auth/forgot/ForgotCode";
+import { ForgotEmail } from "@/screens/auth/forgot/ForgotEmail";
+import { ForgotNewPassword } from "@/screens/auth/forgot/ForgotNewPassword";
+import { LimitedScreen } from "@/screens/auth/LimitedScreen";
+import { LoginScreen } from "@/screens/auth/LoginScreen";
+import { AcademicStep } from "@/screens/auth/signup/AcademicStep";
+import { AccountStep } from "@/screens/auth/signup/AccountStep";
+import { EligibilityStep } from "@/screens/auth/signup/EligibilityStep";
+import { EmailCodeStep } from "@/screens/auth/signup/EmailCodeStep";
+import { LevelStep } from "@/screens/auth/signup/LevelStep";
+import { SignupLayout } from "@/screens/auth/signup/SignupLayout";
+import { VerifyScreen } from "@/screens/auth/VerifyScreen";
+import { EntryGate } from "@/screens/entry/EntryGate";
+import { EventsDirectory } from "@/screens/explore/EventsDirectory";
+import { ExploreScreen } from "@/screens/explore/ExploreScreen";
+import { PlacesDirectory } from "@/screens/explore/PlacesDirectory";
+import { SearchScreen } from "@/screens/explore/SearchScreen";
+import { ServicesDirectory } from "@/screens/explore/ServicesDirectory";
+import { EditGoalScreen } from "@/screens/foryou/EditGoalScreen";
+import { ForYouGate } from "@/screens/foryou/ForYouGate";
+import { ForYouOverview } from "@/screens/foryou/ForYouOverview";
+import { GoalDetailsScreen } from "@/screens/foryou/GoalDetailsScreen";
+import { GoalsScreen } from "@/screens/foryou/GoalsScreen";
+import { NewGoalScreen } from "@/screens/foryou/NewGoalScreen";
+import { OpportunitiesScreen } from "@/screens/foryou/OpportunitiesScreen";
+import { PlanScreen } from "@/screens/foryou/PlanScreen";
+import { ProgressScreen } from "@/screens/foryou/ProgressScreen";
+import { ResourceDetailsScreen } from "@/screens/details/ResourceDetailsScreen";
+import { AnnouncementDetailsScreen } from "@/screens/details/AnnouncementDetailsScreen";
+import { AnnouncementsScreen } from "@/screens/details/AnnouncementsScreen";
+import { EventDetailsScreen } from "@/screens/details/EventDetailsScreen";
+import { LectureDetailsScreen } from "@/screens/details/LectureDetailsScreen";
+import { PlaceDetailsScreen } from "@/screens/details/PlaceDetailsScreen";
+import { ServiceDetailsScreen } from "@/screens/details/ServiceDetailsScreen";
+import { HomeScreen } from "@/screens/home/HomeScreen";
+import { AcademicsSection } from "@/screens/more/academics/AcademicsSection";
+import { SyncFlowScreen } from "@/screens/more/academics/SyncFlowScreen";
+import { MoreHome, MoreLayout } from "@/screens/more/MoreLayout";
+import { ProfileSection } from "@/screens/more/ProfileSection";
+import { ReportIssueScreen } from "@/screens/more/ReportIssueScreen";
+import { SavedSection } from "@/screens/more/SavedSection";
+import { SelfServiceSection } from "@/screens/more/SelfServiceSection";
+import { SettingsSection } from "@/screens/more/SettingsSection";
+import { SupportSection } from "@/screens/more/SupportSection";
+import { NotificationsScreen } from "@/screens/tabs/NotificationsScreen";
+import { AppShell } from "@/shell/AppShell";
+import { MockStateSwitcher } from "@/shell/MockStateSwitcher";
+import { DoneScreen } from "@/screens/setup/DoneScreen";
+import { GoalsStep } from "@/screens/setup/GoalsStep";
+import { ManualStep } from "@/screens/setup/ManualStep";
+import { MethodStep } from "@/screens/setup/MethodStep";
+import { RemindersStep } from "@/screens/setup/RemindersStep";
+import { ReviewStep } from "@/screens/setup/ReviewStep";
+import { SemesterStep } from "@/screens/setup/SemesterStep";
+import { SetupLayout } from "@/screens/setup/SetupLayout";
+import { SyncAccessStep } from "@/screens/setup/SyncAccessStep";
+import { SyncConnectStep } from "@/screens/setup/SyncConnectStep";
+import { SyncReviewStep } from "@/screens/setup/SyncReviewStep";
+import { TimetableStep } from "@/screens/setup/TimetableStep";
+
+// Leaflet is only downloaded when the map opens.
+const MapScreen = lazy(() => import("@/screens/map/MapScreen").then((m) => ({ default: m.MapScreen })));
+
+const MapLoading = () => (
+  <div role="status" className="fixed inset-0 flex items-center justify-center bg-oxford-cream text-sm font-semibold text-oxford-mute">
+    Loading the map…
+  </div>
+);
 
 export const App = () => (
-  <Routes>
-    <Route path="/welcome" element={<WelcomePage />} />
-    <Route path="/login" element={<LoginPage />} />
-    <Route path="/login/forgot" element={<ForgotPasswordPage />} />
-    <Route path="/legal/:kind" element={<LegalPage />} />
-    <Route path="/onboarding/account" element={<AccountStep />} />
-    <Route path="/onboarding" element={<OnboardingLayout />}>
-      <Route index element={<Navigate to="type" replace />} />
-      <Route path="type" element={<TypeStep />} />
-      <Route path="living" element={<LivingStep />} />
-      <Route path="done" element={<DoneStep />} />
-    </Route>
+  <MotionConfig reducedMotion="user">
+    <Routes>
+      <Route path="/" element={<EntryGate />} />
+      <Route path="/welcome" element={<WelcomePage />} />
 
-    <Route
-      element={
-        <ProtectedRoute>
-          <AppShell />
-        </ProtectedRoute>
-      }
-    >
-      <Route path="/" element={<HomePage />} />
-      <Route path="/announcements" element={<AnnouncementsPage />} />
-      <Route path="/announcements/:id" element={<AnnouncementsPage />} />
-      <Route path="/search" element={<SearchPage />} />
-      <Route path="/sections" element={<SectionsPage />} />
-      <Route path="/section/academic" element={<AcademicPage />} />
-      <Route path="/section/navigation" element={<NavigationPage />} />
-      <Route path="/section/accommodation" element={<AccommodationPage />} />
-      <Route path="/section/services" element={<ServicesPage />} />
-      <Route path="/section/:sectionId" element={<SectionListPage />} />
-      <Route path="/section/:sectionId/:itemId" element={<DetailsPage />} />
-      <Route path="/saved" element={<SavedPage />} />
-      <Route path="/notifications" element={<NotificationsPage />} />
-      <Route path="/profile" element={<ProfilePage />} />
-    </Route>
+      {/* Flow 01: authentication and identity */}
+      <Route path="/start" element={<ChooseEntry />} />
+      <Route path="/login" element={<LoginScreen />} />
+      <Route path="/login/forgot" element={<ForgotEmail />} />
+      <Route path="/login/forgot/code" element={<ForgotCode />} />
+      <Route path="/login/forgot/new-password" element={<ForgotNewPassword />} />
+      <Route path="/signup" element={<SignupLayout />}>
+        <Route index element={<Navigate to="level" replace />} />
+        <Route path="level" element={<LevelStep />} />
+        <Route path="account" element={<AccountStep />} />
+        <Route path="verify-email" element={<EmailCodeStep />} />
+        <Route path="eligibility" element={<EligibilityStep />} />
+        <Route path="academic" element={<AcademicStep />} />
+      </Route>
+      <Route path="/verify" element={<VerifyScreen />} />
+      <Route path="/academic-profile" element={<AcademicProfileScreen />} />
+      <Route path="/limited" element={<LimitedScreen />} />
 
-    <Route path="*" element={<Navigate to="/" replace />} />
-  </Routes>
+      {/* Flow 02: semester and course setup. /onboarding resumes at the saved step. */}
+      <Route path="/onboarding/done" element={<DoneScreen />} />
+      <Route path="/onboarding" element={<SetupLayout />}>
+        <Route index element={null} />
+        <Route path="semester" element={<SemesterStep />} />
+        <Route path="method" element={<MethodStep />} />
+        <Route path="sync-access" element={<SyncAccessStep />} />
+        <Route path="sync-connect" element={<SyncConnectStep />} />
+        <Route path="sync-review" element={<SyncReviewStep />} />
+        <Route path="manual" element={<ManualStep />} />
+        <Route path="timetable" element={<TimetableStep />} />
+        <Route path="review" element={<ReviewStep />} />
+        <Route path="reminders" element={<RemindersStep />} />
+        <Route path="goals" element={<GoalsStep />} />
+      </Route>
+
+      {/* Flow 05: full-screen campus map and walking navigation. */}
+      <Route
+        path="/map"
+        element={
+          <Suspense fallback={<MapLoading />}>
+            <MapScreen />
+          </Suspense>
+        }
+      />
+
+      <Route element={<AppShell />}>
+        <Route path="/home" element={<HomeScreen />} />
+        <Route path="/lectures/:sessionId" element={<LectureDetailsScreen />} />
+        <Route path="/announcements" element={<AnnouncementsScreen />} />
+        <Route path="/announcements/:id" element={<AnnouncementDetailsScreen />} />
+        <Route path="/services/:id" element={<ServiceDetailsScreen />} />
+        <Route path="/events/:id" element={<EventDetailsScreen />} />
+        <Route path="/places/:id" element={<PlaceDetailsScreen />} />
+        <Route path="/explore" element={<ExploreScreen />} />
+        <Route path="/explore/places" element={<PlacesDirectory />} />
+        <Route path="/explore/events" element={<EventsDirectory />} />
+        <Route path="/explore/services" element={<ServicesDirectory />} />
+        <Route path="/search" element={<SearchScreen />} />
+        {/* Flow 06: For You (personal; ForYouGate shows the sign-in or verify prompt). */}
+        <Route path="/for-you" element={<ForYouGate />}>
+          <Route index element={<ForYouOverview />} />
+          <Route path="goals" element={<GoalsScreen />} />
+          <Route path="goals/new" element={<NewGoalScreen />} />
+          <Route path="goals/:id" element={<GoalDetailsScreen />} />
+          <Route path="goals/:id/edit" element={<EditGoalScreen />} />
+          <Route path="progress" element={<ProgressScreen />} />
+          <Route path="plan" element={<PlanScreen />} />
+          <Route path="opportunities" element={<OpportunitiesScreen />} />
+        </Route>
+        <Route path="/resources/:id" element={<ResourceDetailsScreen />} />
+        {/* Flows 07 and 08: More, and returning student sync. */}
+        <Route path="/more" element={<MoreLayout />}>
+          <Route index element={<MoreHome />} />
+          <Route path="profile" element={<ProfileSection />} />
+          <Route path="academics" element={<AcademicsSection />} />
+          <Route path="academics/sync" element={<SyncFlowScreen />} />
+          <Route path="self-service" element={<SelfServiceSection />} />
+          <Route path="saved" element={<SavedSection />} />
+          <Route path="support" element={<SupportSection />} />
+          <Route path="support/report" element={<ReportIssueScreen />} />
+          <Route path="settings" element={<SettingsSection />} />
+        </Route>
+        <Route path="/notifications" element={<NotificationsScreen />} />
+        <Route path="/profile" element={<Navigate to="/more/profile" replace />} />
+      </Route>
+
+      <Route path="*" element={<Navigate to="/" replace />} />
+    </Routes>
+    {import.meta.env.DEV && <MockStateSwitcher />}
+  </MotionConfig>
 );

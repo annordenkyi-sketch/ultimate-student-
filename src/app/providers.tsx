@@ -1,21 +1,12 @@
 import type { ReactNode } from "react";
-import { ProfileProvider } from "@/hooks/useProfile";
-import { SavedProvider } from "@/hooks/useSaved";
-import { ChecklistProvider } from "@/hooks/useChecklist";
-import { NotificationsProvider } from "@/hooks/useNotifications";
-import { AnnouncementReadsProvider } from "@/hooks/useAnnouncementReads";
-import { ToastProvider } from "@/hooks/useToast";
+import { ActivityProvider } from "@/session/ActivityProvider";
+import { SessionProvider } from "@/session/SessionProvider";
+import { SyncProvider } from "@/session/SyncProvider";
 
 export const AppProviders = ({ children }: { children: ReactNode }) => (
-  <ProfileProvider>
-    <SavedProvider>
-      <ChecklistProvider>
-        <NotificationsProvider>
-          <AnnouncementReadsProvider>
-            <ToastProvider>{children}</ToastProvider>
-          </AnnouncementReadsProvider>
-        </NotificationsProvider>
-      </ChecklistProvider>
-    </SavedProvider>
-  </ProfileProvider>
+  <SessionProvider>
+    <ActivityProvider>
+      <SyncProvider>{children}</SyncProvider>
+    </ActivityProvider>
+  </SessionProvider>
 );

@@ -2,9 +2,30 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Theme — the single source for colours and fonts. Tailwind's `oxford-*`
+   colours and `font-sans` / `font-serif` read from these. Values are RGB
+   triples so Tailwind opacity modifiers (e.g. bg-oxford-ink/50) work. */
 :root {
   color-scheme: light;
   --app-max: 480px;
+
+  --us-paper: 250 247 239;
+  --us-cream: 243 237 222;
+  --us-sand: 230 219 194;
+  --us-sand-soft: 238 230 207;
+  --us-rule: 216 207 184;
+  --us-ink: 14 27 58;
+  --us-ink-2: 28 39 70;
+  --us-mute: 98 96 88;
+  --us-gold: 168 139 90;
+  --us-wine: 94 37 40;
+  --us-danger: 166 38 30;
+  --us-success: 30 104 76;
+  /* Your-location dot on the campus map. */
+  --us-locate: 37 99 235;
+
+  --us-font-sans: "DM Sans", Inter, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --us-font-serif: "Playfair Display", "Cormorant Garamond", Georgia, "Times New Roman", serif;
 }
 
 html,
@@ -14,12 +35,7 @@ body,
 }
 
 body {
-  @apply bg-paper text-muted antialiased font-sans;
-}
-
-/* Landing page override — body matches the oxford-paper cream used on /welcome */
-body:has([data-landing="oxford"]) {
-  @apply bg-oxford-paper text-oxford-ink;
+  @apply bg-oxford-paper font-sans text-oxford-ink antialiased;
 }
 
 h1,
@@ -27,21 +43,14 @@ h2,
 h3,
 h4,
 .display {
-  font-family: "Bricolage Grotesque", "DM Sans", Inter, system-ui, sans-serif;
-  letter-spacing: -0.02em;
-  @apply text-ink;
+  font-family: var(--us-font-serif);
+  letter-spacing: -0.01em;
+  color: rgb(var(--us-ink));
 }
 
 /* Visible focus ring for keyboard users */
 :focus-visible {
-  @apply outline-none ring-2 ring-brand-600 ring-offset-2 ring-offset-paper;
-}
-
-/* Skip link styling */
-.skip-link {
-  @apply sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-50
-         focus:rounded focus:bg-white focus:px-3 focus:py-2 focus:text-sm
-         focus:font-medium focus:text-brand-700 focus:shadow;
+  @apply outline-none ring-2 ring-oxford-ink ring-offset-2 ring-offset-oxford-paper;
 }
 
 /* Hide scrollbar on horizontal pill rows while keeping scrollability */
@@ -61,4 +70,74 @@ h4,
     animation-iteration-count: 1 !important;
     transition-duration: 0.001ms !important;
   }
+}
+
+/* ── Campus map (Leaflet) ─────────────────────────────────────────── */
+.leaflet-container {
+  font-family: var(--us-font-sans);
+  background: rgb(var(--us-cream));
+}
+.us-marker {
+  background: none;
+  border: 0;
+}
+.us-marker-dot {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9999px;
+  background: rgb(var(--us-ink));
+  color: #fff;
+  border: 2px solid #fff;
+  box-shadow: 0 2px 6px rgb(var(--us-ink) / 0.35);
+}
+.us-marker-dot.is-selected {
+  background: rgb(var(--us-gold));
+  color: rgb(var(--us-ink));
+  border: 3px solid rgb(var(--us-ink));
+}
+.us-marker-start {
+  background: #fff;
+  color: rgb(var(--us-ink));
+  border: 3px solid rgb(var(--us-ink));
+}
+.us-marker-step {
+  background: rgb(var(--us-gold));
+  color: rgb(var(--us-ink));
+}
+.us-user-dot {
+  display: block;
+  width: 22px;
+  height: 22px;
+  border-radius: 9999px;
+  background: rgb(var(--us-locate));
+  border: 3px solid #fff;
+  box-shadow: 0 0 0 6px rgb(var(--us-locate) / 0.2), 0 1px 4px rgb(0 0 0 / 0.3);
+}
+.us-entrance {
+  display: block;
+  width: 28px;
+  height: 28px;
+  border-radius: 9999px;
+  background: rgb(var(--us-success));
+  border: 3px solid #fff;
+  animation: us-pulse 1.6s ease-out infinite;
+}
+@keyframes us-pulse {
+  0% { box-shadow: 0 0 0 0 rgb(var(--us-success) / 0.55); }
+  100% { box-shadow: 0 0 0 20px rgb(var(--us-success) / 0); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .us-entrance {
+    animation: none;
+    box-shadow: 0 0 0 8px rgb(var(--us-success) / 0.25);
+  }
+}
+.us-map-picking.leaflet-container {
+  cursor: crosshair;
+}
+.leaflet-marker-icon:focus-visible {
+  outline: 3px solid rgb(var(--us-gold));
+  outline-offset: 2px;
+  border-radius: 9999px;
 }

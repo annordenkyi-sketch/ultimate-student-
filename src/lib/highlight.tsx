@@ -6,16 +6,16 @@ interface Props {
   query?: string;
 }
 
-/** Wraps substrings of `text` that match `query` in a <mark>. */
+/** Wraps each word of `query` found in `text` in a <mark>. */
 export const Highlight = ({ text, query }: Props) => {
-  const q = (query ?? "").trim();
-  if (!q) return <>{text}</>;
-  const parts = text.split(new RegExp(`(${escapeRegExp(q)})`, "gi"));
+  const words = (query ?? "").trim().split(/\s+/).filter(Boolean);
+  if (!words.length) return <>{text}</>;
+  const parts = text.split(new RegExp(`(${words.map(escapeRegExp).join("|")})`, "gi"));
   return (
     <>
       {parts.map((p, i) =>
         i % 2 === 1 ? (
-          <mark key={i} className="rounded bg-accent-200 px-0.5 text-ink">
+          <mark key={i} className="rounded-sm bg-oxford-sand px-0.5 text-oxford-ink">
             {p}
           </mark>
         ) : (

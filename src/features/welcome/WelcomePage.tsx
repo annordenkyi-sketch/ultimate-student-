@@ -1213,7 +1213,7 @@ const CtaBand = ({ onStart }: { onStart: () => void }) => (
 export const WelcomePage = () => {
   const navigate = useNavigate();
   const reduce = useReducedMotion();
-  const goStart = () => navigate("/onboarding/account");
+  const goStart = () => navigate("/start");
 
   return (
     <div data-landing="oxford" className="min-h-screen bg-oxford-paper font-sans text-oxford-ink antialiased">

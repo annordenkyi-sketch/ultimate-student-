@@ -50,30 +50,24 @@ export default {
           800: "#125F63",
           900: "#0F4C5C",
         },
-        // Landing palette v2 (oxford-style cream + navy) — active on the public landing page.
+        // Active palette. Values live once in src/styles/index.css (--us-*).
         oxford: {
-          paper: "#FAF7EF",   // page background — soft off-white cream
-          cream: "#F3EDDE",   // section background — warmer cream
-          sand: "#E6DBC2",    // stat card primary — tan/sand
-          sandSoft: "#EEE6CF",// stat card secondary — softer sand
-          rule: "#D8CFB8",    // dividers, hairlines on cream
-          ink: "#0E1B3A",     // headings, logo wordmark, Login button
-          ink2: "#1C2746",    // sub-headings, body copy strong
-          mute: "#6C6A62",    // body copy, meta text
-          gold: "#A88B5A",    // accent label text (eyebrows on stat cards)
-          wine: "#5E2528",    // rare dark accent (never used as small text on light bg)
+          paper: "rgb(var(--us-paper) / <alpha-value>)",
+          cream: "rgb(var(--us-cream) / <alpha-value>)",
+          sand: "rgb(var(--us-sand) / <alpha-value>)",
+          sandSoft: "rgb(var(--us-sand-soft) / <alpha-value>)",
+          rule: "rgb(var(--us-rule) / <alpha-value>)",
+          ink: "rgb(var(--us-ink) / <alpha-value>)",
+          ink2: "rgb(var(--us-ink-2) / <alpha-value>)",
+          mute: "rgb(var(--us-mute) / <alpha-value>)",
+          gold: "rgb(var(--us-gold) / <alpha-value>)",
+          wine: "rgb(var(--us-wine) / <alpha-value>)",
+          danger: "rgb(var(--us-danger) / <alpha-value>)",
+          success: "rgb(var(--us-success) / <alpha-value>)",
         },
       },
       fontFamily: {
-        sans: [
-          "DM Sans",
-          "Inter",
-          "system-ui",
-          "-apple-system",
-          "Segoe UI",
-          "Roboto",
-          "sans-serif",
-        ],
+        sans: ["var(--us-font-sans)"],
         display: [
           "Bricolage Grotesque",
           "DM Sans",
@@ -81,13 +75,7 @@ export default {
           "system-ui",
           "sans-serif",
         ],
-        serif: [
-          "Playfair Display",
-          "Cormorant Garamond",
-          "Georgia",
-          "Times New Roman",
-          "serif",
-        ],
+        serif: ["var(--us-font-serif)"],
       },
       borderRadius: {
         xl: "0.75rem",

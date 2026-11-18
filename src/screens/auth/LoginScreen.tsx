@@ -2,7 +2,7 @@ import { useRef, useState, type FormEvent } from "react";
 import { Navigate, useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import { errorCodeOf, services } from "@/services";
 import { accessFor, safeReturnTo } from "@/session/access";
-import { useSession } from "@/session/SessionProvider";
+import { sessionExpired, useSession } from "@/session/SessionProvider";
 import { Checkbox } from "@/ui/form/Checkbox";
 import { FormAlert, alertActionClass } from "@/ui/form/FormAlert";
 import { LoadingButton } from "@/ui/form/LoadingButton";
@@ -28,6 +28,8 @@ export const LoginScreen = () => {
   const [params] = useSearchParams();
   const returnTo = safeReturnTo(params.get("returnTo"));
   const incoming = (location.state ?? {}) as LoginState;
+  // Shows "Your session has expired" until they log in again.
+  const [expired] = useState(sessionExpired);
 
   const [identifier, setIdentifier] = useState(incoming.identifier ?? "");
   const [password, setPassword] = useState("");
@@ -82,6 +84,11 @@ export const LoginScreen = () => {
           : "Welcome back. Use your email or student ID."}
       </AuthHeading>
 
+      {expired && !formError && (
+        <FormAlert tone="info" title="Your session has expired" className="mb-5">
+          Log in again{returnTo ? " and we'll take you straight to what you were opening" : ""}.
+        </FormAlert>
+      )}
       {incoming.notice === "password-updated" && !formError && (
         <FormAlert tone="success" title="Password updated" className="mb-5">
           Log in with your new password.

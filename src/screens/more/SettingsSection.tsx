@@ -1,11 +1,13 @@
 import { useEffect, useState, type FormEvent, type ReactNode } from "react";
 import { Link } from "react-router-dom";
 import { Bell, Lock, ShieldCheck } from "lucide-react";
-import { errorCodeOf, services, type NotificationCategory } from "@/services";
+import { errorCodeOf, services, type NotificationCategory, type QuietHours } from "@/services";
 import { useAsync } from "@/lib/useAsync";
 import { isLimited } from "@/session/access";
 import { useSession } from "@/session/SessionProvider";
 import { useSync } from "@/session/SyncProvider";
+import { useActivity } from "@/session/ActivityProvider";
+import { useNotificationPermission, type PermissionReason } from "@/session/NotificationPermission";
 import { useUnlock } from "@/session/useUnlock";
 import { btn } from "@/ui/button";
 import { ConfirmDialog } from "@/ui/ConfirmDialog";
@@ -14,6 +16,7 @@ import { FormAlert } from "@/ui/form/FormAlert";
 import { LoadingButton } from "@/ui/form/LoadingButton";
 import { PasswordField } from "@/ui/form/PasswordField";
 import { PasswordRules } from "@/ui/form/PasswordRules";
+import { TextField } from "@/ui/form/TextField";
 import { isStrongPassword } from "@/ui/form/validation";
 import { SectionHeader } from "./MoreLayout";
 
@@ -43,12 +46,13 @@ export const SettingsSection = () => {
     <div className="max-w-3xl space-y-5">
       <SectionHeader title="Settings" />
       {account ? (
-        <NotificationSettings accountId={account.id} />
+        <NotificationSettings accountId={account.id} limited={isLimited(access)} />
       ) : (
         <Card id="notif-title" title="Notifications" icon={Bell}>
-          <p className="text-sm text-oxford-mute">Sign in to choose which notifications you get.</p>
+          <GuestAlerts />
+          <p className="mt-4 text-sm text-oxford-mute">Sign in for lecture, deadline and goal reminders.</p>
           {unlock && (
-            <Link to={unlock.to} className={btn("primary", "mt-3")}>
+            <Link to={unlock.to} className={btn("secondary", "mt-3")}>
               {unlock.label}
             </Link>
           )}
@@ -60,10 +64,123 @@ export const SettingsSection = () => {
   );
 };
 
-const NotificationSettings = ({ accountId }: { accountId: string }) => {
+/** This device's notification permission, and how to change it (flow 09). */
+const DevicePermission = () => {
+  const { permission, ensure } = useNotificationPermission();
+  return (
+    <div className="mb-4 rounded-xl border border-oxford-rule bg-oxford-cream/50 p-4">
+      <p className="text-sm font-semibold text-oxford-ink">
+        On this device:{" "}
+        {permission === "granted" ? "notifications allowed" : permission === "default" ? "notifications not turned on" : "notifications blocked"}
+      </p>
+      {permission === "default" && (
+        <>
+          <p className="mt-1 text-sm text-oxford-ink2">Until you turn them on, reminders and alerts appear in your notification centre only.</p>
+          <button type="button" onClick={() => ensure("general")} className={btn("primary", "mt-3")}>
+            Turn on notifications
+          </button>
+        </>
+      )}
+      {(permission === "denied" || permission === "unsupported") && (
+        <p className="mt-1 text-sm text-oxford-ink2">
+          {permission === "unsupported"
+            ? "This browser can't show notifications. Reminders and alerts still appear in your notification centre."
+            : "Reminders and alerts still appear in your notification centre. To get them on this device, allow notifications for this site in your browser's site settings (the icon next to the web address), then come back."}
+        </p>
+      )}
+    </div>
+  );
+};
+
+/** Guests can opt in to public news and event alerts only. */
+const GuestAlerts = () => {
+  const { ensure } = useNotificationPermission();
+  const { refreshNotifications } = useActivity();
+  const [on, setOn] = useState(() => services.notifications.guestAlerts());
+  return (
+    <div className="flex items-center justify-between gap-4">
+      <span>
+        <span id="guest-alerts-label" className="block font-semibold text-oxford-ink">
+          Campus news and event alerts
+        </span>
+        <span className="block text-sm text-oxford-mute">Public alerts only. You can turn them off at any time.</span>
+      </span>
+      <button
+        type="button"
+        role="switch"
+        aria-checked={on}
+        aria-labelledby="guest-alerts-label"
+        onClick={async () => {
+          services.notifications.setGuestAlerts(!on);
+          setOn(!on);
+          refreshNotifications();
+          if (!on) await ensure("events");
+        }}
+        className={`relative h-8 w-14 shrink-0 rounded-full transition ${on ? "bg-oxford-ink" : "bg-oxford-ink/20"}`}
+      >
+        <span aria-hidden="true" className={`absolute top-1 h-6 w-6 rounded-full bg-white shadow transition-all ${on ? "left-7" : "left-1"}`} />
+      </button>
+    </div>
+  );
+};
+
+const QuietHoursSetting = ({ accountId }: { accountId: string }) => {
+  const { state } = useAsync(() => services.notifications.quietHours(accountId), [accountId]);
+  const [q, setQ] = useState<QuietHours | null>(null);
+  const [note, setNote] = useState<string | null>(null);
+  useEffect(() => {
+    if (state.status === "ready") setQ(state.data);
+  }, [state]);
+  if (!q) return null;
+
+  const save = async (next: QuietHours) => {
+    setQ(next);
+    await services.notifications.setQuietHours(accountId, next);
+    setNote(next.enabled ? `Quiet hours ${next.from} to ${next.to}.` : "Quiet hours off.");
+  };
+
+  return (
+    <div className="mt-4 border-t border-oxford-rule/70 pt-4">
+      <div className="flex items-center justify-between gap-4">
+        <span>
+          <span id="quiet-label" className="block font-semibold text-oxford-ink">
+            Quiet hours
+          </span>
+          <span className="block text-sm text-oxford-mute">Nothing pops up during these hours. Notifications wait in your notification centre.</span>
+        </span>
+        <button
+          type="button"
+          role="switch"
+          aria-checked={q.enabled}
+          aria-labelledby="quiet-label"
+          onClick={() => save({ ...q, enabled: !q.enabled })}
+          className={`relative h-8 w-14 shrink-0 rounded-full transition ${q.enabled ? "bg-oxford-ink" : "bg-oxford-ink/20"}`}
+        >
+          <span aria-hidden="true" className={`absolute top-1 h-6 w-6 rounded-full bg-white shadow transition-all ${q.enabled ? "left-7" : "left-1"}`} />
+        </button>
+      </div>
+      {q.enabled && (
+        <div className="mt-3 grid max-w-sm grid-cols-2 gap-3">
+          <TextField id="quiet-from" type="time" label="From" value={q.from} onChange={(e) => e.target.value && save({ ...q, from: e.target.value })} />
+          <TextField id="quiet-to" type="time" label="To" value={q.to} onChange={(e) => e.target.value && save({ ...q, to: e.target.value })} />
+        </div>
+      )}
+      <p role="status" className="mt-2 min-h-[1.25rem] text-sm font-semibold text-oxford-success">
+        {note}
+      </p>
+    </div>
+  );
+};
+
+const NEEDS_PERMISSION: Partial<Record<NotificationCategory, PermissionReason>> = { lectures: "lectures", events: "events", goals: "goals" };
+
+const NotificationSettings = ({ accountId, limited }: { accountId: string; limited: boolean }) => {
   const { state, reload } = useAsync(() => services.settings.notificationPrefs(accountId), [accountId]);
   const [prefs, setPrefs] = useState<Record<NotificationCategory, boolean> | null>(null);
   const [status, setStatus] = useState<string | null>(null);
+  const { ensure } = useNotificationPermission();
+  // Students who aren't verified yet only get public news and event alerts.
+  const categories = limited ? CATEGORIES.filter((c) => c.id === "news" || c.id === "events") : CATEGORIES;
 
   useEffect(() => {
     if (state.status === "ready") setPrefs(state.data);
@@ -77,6 +194,8 @@ const NotificationSettings = ({ accountId }: { accountId: string }) => {
     try {
       await services.settings.setNotificationPref(accountId, c, on);
       setStatus(`${label} notifications ${on ? "on" : "off"}.`);
+      const reason = NEEDS_PERMISSION[c];
+      if (on && reason) await ensure(reason);
     } catch {
       setPrefs(prefs);
       setStatus(`We couldn't change ${label.toLowerCase()} notifications. Try again.`);
@@ -85,12 +204,13 @@ const NotificationSettings = ({ accountId }: { accountId: string }) => {
 
   return (
     <Card id="notif-title" title="Notifications" icon={Bell}>
+      <DevicePermission />
       {state.status === "loading" && <Skeleton lines={3} />}
       {state.status === "error" && <LoadError what="your notification settings" onRetry={reload} />}
       {prefs && (
         <>
           <ul className="-my-2 divide-y divide-oxford-rule/60">
-            {CATEGORIES.map((c) => (
+            {categories.map((c) => (
               <li key={c.id} className="flex items-center justify-between gap-4 py-3">
                 <span>
                   <span id={`notif-${c.id}`} className="block font-semibold text-oxford-ink">
@@ -114,6 +234,7 @@ const NotificationSettings = ({ accountId }: { accountId: string }) => {
           <p role="status" className="mt-2 min-h-[1.25rem] text-sm font-semibold text-oxford-success">
             {status}
           </p>
+          <QuietHoursSetting accountId={accountId} />
         </>
       )}
     </Card>

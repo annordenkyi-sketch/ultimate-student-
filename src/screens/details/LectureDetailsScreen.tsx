@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { CalendarClock, MapPin, NotebookPen, UserRound } from "lucide-react";
 import { services, type AlertPermission, type LectureReminder, type ReminderLead } from "@/services";
+import { PermissionNote, useNotificationPermission } from "@/session/NotificationPermission";
 import { dayLabel, duration, longDate, useNow } from "@/lib/dates";
 import { useAsync } from "@/lib/useAsync";
 import { isLimited } from "@/session/access";
@@ -94,6 +95,7 @@ const ReminderPanel = ({ accountId, sessionId }: { accountId: string; sessionId:
   const [reminder, setReminder] = useState<LectureReminder | null>(null);
   const [status, setStatus] = useState<string | null>(null);
   const [permission, setPermission] = useState<AlertPermission | null>(null);
+  const { ensure } = useNotificationPermission();
 
   useEffect(() => {
     void services.timetable.reminder(accountId, sessionId).then(setReminder);
@@ -103,8 +105,7 @@ const ReminderPanel = ({ accountId, sessionId }: { accountId: string; sessionId:
     setReminder(next);
     setStatus(null);
     if (next.enabled && !reminder?.enabled) {
-      const current = services.device.notificationPermission();
-      setPermission(current === "default" ? await services.device.requestNotificationPermission() : current);
+      setPermission(await ensure("lectures"));
     }
     await services.timetable.setReminder(accountId, sessionId, next);
     setStatus(next.enabled ? `Reminder set for ${duration(next.minutesBefore)} before.` : "Reminder turned off.");
@@ -167,11 +168,7 @@ const ReminderPanel = ({ accountId, sessionId }: { accountId: string; sessionId:
               </div>
             </fieldset>
           )}
-          {permission && permission !== "granted" && reminder.enabled && (
-            <p className="mt-3 text-sm text-oxford-mute">
-              Notifications aren't allowed in this browser, so the reminder will show in your notification centre.
-            </p>
-          )}
+          {permission && reminder.enabled && <PermissionNote permission={permission} className="mt-3" />}
           <p role="status" className="mt-3 text-sm font-semibold text-oxford-success">
             {status}
           </p>

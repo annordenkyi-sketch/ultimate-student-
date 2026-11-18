@@ -12,7 +12,8 @@ interface Props {
   intro?: ReactNode;
   /** Open/closed, date, etc. Shown under the title. */
   status?: ReactNode;
-  photo?: { id: string; alt: string } | null;
+  /** Unsplash photo id, or a full image URL uploaded by staff. */
+  photo?: { id: string; alt: string; url?: string } | null;
   save: { kind: SavedKind; id: string };
   /** Campus place for Directions. Null hides the button. */
   directionsTo: string | null;
@@ -49,14 +50,14 @@ export const ContentDetail = ({
     {photo && (
       <figure className="mb-5 overflow-hidden rounded-2xl border border-oxford-rule bg-oxford-cream">
         <img
-          src={unsplash(photo.id, 1200)}
-          srcSet={unsplashSrcSet(photo.id)}
+          src={photo.url ?? unsplash(photo.id, 1200)}
+          srcSet={photo.url ? undefined : unsplashSrcSet(photo.id)}
           sizes="(min-width: 1024px) 768px, 100vw"
           alt={photo.alt}
           loading="lazy"
           className="aspect-[16/7] w-full object-cover"
         />
-        <figcaption className="px-4 py-2 text-xs text-oxford-mute">Sample photo</figcaption>
+        {!photo.url && <figcaption className="px-4 py-2 text-xs text-oxford-mute">Sample photo</figcaption>}
       </figure>
     )}
 

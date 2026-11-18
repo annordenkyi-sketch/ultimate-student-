@@ -3,6 +3,7 @@
 // and the types in ./types.
 
 import { mockAccountService } from "./mock/accountService";
+import { mockAdminService } from "./mock/adminService";
 import { mockActivityService } from "./mock/activityService";
 import { mockAuthService } from "./mock/authService";
 import { mockCampusService } from "./mock/campusService";
@@ -14,6 +15,7 @@ import { browserDeviceService } from "./mock/deviceService";
 import { mockEligibilityService } from "./mock/eligibilityService";
 import { mockGoalsService, mockOpportunitiesService, mockPlanService } from "./mock/forYouService";
 import { mockLocationService } from "./mock/locationService";
+import { mockNotificationService } from "./mock/notificationService";
 import { mockPortalService } from "./mock/portalService";
 import { mockSearchService } from "./mock/searchService";
 import { mockSettingsService, mockSupportService } from "./mock/supportService";
@@ -24,9 +26,11 @@ import { mockTimetableService } from "./mock/timetableService";
 import type {
   AccountService,
   ActivityService,
+  AdminService,
   CampusService,
   ClockService,
   GoalsService,
+  NotificationService,
   OpportunitiesService,
   PlanService,
   SettingsService,
@@ -69,6 +73,8 @@ export const services: {
   sync: SyncService;
   support: SupportService;
   settings: SettingsService;
+  notifications: NotificationService;
+  admin: AdminService;
 } = {
   session: mockSessionService,
   auth: mockAuthService,
@@ -92,6 +98,8 @@ export const services: {
   sync: mockSyncService,
   support: mockSupportService,
   settings: mockSettingsService,
+  notifications: mockNotificationService,
+  admin: mockAdminService,
 };
 
 export { ServiceError, errorCodeOf } from "./types";
@@ -105,7 +113,32 @@ export type {
   CampusEvent,
   CampusPlace,
   CheckIn,
+  AdminReference,
+  AdminRole,
+  AdminService,
+  AdminUser,
+  Audience,
+  AuditAction,
+  AuditEntry,
+  ContentItem,
+  ContentMeta,
+  ContentPayload,
+  ContentType,
+  ContentVersion,
+  DisplayStatus,
+  EventPayload,
+  HoursRow,
+  NewsPayload,
+  PlacePayload,
+  ServicePayload,
+  TimetablePayload,
+  TimetableSessionRow,
+  VersionStatus,
   CourseResult,
+  DeliveryEvent,
+  DeliveryOutcome,
+  NotificationDraft,
+  QuietHours,
   Faq,
   IssueCategory,
   IssueReport,
@@ -167,5 +200,6 @@ export type {
   StudentAccount,
   StudyLevel,
   VerificationStatus,
+  SessionKind,
   Weekday,
 } from "./types";

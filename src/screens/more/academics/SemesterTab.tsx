@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { services, type ReminderLead, type ReminderPrefs, type Weekday } from "@/services";
+import { services, type AlertPermission, type ReminderLead, type ReminderPrefs, type Weekday } from "@/services";
+import { PermissionNote, useNotificationPermission } from "@/session/NotificationPermission";
 import { useAsync } from "@/lib/useAsync";
 import { btn } from "@/ui/button";
 import { ConfirmDialog } from "@/ui/ConfirmDialog";
@@ -127,6 +128,8 @@ const ReminderPrefsForm = ({ data }: { data: AcademicsData }) => {
   const [prefs, setPrefs] = useState<ReminderPrefs | null>(null);
   const [saving, setSaving] = useState(false);
   const [notice, setNotice] = useState<{ tone: "success" | "error"; text: string } | null>(null);
+  const { ensure } = useNotificationPermission();
+  const [permission, setPermission] = useState<AlertPermission | null>(null);
 
   useEffect(() => {
     if (state.status !== "ready") return;
@@ -177,13 +180,18 @@ const ReminderPrefsForm = ({ data }: { data: AcademicsData }) => {
           role="switch"
           aria-checked={prefs.enabled}
           aria-labelledby="reminders-title"
-          onClick={() => set({ enabled: !prefs.enabled })}
+          onClick={async () => {
+            const on = !prefs.enabled;
+            set({ enabled: on });
+            if (on) setPermission(await ensure("lectures"));
+          }}
           className={`relative h-8 w-14 shrink-0 rounded-full transition ${prefs.enabled ? "bg-oxford-ink" : "bg-oxford-ink/20"}`}
         >
           <span aria-hidden="true" className={`absolute top-1 h-6 w-6 rounded-full bg-white shadow transition-all ${prefs.enabled ? "left-7" : "left-1"}`} />
         </button>
       </div>
 
+      {prefs.enabled && permission && <PermissionNote permission={permission} className="mt-4" />}
       {prefs.enabled && (
         <div className="mt-5 space-y-5">
           <fieldset>

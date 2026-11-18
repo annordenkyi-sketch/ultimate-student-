@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { Navigate, Outlet, useLocation } from "react-router-dom";
 import { motion, useReducedMotion } from "framer-motion";
+import { NotificationTestPanel } from "@/demo/NotificationTestPanel";
 import { useSession } from "@/session/SessionProvider";
 import { AccessBanner } from "./AccessBanner";
 import { BottomTabs } from "./BottomTabs";
@@ -47,6 +48,7 @@ export const AppShell = () => {
         </main>
       </div>
       <BottomTabs />
+      <NotificationTestPanel />
     </div>
   );
 };

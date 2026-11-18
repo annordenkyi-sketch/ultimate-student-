@@ -14,7 +14,7 @@ export const Chip = ({
     type="button"
     aria-pressed={pressed}
     onClick={onClick}
-    className={`inline-flex min-h-[40px] shrink-0 items-center gap-1.5 rounded-full border px-4 text-sm font-semibold transition ${
+    className={`relative inline-flex min-h-[40px] shrink-0 items-center gap-1.5 rounded-full border px-4 text-sm font-semibold transition ${
       pressed
         ? "border-oxford-ink bg-oxford-ink text-white"
         : "border-oxford-ink/20 bg-white text-oxford-ink hover:bg-oxford-cream"

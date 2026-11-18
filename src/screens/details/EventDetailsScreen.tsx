@@ -135,7 +135,9 @@ export const EventDetailsScreen = () => {
           </p>
         ) : (
           <>
-            <p className="text-sm text-oxford-mute">Registration is required to attend.</p>
+            <p className="text-sm text-oxford-mute">
+              Registration is required to attend.{e.capacity ? ` ${e.capacity} places.` : ""}
+            </p>
             {registerFailed && (
               <p role="alert" className="mt-2 text-sm font-semibold text-oxford-danger">
                 Registration didn't go through. Try again.

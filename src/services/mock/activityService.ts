@@ -1,8 +1,7 @@
 import { storage } from "@/lib/storage";
 import type { ActivityService, SavedItem } from "../types";
 import { mockClockService } from "./clockService";
-import { notificationsAt } from "./contentData";
-import { SEED_ACCOUNTS, db, wait } from "./db";
+import { wait } from "./db";
 
 const NOTIFICATION_READS = "us.v4.notificationReads";
 const ANNOUNCEMENT_READS = "us.v4.announcementReads";
@@ -37,13 +36,6 @@ const savedFor = (accountId: string): SavedItem[] => {
 };
 
 export const mockActivityService: ActivityService = {
-  async notifications(accountId) {
-    await wait(300);
-    // Sample notifications go to the demo accounts only; a new sign-up starts with none.
-    if (!SEED_ACCOUNTS.some((a) => a.id === accountId)) return [];
-    const withLectures = Boolean(db.findById(accountId)?.coursesSetUp);
-    return notificationsAt(mockClockService.now(), withLectures);
-  },
   async readNotifications(accountId) {
     return read<string[]>(NOTIFICATION_READS, accountId, []);
   },

@@ -1,6 +1,8 @@
 import { bearing, distance, pointAlong, walkMinutes } from "@/lib/geo";
 import type { CampusService, LatLng, RouteStep, WalkRoute } from "../types";
-import { CAMPUS_AREA, LANDMARKS, PLACES, ROUTABLE } from "./campusData";
+import { CAMPUS_AREA, LANDMARKS } from "./campusData";
+import { mockClockService } from "./clockService";
+import { isRoutable, livePlaces } from "./liveContent";
 import { wait } from "./db";
 
 // Walking routes over the campus path network in ./campusPaths.json: footways,
@@ -23,9 +25,10 @@ interface RawGraph {
 interface Graph {
   nodes: LatLng[];
   adj: { to: number; m: number; name: string | null }[][];
-  /** Path node at each routable place's entrance. */
-  entranceNode: Record<string, number>;
 }
+
+const now = () => mockClockService.now();
+const placesNow = () => livePlaces(now());
 
 const nearestNode = (nodes: LatLng[], p: LatLng) => {
   let best = 0;
@@ -52,10 +55,18 @@ const loadGraph = () =>
       adj[a]!.push({ to: b, m, name });
       adj[b]!.push({ to: a, m, name });
     }
-    const entranceNode: Record<string, number> = {};
-    for (const p of PLACES) if (ROUTABLE.has(p.id)) entranceNode[p.id] = nearestNode(nodes, p.entrance).i;
-    return { nodes, adj, entranceNode };
+    return { nodes, adj };
   }));
+
+/** Nearest path junction to a place's entrance, if it has a verified walking path. Cached by position. */
+const entranceCache = new Map<string, number>();
+const entranceNodeFor = (g: Graph, placeId: string): number | undefined => {
+  const place = placesNow().find((p) => p.id === placeId);
+  if (!place || !isRoutable(now(), placeId)) return undefined;
+  const key = `${place.id}:${place.entrance.lat},${place.entrance.lng}`;
+  if (!entranceCache.has(key)) entranceCache.set(key, nearestNode(g.nodes, place.entrance).i);
+  return entranceCache.get(key);
+};
 
 /** Shortest distances from `source` to every node (Dijkstra with a binary heap). */
 const shortestFrom = (g: Graph, source: number) => {
@@ -112,7 +123,7 @@ const compass = (deg: number) => COMPASS[Math.round(deg / 45) % 8]!;
 
 const landmarkNear = (p: LatLng, exceptId: string) => {
   let best: { name: string; m: number } | null = null;
-  for (const place of PLACES) {
+  for (const place of placesNow()) {
     if (place.id === exceptId) continue;
     const m = Math.min(distance(p, place), distance(p, place.entrance));
     if (m <= LANDMARK_M && (!best || m < best.m)) best = { name: LANDMARKS[place.id] ?? place.name, m };
@@ -121,8 +132,8 @@ const landmarkNear = (p: LatLng, exceptId: string) => {
 };
 
 const buildRoute = (g: Graph, from: LatLng, placeId: string): WalkRoute | null => {
-  const place = PLACES.find((p) => p.id === placeId);
-  const end = g.entranceNode[placeId];
+  const place = placesNow().find((p) => p.id === placeId);
+  const end = entranceNodeFor(g, placeId);
   if (!place || end === undefined) return null;
   const start = nearestNode(g.nodes, from);
   if (start.m > MAX_CONNECT_M) return null;
@@ -196,11 +207,11 @@ export const mockCampusService: CampusService = {
   area: CAMPUS_AREA,
   async places() {
     await wait(300);
-    return PLACES;
+    return placesNow();
   },
   async place(id) {
     await wait(200);
-    return PLACES.find((p) => p.id === id) ?? null;
+    return placesNow().find((p) => p.id === id) ?? null;
   },
   async route(from, placeId) {
     const [g] = await Promise.all([loadGraph(), wait(700)]);
@@ -213,12 +224,17 @@ export const mockCampusService: CampusService = {
     const { dist } = shortestFrom(g, start.i);
     const out: Record<string, number> = {};
     for (const id of placeIds) {
-      const end = g.entranceNode[id];
+      const end = entranceNodeFor(g, id);
       if (end !== undefined && Number.isFinite(dist[end]!)) out[id] = walkMinutes(dist[end]! + start.m);
     }
     return out;
   },
   async reportIssue() {
     await wait(600);
+  },
+  async nearestPath(p) {
+    const [g] = await Promise.all([loadGraph(), wait(500)]);
+    const { i, m } = nearestNode(g.nodes, p);
+    return { metres: Math.round(m), name: g.adj[i]!.find((e) => e.name)?.name ?? null };
   },
 };

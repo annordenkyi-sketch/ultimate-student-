@@ -50,7 +50,7 @@ export const MockStateSwitcher = () => {
   return (
     <div
       data-devtools
-      className={`fixed z-[1200] flex items-end ${
+      className={`fixed z-[1050] flex items-end ${
         onMap ? "right-3 top-36 flex-col-reverse" : "bottom-24 right-4 flex-col lg:bottom-6 lg:right-6"
       }`}
     >

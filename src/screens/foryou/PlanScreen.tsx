@@ -35,8 +35,12 @@ export const PlanScreen = () => {
   const today = toISODate(now);
   const thisWeek = weekStartOf(now);
   const [params, setParams] = useSearchParams();
+  const isDate = (v: string | null): v is string => Boolean(v && /^\d{4}-\d{2}-\d{2}$/.test(v));
+  // ?day= opens the week containing that day and highlights it (deadline links); ?task= highlights one task.
+  const focusDay = isDate(params.get("day")) ? params.get("day")! : null;
+  const focusTask = params.get("task");
   const requested = params.get("week");
-  const week = requested && /^\d{4}-\d{2}-\d{2}$/.test(requested) ? weekStartOf(fromISODate(requested)) : thisWeek;
+  const week = focusDay ? weekStartOf(fromISODate(focusDay)) : isDate(requested) ? weekStartOf(fromISODate(requested)) : thisWeek;
 
   const tasksQuery = useAsync(() => services.plan.week(accountId, week), [accountId, week]);
   const goalsQuery = useAsync(() => services.goals.list(accountId), [accountId]);
@@ -163,10 +167,16 @@ export const PlanScreen = () => {
                     const ordered = [...dayTasks.filter((t) => !t.done), ...dayTasks.filter((t) => t.done)];
                     const date = fromISODate(d);
                     return (
-                      <li key={d} className="rounded-2xl border border-oxford-rule bg-white/80 px-4 py-3">
+                      <li
+                        key={d}
+                        id={`day-${d}`}
+                        ref={d === focusDay ? (el) => el?.scrollIntoView({ block: "center", behavior: reduce ? "auto" : "smooth" }) : undefined}
+                        className={`scroll-mt-24 rounded-2xl border bg-white/80 px-4 py-3 ${d === focusDay ? "border-oxford-gold ring-2 ring-oxford-gold/50" : "border-oxford-rule"}`}
+                      >
                         <h3 className="flex items-center gap-2 font-sans text-sm font-semibold text-oxford-ink">
                           {date.toLocaleDateString("en-GB", { weekday: "long", day: "numeric", month: "short" })}
                           {d === today && <span className="rounded-full bg-oxford-ink px-2 py-0.5 text-[11px] font-semibold text-white">Today</span>}
+                          {d === focusDay && <span className="rounded-full bg-oxford-gold/30 px-2 py-0.5 text-[11px] font-semibold text-oxford-ink">From your notification</span>}
                         </h3>
                         {ordered.length === 0 ? (
                           <p className="py-1.5 text-sm text-oxford-mute">Nothing planned</p>
@@ -183,7 +193,7 @@ export const PlanScreen = () => {
                                     animate={{ opacity: 1 }}
                                     exit={reduce ? undefined : { opacity: 0, height: 0 }}
                                     transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
-                                    className="flex items-center gap-3 py-1.5"
+                                    className={`flex items-center gap-3 py-1.5 ${t.id === focusTask ? "-mx-2 rounded-lg bg-oxford-gold/15 px-2" : ""}`}
                                   >
                                     <TickBox checked={t.done} onChange={(v) => toggle(t, v)} label={t.title} />
                                     <span className="min-w-0 flex-1">

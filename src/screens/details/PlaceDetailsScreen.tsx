@@ -30,15 +30,17 @@ export const PlaceDetailsScreen = () => {
       title={p.name}
       intro={p.summary}
       status={<OpenBadge periods={p.periods} now={now} />}
-      photo={p.photoId ? { id: p.photoId, alt: p.name } : null}
+      photo={p.photoUrl ? { id: "", url: p.photoUrl, alt: p.name } : p.photoId ? { id: p.photoId, alt: p.name } : null}
       save={{ kind: "place", id: p.id }}
       directionsTo={p.id}
       website={p.website}
     >
-      <DetailSection id="about-place" title="About" wide>
-        <Paragraphs items={p.description} />
-      </DetailSection>
-      <HoursSection hours={p.hours} />
+      {p.description.length > 0 && (
+        <DetailSection id="about-place" title="About" wide>
+          <Paragraphs items={p.description} />
+        </DetailSection>
+      )}
+      {p.hours.length > 0 && <HoursSection hours={p.hours} />}
       <ContactSection phone={p.phone} email={p.email} />
       <LocationSection label={p.name} detail={`Entrance: ${p.entrance.label}`} onMap walkMinutes={walk?.[p.id]} />
     </ContentDetail>

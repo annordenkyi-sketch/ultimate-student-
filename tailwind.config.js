@@ -70,7 +70,7 @@ export default {
         sans: ["var(--us-font-sans)"],
         display: [
           "Bricolage Grotesque",
-          "DM Sans",
+          "Aptos",
           "Inter",
           "system-ui",
           "sans-serif",

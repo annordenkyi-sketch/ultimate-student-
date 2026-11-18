@@ -81,6 +81,10 @@ export const db = {
   findById(id: string): StoredAccount | undefined {
     return load().find((a) => a.id === id);
   },
+  /** Every student account (for notifying an audience). */
+  all(): StoredAccount[] {
+    return load();
+  },
   insert(account: StoredAccount): void {
     save([...load(), account]);
   },

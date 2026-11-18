@@ -51,6 +51,7 @@ export type ServiceErrorCode =
   | "invalid-reset"
   | "portal-auth-failed"
   | "sync-failed"
+  | "forbidden"
   | "network";
 
 export class ServiceError extends Error {
@@ -282,6 +283,9 @@ export interface Announcement {
   publishedAt: string;
   summary: string;
   body: string[];
+  /** Optional link or attachment added by staff. */
+  link?: string | null;
+  attachmentName?: string | null;
 }
 
 export type EventCategory = "Careers" | "Tech" | "Sports" | "Wellbeing" | "Culture";
@@ -298,6 +302,8 @@ export interface CampusEvent {
   description: string[];
   /** "required": students register to attend. "none": just turn up. */
   registration: "required" | "none";
+  /** Places available, when registration is required. */
+  capacity?: number | null;
 }
 
 export type ServiceIcon = "library" | "health" | "ict" | "fees" | "portal";
@@ -359,6 +365,10 @@ export interface CampusPlace extends LatLng {
   email: string | null;
   website: string | null;
   photoId: string | null;
+  /** Photo uploaded by staff (data URL), shown instead of photoId. */
+  photoUrl?: string | null;
+  /** Further entrances besides the main one. */
+  otherEntrances?: (LatLng & { label: string })[];
 }
 
 export type Recommendation = {
@@ -381,13 +391,24 @@ export interface ContentService {
   recommendations(accountId: string | null): Promise<Recommendation[]>;
 }
 
-export type NotificationTarget = { kind: "lecture" | "announcement" | "event"; id: string };
+/** Where a notification leads. Each kind opens its own screen (deep link). */
+export type NotificationTarget =
+  | { kind: "lecture"; id: string }
+  | { kind: "announcement"; id: string }
+  | { kind: "event"; id: string }
+  /** A deadline opens that day in the weekly plan; `id` is the plan task, if there is one. */
+  | { kind: "deadline"; date: string; id: string | null }
+  | { kind: "goal"; id: string };
 
 export interface AppNotification {
   id: string;
   title: string;
   body: string;
   createdAt: string;
+  /** Settings category, so it respects the student's on/off choice and filters. */
+  category: NotificationCategory;
+  /** "reminder" for something coming up; "update" for something that changed or is new. */
+  type: "reminder" | "update";
   target: NotificationTarget;
 }
 
@@ -402,9 +423,9 @@ export interface SavedItem {
 
 /** Per-student activity: notifications, what's been read, saved and registered. */
 export interface ActivityService {
-  notifications(accountId: string): Promise<AppNotification[]>;
-  readNotifications(accountId: string): Promise<string[]>;
-  markNotificationsRead(accountId: string, ids: string[]): Promise<void>;
+  /** `userKey` is the account id, or "guest". */
+  readNotifications(userKey: string): Promise<string[]>;
+  markNotificationsRead(userKey: string, ids: string[]): Promise<void>;
   /** `userKey` is the account id, or "guest". */
   readAnnouncements(userKey: string): Promise<string[]>;
   markAnnouncementRead(userKey: string, id: string): Promise<void>;
@@ -463,6 +484,8 @@ export interface CampusService {
   /** Walking minutes from a position. Places with no route are left out. */
   walkingMinutes(from: LatLng, placeIds: string[]): Promise<Record<string, number>>;
   reportIssue(placeId: string, note: string): Promise<void>;
+  /** Nearest verified walking path to a point, for staff checking a new entrance. */
+  nearestPath(p: LatLng): Promise<{ metres: number; name: string | null }>;
 }
 
 export interface GeoFix extends LatLng {
@@ -756,6 +779,250 @@ export type NotificationCategory = "lectures" | "news" | "events" | "deadlines" 
 export interface SettingsService {
   notificationPrefs(accountId: string): Promise<Record<NotificationCategory, boolean>>;
   setNotificationPref(accountId: string, category: NotificationCategory, on: boolean): Promise<void>;
+}
+
+// ── Flow 09: notifications ─────────────────────────────────────────────
+
+export type NotificationDraft = Omit<AppNotification, "id" | "createdAt">;
+
+/** What happened when a notification was created. */
+export type DeliveryOutcome =
+  /** Notifications allowed: shown as an in-app banner, or by the system when the app is in the background. */
+  | { status: "shown"; via: "banner" | "system" }
+  /** Not shown, but saved to the notification centre. */
+  | { status: "centre-only"; reason: "permission" | "quiet-hours" }
+  /** Not created at all. */
+  | { status: "skipped"; reason: "category-off" | "not-for-guests" | "guest-not-opted-in" | "needs-verification" };
+
+export interface DeliveryEvent {
+  userKey: string;
+  notification: AppNotification;
+  outcome: DeliveryOutcome;
+}
+
+export interface QuietHours {
+  enabled: boolean;
+  /** "HH:MM". Quiet hours can run past midnight, e.g. 22:00 to 07:00. */
+  from: string;
+  to: string;
+}
+
+export interface NotificationService {
+  /** The notification centre, newest first. `userKey` is the account id, or "guest". */
+  list(userKey: string): Promise<AppNotification[]>;
+  dismiss(userKey: string, id: string): Promise<void>;
+  /**
+   * Creates a notification: checks the student's settings and permission,
+   * delivers it if allowed, and stores it in the notification centre.
+   */
+  deliver(userKey: string, draft: NotificationDraft): Promise<{ notification: AppNotification | null; outcome: DeliveryOutcome }>;
+  /** Called for every notification created while the app is open (for in-app banners). */
+  subscribe(listener: (e: DeliveryEvent) => void): () => void;
+  quietHours(accountId: string): Promise<QuietHours>;
+  setQuietHours(accountId: string, q: QuietHours): Promise<void>;
+  /** Guests can opt in to public news and event alerts. */
+  guestAlerts(): boolean;
+  setGuestAlerts(on: boolean): void;
+}
+
+// ── Flow 10: admin content publishing ──────────────────────────────────
+
+export type AdminRole = "super-admin" | "editor" | "reviewer";
+
+export interface AdminUser {
+  id: string;
+  name: string;
+  email: string;
+  /** Null: a staff account with no admin access. */
+  role: AdminRole | null;
+}
+
+export type ContentType = "news" | "event" | "service" | "place" | "timetable";
+
+/** Who an item is for. */
+export type Audience =
+  | { kind: "all" }
+  | { kind: "levels"; levels: string[] }
+  | { kind: "programmes"; programmeIds: string[] };
+
+export interface ContentMeta {
+  /** Where the content comes from, e.g. "Registrar's Office". */
+  source: string;
+  audience: Audience;
+  /** Create notifications for students when published. */
+  notify: boolean;
+  /** Editor's requested go-live, local "YYYY-MM-DDTHH:MM". Empty: as soon as it's approved. */
+  publishOn?: string;
+  /** Editor's requested expiry, "YYYY-MM-DD" (end of that day). Empty: no expiry. */
+  expiresOn?: string;
+}
+
+/** Opening hours as entered by staff; the student app derives "open now" from them. */
+export interface HoursRow {
+  days: "weekdays" | "mon-sat" | "every-day" | "sat" | "sun";
+  open: string;
+  close: string;
+  closed: boolean;
+}
+
+export interface NewsPayload {
+  title: string;
+  summary: string;
+  body: string;
+  category: AnnouncementCategory;
+  link: string;
+  attachmentName: string;
+}
+
+export interface EventPayload {
+  title: string;
+  description: string;
+  category: EventCategory;
+  /** "YYYY-MM-DD" and "HH:MM". */
+  date: string;
+  start: string;
+  end: string;
+  placeId: string;
+  venue: string;
+  organiser: string;
+  registration: boolean;
+  capacity: string;
+}
+
+export interface ServicePayload {
+  name: string;
+  shortName: string;
+  category: ServiceCategory;
+  summary: string;
+  description: string;
+  hours: HoursRow[];
+  phone: string;
+  email: string;
+  placeId: string;
+  website: string;
+}
+
+export interface PlacePayload {
+  name: string;
+  category: PlaceCategory;
+  summary: string;
+  description: string;
+  photo: string;
+  hours: HoursRow[];
+  lat: number | null;
+  lng: number | null;
+  entrances: (LatLng & { label: string })[];
+  /** Staff confirmed the entrance connects to a campus walking path. */
+  pathChecked: boolean;
+}
+
+export interface TimetableSessionRow {
+  id: string;
+  kind: SessionKind;
+  day: Weekday | "";
+  start: string;
+  end: string;
+  venue: string;
+  lecturer: string;
+}
+
+export interface TimetablePayload {
+  semesterId: string;
+  programmeId: string;
+  courseCode: string;
+  courseTitle: string;
+  credits: string;
+  sessions: TimetableSessionRow[];
+  /** Official schedule source: a document name or link. */
+  sourceDocument: string;
+  sourceChecked: boolean;
+}
+
+export type ContentPayload = NewsPayload | EventPayload | ServicePayload | PlacePayload | TimetablePayload;
+
+export type VersionStatus = "draft" | "in-review" | "returned" | "approved" | "published" | "superseded";
+
+export interface ContentVersion {
+  number: number;
+  payload: ContentPayload;
+  meta: ContentMeta;
+  status: VersionStatus;
+  createdBy: string;
+  createdAt: string;
+  submittedAt: string | null;
+  reviewedBy: string | null;
+  reviewedAt: string | null;
+  /** Reviewer's comment when returned for correction. */
+  comment: string | null;
+  publishedAt: string | null;
+}
+
+export interface ContentItem {
+  id: string;
+  type: ContentType;
+  /** The version students see. Null until first published. */
+  live: ContentVersion | null;
+  /** A new version being written or reviewed. The live one stays up meanwhile. */
+  working: ContentVersion | null;
+  /** When an approved working version goes live. Null: not scheduled. */
+  publishAt: string | null;
+  /** After this, students no longer see it. */
+  expiresAt: string | null;
+  unpublished: boolean;
+  /** Every version, oldest first. */
+  versions: ContentVersion[];
+  createdBy: string;
+  updatedAt: string;
+}
+
+export type DisplayStatus = "draft" | "in-review" | "returned" | "approved" | "scheduled" | "published" | "expired" | "unpublished";
+
+export type AuditAction = "create" | "save" | "submit" | "approve" | "return" | "publish" | "schedule" | "unpublish" | "expiry" | "role";
+
+export interface AuditEntry {
+  id: string;
+  at: string;
+  actor: string;
+  action: AuditAction;
+  itemId: string | null;
+  itemTitle: string;
+  detail: string;
+}
+
+export interface AdminService {
+  /** Staff email and password. Throws "invalid-credentials". */
+  logIn(email: string, password: string): Promise<AdminUser>;
+  current(): AdminUser | null;
+  logOut(): void;
+  users(): Promise<AdminUser[]>;
+  setRole(actorId: string, userId: string, role: AdminRole | null): Promise<AdminUser>;
+
+  list(): Promise<ContentItem[]>;
+  get(id: string): Promise<ContentItem | null>;
+  create(actorId: string, type: ContentType, payload: ContentPayload, meta: ContentMeta): Promise<ContentItem>;
+  /** Saves the working version as a draft (starting a new version if the item is published). */
+  saveDraft(actorId: string, id: string, payload: ContentPayload, meta: ContentMeta): Promise<ContentItem>;
+  submit(actorId: string, id: string): Promise<ContentItem>;
+  approve(actorId: string, id: string): Promise<ContentItem>;
+  returnForCorrection(actorId: string, id: string, comment: string): Promise<ContentItem>;
+  /** `at` null publishes now; otherwise schedules. */
+  publish(actorId: string, id: string, at: string | null): Promise<{ item: ContentItem; notified: number }>;
+  unpublish(actorId: string, id: string): Promise<ContentItem>;
+  setExpiry(actorId: string, id: string, expiresAt: string | null): Promise<ContentItem>;
+  discardDraft(actorId: string, id: string): Promise<ContentItem | null>;
+  audit(): Promise<AuditEntry[]>;
+  /** Lists the editors pick from: programmes, levels, semesters, places, venues. */
+  reference(): Promise<AdminReference>;
+}
+
+export interface AdminReference {
+  programmes: { id: string; name: string }[];
+  levels: string[];
+  semesters: Semester[];
+  places: { id: string; name: string; category: PlaceCategory; lat: number; lng: number }[];
+  /** Venue names the timetable knows, and the place each one is in. */
+  venues: Record<string, string>;
+  campus: { center: LatLng; radiusM: number };
 }
 
 export interface ClockService {

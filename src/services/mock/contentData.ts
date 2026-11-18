@@ -295,11 +295,24 @@ export const UNIVERSITY_SERVICES: UniversityService[] = [
   },
 ];
 
-/** Notifications for a signed-in student. Lecture ones only once courses are set up. */
+/** The coming Friday (or today, if it's Friday), as "YYYY-MM-DD". */
+const thisFriday = (now: Date) => {
+  const d = new Date(now);
+  d.setDate(d.getDate() + ((5 - d.getDay() + 7) % 7));
+  const pad = (n: number) => String(n).padStart(2, "0");
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+};
+
+/**
+ * Sample notification centre for the demo accounts. Lecture and goal ones
+ * only for a student with courses set up.
+ */
 export const notificationsAt = (now: Date, withLectures: boolean): AppNotification[] => {
   const items: AppNotification[] = [
     {
       id: "n-midsem",
+      category: "news",
+      type: "update",
       title: "New from Academic Affairs",
       body: "Mid-semester examination timetable published.",
       createdAt: hoursAgo(now, 2),
@@ -307,6 +320,8 @@ export const notificationsAt = (now: Date, withLectures: boolean): AppNotificati
     },
     {
       id: "n-career-fair",
+      category: "events",
+      type: "update",
       title: "Registration open: Career fair",
       body: "Internships and graduate roles. Register to attend.",
       createdAt: hoursAgo(now, 4),
@@ -314,16 +329,20 @@ export const notificationsAt = (now: Date, withLectures: boolean): AppNotificati
     },
     {
       id: "n-fees",
-      title: "New from the Finance Directorate",
-      body: "Second fee instalment due.",
+      category: "deadlines",
+      type: "reminder",
+      title: "Deadline: second fee instalment",
+      body: "Due this Friday. Pay on the student portal and keep your receipt.",
       createdAt: hoursAgo(now, 30),
-      target: { kind: "announcement", id: "fees-instalment" },
+      target: { kind: "deadline", date: thisFriday(now), id: null },
     },
   ];
   if (withLectures) {
     items.push(
       {
         id: "n-cscd301",
+        category: "lectures",
+        type: "reminder",
         title: "CSCD 301 Tutorial today",
         body: "Object Oriented Programming at 10:30 in JQB 19.",
         createdAt: hoursAgo(now, 1),
@@ -331,10 +350,21 @@ export const notificationsAt = (now: Date, withLectures: boolean): AppNotificati
       },
       {
         id: "n-cscd309",
+        category: "lectures",
+        type: "update",
         title: "CSCD 309 venue update",
         body: "Operating Systems lectures are in Science LT 2.",
         createdAt: hoursAgo(now, 50),
         target: { kind: "lecture", id: "CSCD309-1" },
+      },
+      {
+        id: "n-goal-internships",
+        category: "goals",
+        type: "reminder",
+        title: "Goal reminder: Apply for two internships",
+        body: "Next step: Apply at the career fair.",
+        createdAt: hoursAgo(now, 26),
+        target: { kind: "goal", id: "g-internships" },
       },
     );
   }

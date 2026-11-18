@@ -1,5 +1,5 @@
 import { lazy, Suspense } from "react";
-import { Navigate, Route, Routes } from "react-router-dom";
+import { Navigate, Route, Routes, useLocation } from "react-router-dom";
 import { MotionConfig } from "framer-motion";
 import { WelcomePage } from "@/features/welcome/WelcomePage";
 import { AcademicProfileScreen } from "@/screens/auth/AcademicProfileScreen";
@@ -50,7 +50,10 @@ import { SettingsSection } from "@/screens/more/SettingsSection";
 import { SupportSection } from "@/screens/more/SupportSection";
 import { NotificationsScreen } from "@/screens/tabs/NotificationsScreen";
 import { AppShell } from "@/shell/AppShell";
+import { LinkAlias } from "@/shell/LinkAliases";
 import { MockStateSwitcher } from "@/shell/MockStateSwitcher";
+import { NotificationBanner } from "@/shell/NotificationBanner";
+import { RequireSignIn } from "@/session/RequireSignIn";
 import { DoneScreen } from "@/screens/setup/DoneScreen";
 import { GoalsStep } from "@/screens/setup/GoalsStep";
 import { ManualStep } from "@/screens/setup/ManualStep";
@@ -66,6 +69,27 @@ import { TimetableStep } from "@/screens/setup/TimetableStep";
 
 // Leaflet is only downloaded when the map opens.
 const MapScreen = lazy(() => import("@/screens/map/MapScreen").then((m) => ({ default: m.MapScreen })));
+
+// Admin (flow 10) is its own area, downloaded only by staff who open it.
+const AdminApp = lazy(() => import("@/admin/AdminApp"));
+
+const AdminLoading = () => (
+  <div role="status" className="flex min-h-screen items-center justify-center bg-oxford-paper text-sm font-semibold text-oxford-mute">
+    Loading Admin…
+  </div>
+);
+
+/** Student-app overlays (notification banner, dev test panel) stay out of Admin. */
+const StudentOverlays = () => {
+  const { pathname } = useLocation();
+  if (pathname === "/admin" || pathname.startsWith("/admin/")) return null;
+  return (
+    <>
+      <NotificationBanner />
+      {import.meta.env.DEV && <MockStateSwitcher />}
+    </>
+  );
+};
 
 const MapLoading = () => (
   <div role="status" className="fixed inset-0 flex items-center justify-center bg-oxford-cream text-sm font-semibold text-oxford-mute">
@@ -125,7 +149,14 @@ export const App = () => (
 
       <Route element={<AppShell />}>
         <Route path="/home" element={<HomeScreen />} />
-        <Route path="/lectures/:sessionId" element={<LectureDetailsScreen />} />
+        <Route
+          path="/lectures/:sessionId"
+          element={
+            <RequireSignIn>
+              <LectureDetailsScreen />
+            </RequireSignIn>
+          }
+        />
         <Route path="/announcements" element={<AnnouncementsScreen />} />
         <Route path="/announcements/:id" element={<AnnouncementDetailsScreen />} />
         <Route path="/services/:id" element={<ServiceDetailsScreen />} />
@@ -164,8 +195,25 @@ export const App = () => (
         <Route path="/profile" element={<Navigate to="/more/profile" replace />} />
       </Route>
 
+      {/* Flow 09: short links that open the matching screen. */}
+      <Route path="/lecture/:id" element={<LinkAlias kind="lecture" />} />
+      <Route path="/news/:id" element={<LinkAlias kind="news" />} />
+      <Route path="/event/:id" element={<LinkAlias kind="event" />} />
+      <Route path="/goal/:id" element={<LinkAlias kind="goal" />} />
+      <Route path="/deadline/:id" element={<LinkAlias kind="deadline" />} />
+
+      {/* Flow 10: admin content publishing, for staff. */}
+      <Route
+        path="/admin/*"
+        element={
+          <Suspense fallback={<AdminLoading />}>
+            <AdminApp />
+          </Suspense>
+        }
+      />
+
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
-    {import.meta.env.DEV && <MockStateSwitcher />}
+    <StudentOverlays />
   </MotionConfig>
 );

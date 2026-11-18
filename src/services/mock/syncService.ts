@@ -10,7 +10,8 @@ import type {
   Timetable,
 } from "../types";
 import { mockClockService } from "./clockService";
-import { CATALOGUE, VENUE_PLACES, clone } from "./courseData";
+import { VENUE_PLACES, clone } from "./courseData";
+import { liveCatalogue } from "./liveContent";
 import { wait } from "./db";
 import { mockPortalService } from "./portalService";
 import {
@@ -39,7 +40,7 @@ const daysAgo = (d: number) => new Date(now().getTime() - d * 86_400_000).toISOS
 
 /** Official version of a course: the catalogue's sessions where we have them. */
 const officialCopy = (c: Course): Course => {
-  const listed = CATALOGUE.find((x) => x.code === c.code);
+  const listed = liveCatalogue(now()).find((x) => x.code === c.code);
   return clone({
     ...c,
     origin: "synced",
@@ -68,7 +69,7 @@ const placed = (s: CourseSession) => Boolean(s.day && s.start && s.end);
 /** Courses the portal adds in the test cases, with times that fit around the demo week. */
 const EXTRA_COURSES = (): Course[] => {
   const pick = (code: string, override?: Partial<CourseSession>) => {
-    const c = clone(CATALOGUE.find((x) => x.code === code)!);
+    const c = clone(liveCatalogue(now()).find((x) => x.code === code)!);
     if (override) c.sessions = [{ ...c.sessions[0]!, ...override }];
     return { ...c, origin: "synced" as const };
   };
@@ -197,7 +198,9 @@ export const mockSyncService: SyncService = {
 
     const timetable = timetableFor(accountId);
     const baseline = baselineFor(accountId);
-    const portal = scenario === "no-changes" ? baseline : portalRegistration(baseline, timetable, scenario === "conflict");
+    // The registration as the university publishes it now (Admin timetable updates included).
+    const official = baseline.map((c) => (liveCatalogue(now()).some((x) => x.code === c.code) ? officialCopy(c) : c));
+    const portal = scenario === "no-changes" ? official : portalRegistration(official, timetable, scenario === "conflict");
     const found = diff(baseline, portal, timetable);
     if (!found.added.length && !found.removed.length && !found.changed.length) {
       const at = now().toISOString();

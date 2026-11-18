@@ -1,10 +1,15 @@
 import type { ReactNode } from "react";
-import { ArrowLeft } from "lucide-react";
+import { Link, useLocation } from "react-router-dom";
+import { ArrowLeft, SearchX } from "lucide-react";
+import { btn } from "@/ui/button";
 import { canGoBack, useGoBack } from "@/lib/useGoBack";
 import { BackLink } from "../auth/parts";
 
 /** Back to wherever the student came from; the fallback when they arrived directly. */
-export const HistoryBack = ({ fallback }: { fallback: { to: string; label: string } }) => {
+export const HistoryBack = ({ fallback: given }: { fallback: { to: string; label: string } }) => {
+  // Opened straight from a notification (e.g. a link from outside the app): back to the notification centre.
+  const fromNotification = new URLSearchParams(useLocation().search).get("ref") === "notification";
+  const fallback = fromNotification ? { to: "/notifications", label: "Notifications" } : given;
   const goBack = useGoBack(fallback.to);
   if (!canGoBack()) return <BackLink to={fallback.to} label={fallback.label} />;
   return (
@@ -41,9 +46,21 @@ export const DetailHeader = ({
   </header>
 );
 
+/** Flow 09: the link is fine but the content has gone (event removed, course dropped). */
 export const NotFound = ({ what, back }: { what: string; back: { to: string; label: string } }) => (
-  <>
-    <DetailHeader back={back} title={`${what} not found`} />
-    <p className="text-oxford-mute">It may have been removed, or the link is out of date.</p>
-  </>
+  <div className="max-w-xl">
+    <HistoryBack fallback={back} />
+    <div className="mt-2 rounded-2xl border border-oxford-rule bg-white/80 px-6 py-10 text-center">
+      <span className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-oxford-sandSoft text-oxford-ink">
+        <SearchX className="h-6 w-6" aria-hidden="true" />
+      </span>
+      <h1 className="mt-4 text-2xl font-medium">This is no longer available</h1>
+      <p className="mx-auto mt-2 max-w-sm text-oxford-mute">
+        This {what.toLowerCase()} may have been removed or changed since the link was sent.
+      </p>
+      <Link to="/home" className={btn("primary", "mt-6")}>
+        Go to Home
+      </Link>
+    </div>
+  </div>
 );

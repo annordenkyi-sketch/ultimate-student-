@@ -15,7 +15,7 @@ import type {
 } from "../types";
 import { PROGRAMMES } from "./catalogService";
 import { mockClockService } from "./clockService";
-import { eventsAt } from "./contentData";
+import { liveEvents } from "./liveContent";
 import { SEMESTERS } from "./courseData";
 import { db, wait } from "./db";
 import {
@@ -278,7 +278,7 @@ export const mockOpportunitiesService: OpportunitiesService = {
     };
 
     const out: Opportunity[] = [];
-    for (const e of eventsAt(at).sort((a, b) => a.startsAt.localeCompare(b.startsAt))) {
+    for (const e of liveEvents(at).sort((a, b) => a.startsAt.localeCompare(b.startsAt))) {
       if (new Date(e.endsAt) < at) continue;
       const reason = reasonFor(EVENT_TOPICS[e.id] ?? []);
       if (reason) out.push({ type: "event", id: e.id, title: e.title, kind: e.category, detail: eventDetail(e.startsAt, e.venue), reason });

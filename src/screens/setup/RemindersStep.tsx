@@ -1,6 +1,7 @@
 import { useState, type FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
-import { services, type AlertPermission, type ReminderLead, type Weekday } from "@/services";
+import { type AlertPermission, type ReminderLead, type Weekday } from "@/services";
+import { useNotificationPermission } from "@/session/NotificationPermission";
 import { FieldError } from "@/ui/form/FieldError";
 import { FormAlert } from "@/ui/form/FormAlert";
 import { LoadingButton } from "@/ui/form/LoadingButton";
@@ -49,6 +50,7 @@ export const RemindersStep = () => {
   const [days, setDays] = useState<Set<Weekday>>(new Set(saved?.days ?? daysWithClasses));
   const [codes, setCodes] = useState<Set<string>>(new Set(saved?.courseCodes ?? coursesWithClasses.map((c) => c.code)));
   const [permission, setPermission] = useState<AlertPermission | null>(null);
+  const { ensure } = useNotificationPermission();
   const [asking, setAsking] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -57,15 +59,10 @@ export const RemindersStep = () => {
     setEnabled(next);
     setError(null);
     if (!next) return;
-    // Only ask for permission once reminders are actually turned on.
-    const current = services.device.notificationPermission();
-    if (current === "default") {
-      setAsking(true);
-      setPermission(await services.device.requestNotificationPermission());
-      setAsking(false);
-    } else {
-      setPermission(current);
-    }
+    // Only ask once reminders are actually turned on, and explain first (pre-prompt).
+    setAsking(true);
+    setPermission(await ensure("lectures"));
+    setAsking(false);
   };
 
   const toggleIn = <T,>(set: Set<T>, value: T) => {

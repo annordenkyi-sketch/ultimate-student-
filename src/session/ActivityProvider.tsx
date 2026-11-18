@@ -7,15 +7,21 @@ import {
   useState,
   type ReactNode,
 } from "react";
-import { services, type AppNotification, type SavedItem, type SavedKind } from "@/services";
+import { services, type AppNotification, type DeliveryEvent, type SavedItem, type SavedKind } from "@/services";
 import { useSession } from "./SessionProvider";
 
 interface ActivityCtx {
-  /** Null while loading or for guests. */
+  /** The notification centre. Null while loading. Guests only see public alerts they opted in to. */
   notifications: AppNotification[] | null;
   isNotificationRead: (id: string) => boolean;
   unreadCount: number;
   markNotificationsRead: (ids: string[]) => void;
+  dismissNotification: (id: string) => Promise<void>;
+  /** Reload the centre, e.g. after a guest opts in to alerts. */
+  refreshNotifications: () => void;
+  /** A notification that just arrived while the app is open, for the in-app banner. */
+  banner: AppNotification | null;
+  clearBanner: () => void;
   isAnnouncementRead: (id: string) => boolean;
   markAnnouncementRead: (id: string) => void;
   saved: SavedItem[];
@@ -56,28 +62,46 @@ export const ActivityProvider = ({ children }: { children: ReactNode }) => {
   const [saved, setSavedItems] = useState<SavedItem[]>([]);
   const [registrations, setRegistrations] = useState<Set<string>>(new Set());
   const [savedAfterSignIn, setSavedAfterSignIn] = useState<{ kind: SavedKind; id: string } | null>(null);
+  const [banner, setBanner] = useState<AppNotification | null>(null);
+  const [refreshKey, setRefreshKey] = useState(0);
+
+  // Notification centre and read state, for students and guests alike.
+  useEffect(() => {
+    let live = true;
+    setNotifications(null);
+    void Promise.all([services.notifications.list(userKey), services.activity.readNotifications(userKey)]).then(([list, read]) => {
+      if (!live) return;
+      setNotifications(list);
+      setReadNotifications(new Set(read));
+    });
+    return () => {
+      live = false;
+    };
+  }, [userKey, coursesSetUp, refreshKey]);
+
+  // New notifications while the app is open: add to the centre, and show a banner when it's allowed.
+  useEffect(
+    () =>
+      services.notifications.subscribe((e: DeliveryEvent) => {
+        if (e.userKey !== userKey) return;
+        setNotifications((prev) => [e.notification, ...(prev ?? []).filter((n) => n.id !== e.notification.id)]);
+        if (e.outcome.status === "shown" && e.outcome.via === "banner") setBanner(e.notification);
+      }),
+    [userKey],
+  );
 
   useEffect(() => {
     let live = true;
     void services.activity.readAnnouncements(userKey).then((ids) => live && setReadAnnouncements(new Set(ids)));
     if (!accountId) {
-      setNotifications(null);
-      setReadNotifications(new Set());
       setSavedItems([]);
       setRegistrations(new Set());
       return () => {
         live = false;
       };
     }
-    void Promise.all([
-      services.activity.notifications(accountId),
-      services.activity.readNotifications(accountId),
-      services.activity.saved(accountId),
-      services.activity.registrations(accountId),
-    ]).then(async ([list, read, savedItems, regs]) => {
+    void Promise.all([services.activity.saved(accountId), services.activity.registrations(accountId)]).then(async ([savedItems, regs]) => {
       if (!live) return;
-      setNotifications(list);
-      setReadNotifications(new Set(read));
       setSavedItems(savedItems);
       setRegistrations(new Set(regs));
 
@@ -96,16 +120,27 @@ export const ActivityProvider = ({ children }: { children: ReactNode }) => {
     return () => {
       live = false;
     };
-  }, [accountId, userKey, coursesSetUp]);
+  }, [accountId, userKey]);
 
   const markNotificationsRead = useCallback(
     (ids: string[]) => {
-      if (!accountId || ids.length === 0) return;
+      if (ids.length === 0) return;
       setReadNotifications((prev) => new Set([...prev, ...ids]));
-      void services.activity.markNotificationsRead(accountId, ids);
+      void services.activity.markNotificationsRead(userKey, ids);
     },
-    [accountId],
+    [userKey],
   );
+
+  const dismissNotification = useCallback(
+    async (id: string) => {
+      setNotifications((prev) => prev?.filter((n) => n.id !== id) ?? prev);
+      await services.notifications.dismiss(userKey, id);
+    },
+    [userKey],
+  );
+
+  const refreshNotifications = useCallback(() => setRefreshKey((k) => k + 1), []);
+  const clearBanner = useCallback(() => setBanner(null), []);
 
   const markAnnouncementRead = useCallback(
     (id: string) => {
@@ -145,6 +180,10 @@ export const ActivityProvider = ({ children }: { children: ReactNode }) => {
       isNotificationRead: (id) => readNotifications.has(id),
       unreadCount: notifications?.filter((n) => !readNotifications.has(n.id)).length ?? 0,
       markNotificationsRead,
+      dismissNotification,
+      refreshNotifications,
+      banner,
+      clearBanner,
       isAnnouncementRead: (id) => readAnnouncements.has(id),
       markAnnouncementRead,
       saved,
@@ -155,7 +194,7 @@ export const ActivityProvider = ({ children }: { children: ReactNode }) => {
       saveAfterSignIn,
       savedAfterSignIn,
     }),
-    [notifications, readNotifications, markNotificationsRead, readAnnouncements, markAnnouncementRead, saved, setSaved, registrations, register, saveAfterSignIn, savedAfterSignIn],
+    [notifications, readNotifications, markNotificationsRead, dismissNotification, refreshNotifications, banner, clearBanner, readAnnouncements, markAnnouncementRead, saved, setSaved, registrations, register, saveAfterSignIn, savedAfterSignIn],
   );
 
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>;

@@ -1,5 +1,7 @@
 import { ServiceError, type PortalService } from "../types";
-import { CATALOGUE, PORTAL_IMPORT_CODES, clone } from "./courseData";
+import { PORTAL_IMPORT_CODES, clone } from "./courseData";
+import { mockClockService } from "./clockService";
+import { liveCatalogue } from "./liveContent";
 import { wait } from "./db";
 
 /** Portal passwords for testing the sync path. Any other password is "wrong details". */
@@ -19,6 +21,6 @@ export const mockPortalService: PortalService = {
   async importRegistration(token) {
     await wait(1500);
     if (token !== "portal-ok") throw new ServiceError("sync-failed");
-    return clone(CATALOGUE.filter((c) => PORTAL_IMPORT_CODES.includes(c.code)));
+    return clone(liveCatalogue(mockClockService.now()).filter((c) => PORTAL_IMPORT_CODES.includes(c.code)));
   },
 };

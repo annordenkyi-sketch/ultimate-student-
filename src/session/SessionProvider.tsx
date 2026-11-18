@@ -21,7 +21,28 @@ interface SessionCtx {
   /** Optimistic local update, also sent to the account service. */
   updateAccount: (patch: AccountPatch) => void;
   signOut: () => void;
+  /** Ends the session as if it timed out; the next log-in says so. */
+  expireSession: () => void;
 }
+
+const EXPIRED_KEY = "us.sessionExpired";
+
+/** True after the session expired, until the student logs in again. */
+export const sessionExpired = () => {
+  try {
+    return window.sessionStorage.getItem(EXPIRED_KEY) === "1";
+  } catch {
+    return false;
+  }
+};
+
+const clearSessionExpired = () => {
+  try {
+    window.sessionStorage.removeItem(EXPIRED_KEY);
+  } catch {
+    /* ignore */
+  }
+};
 
 const Ctx = createContext<SessionCtx | null>(null);
 
@@ -30,7 +51,10 @@ export const SessionProvider = ({ children }: { children: ReactNode }) => {
 
   const setSession = useCallback((next: Session, remember?: boolean) => {
     if (next.status === "signedOut") services.session.signOut();
-    else services.session.persist(next, remember);
+    else {
+      services.session.persist(next, remember);
+      clearSessionExpired();
+    }
     setSessionState(next);
   }, []);
 
@@ -55,6 +79,16 @@ export const SessionProvider = ({ children }: { children: ReactNode }) => {
     setSessionState({ status: "signedOut" });
   }, []);
 
+  const expireSession = useCallback(() => {
+    services.session.signOut();
+    try {
+      window.sessionStorage.setItem(EXPIRED_KEY, "1");
+    } catch {
+      /* ignore */
+    }
+    setSessionState({ status: "signedOut" });
+  }, []);
+
   const value = useMemo<SessionCtx>(
     () => ({
       session,
@@ -64,8 +98,9 @@ export const SessionProvider = ({ children }: { children: ReactNode }) => {
       setAccount,
       updateAccount,
       signOut,
+      expireSession,
     }),
-    [session, setSession, setAccount, updateAccount, signOut],
+    [session, setSession, setAccount, updateAccount, signOut, expireSession],
   );
 
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>;

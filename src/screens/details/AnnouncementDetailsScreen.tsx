@@ -3,7 +3,8 @@ import { useParams } from "react-router-dom";
 import { services } from "@/services";
 import { useAsync } from "@/lib/useAsync";
 import { useActivity } from "@/session/ActivityProvider";
-import { SaveButton, ShareButton } from "@/ui/ContentActions";
+import { OfficialLink, SaveButton, ShareButton } from "@/ui/ContentActions";
+import { Paperclip } from "lucide-react";
 import { LoadError, Skeleton } from "@/ui/DashCard";
 import { DetailHeader, NotFound } from "./DetailHeader";
 
@@ -45,6 +46,17 @@ export const AnnouncementDetailsScreen = () => {
         {a.body.map((p) => (
           <p key={p}>{p}</p>
         ))}
+        {(a.link || a.attachmentName) && (
+          <div className="flex flex-wrap gap-3 border-t border-oxford-rule/70 pt-4">
+            {a.link && <OfficialLink href={a.link} label="More information" />}
+            {a.attachmentName && (
+              <span className="inline-flex items-center gap-2 rounded-md border border-oxford-ink/20 bg-white px-4 py-2 text-sm font-semibold text-oxford-ink">
+                <Paperclip className="h-4 w-4" aria-hidden="true" />
+                {a.attachmentName}
+              </span>
+            )}
+          </div>
+        )}
       </div>
     </article>
   );

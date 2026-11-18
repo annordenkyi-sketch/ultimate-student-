@@ -7,9 +7,8 @@ import type {
   SearchType,
   ServiceCategory,
 } from "../types";
-import { PLACES } from "./campusData";
 import { mockClockService } from "./clockService";
-import { UNIVERSITY_SERVICES, announcementsAt, eventsAt } from "./contentData";
+import { liveAnnouncements, liveEvents, livePlaces, liveServices } from "./liveContent";
 import { wait } from "./db";
 
 const CATEGORIES: Record<SearchType, string[]> = {
@@ -48,7 +47,7 @@ export const mockSearchService: SearchService = {
     const weekEnd = now.getTime() + 7 * 86_400_000;
 
     const places = want("place")
-      ? PLACES.filter(
+      ? livePlaces(now).filter(
           (p) =>
             inCategory("place", p.category) &&
             (!openNow || isOpenNow(p.periods, now)) &&
@@ -57,7 +56,7 @@ export const mockSearchService: SearchService = {
       : [];
 
     const services = want("service")
-      ? UNIVERSITY_SERVICES.filter(
+      ? liveServices(now).filter(
           (s) =>
             inCategory("service", s.category) &&
             (!openNow || isOpenNow(s.periods, now)) &&
@@ -68,7 +67,7 @@ export const mockSearchService: SearchService = {
     // "Open now" only applies to things with opening hours.
     const events =
       want("event") && !openNow
-        ? eventsAt(now)
+        ? liveEvents(now)
             .filter((e) => {
               const start = new Date(e.startsAt);
               if (new Date(e.endsAt) < now) return false;
@@ -81,7 +80,7 @@ export const mockSearchService: SearchService = {
 
     const announcements =
       want("announcement") && !openNow && date === "any"
-        ? announcementsAt(now).filter(
+        ? liveAnnouncements(now).filter(
             (a) => inCategory("announcement", a.category) && matches(q, a.title, a.source, a.category, a.summary, ...a.body),
           )
         : [];

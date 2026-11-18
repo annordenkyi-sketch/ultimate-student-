@@ -1,7 +1,8 @@
 import { useRef, useState } from "react";
 import { ArrowDown, ArrowUp, Plus, Trash2 } from "lucide-react";
 import { GPA_SCALE } from "@/config/grading";
-import type { Goal, GoalInput, SuggestedGoal } from "@/services";
+import type { AlertPermission, Goal, GoalInput, SuggestedGoal } from "@/services";
+import { PermissionNote, useNotificationPermission } from "@/session/NotificationPermission";
 import { DAY_OPTIONS } from "@/lib/goals";
 import { TextField, inputClass } from "@/ui/form/TextField";
 
@@ -325,7 +326,15 @@ export const ReminderFields = ({
   draft: GoalDraft;
   errors: DraftErrors;
   onChange: (patch: Partial<GoalDraft>) => void;
-}) => (
+}) => {
+  const { ensure } = useNotificationPermission();
+  const [permission, setPermission] = useState<AlertPermission | null>(null);
+  const toggle = async () => {
+    const on = !draft.remindersOn;
+    onChange({ remindersOn: on });
+    if (on) setPermission(await ensure("goals"));
+  };
+  return (
   <div>
     <div className="flex items-center justify-between gap-4 rounded-xl border border-oxford-rule bg-white px-4 py-3">
       <span>
@@ -339,7 +348,7 @@ export const ReminderFields = ({
         role="switch"
         aria-checked={draft.remindersOn}
         aria-labelledby="reminders-label"
-        onClick={() => onChange({ remindersOn: !draft.remindersOn })}
+        onClick={toggle}
         className={`relative h-8 w-14 shrink-0 rounded-full transition ${draft.remindersOn ? "bg-oxford-ink" : "bg-oxford-ink/20"}`}
       >
         <span
@@ -404,5 +413,7 @@ export const ReminderFields = ({
         </div>
       </div>
     )}
+    {draft.remindersOn && permission && <PermissionNote permission={permission} className="mt-4" />}
   </div>
-);
+  );
+};

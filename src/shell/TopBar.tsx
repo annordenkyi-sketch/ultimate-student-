@@ -76,8 +76,20 @@ export const TopBar = () => {
             </>
           ) : (
             <>
-              <IconLink to={signInTo} label="Notifications, sign in to view">
+              <IconLink
+                to="/notifications"
+                label={unreadCount > 0 ? `Campus alerts, ${unreadCount} unread` : "Campus alerts"}
+                className="relative"
+              >
                 <Bell className="h-5 w-5" aria-hidden="true" />
+                {unreadCount > 0 && (
+                  <span
+                    aria-hidden="true"
+                    className="absolute right-1 top-1 flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-oxford-danger px-1 text-[10px] font-bold leading-none text-white"
+                  >
+                    {unreadCount > 9 ? "9+" : unreadCount}
+                  </span>
+                )}
               </IconLink>
               <IconLink to={signInTo} label="Sign in" className="ml-1 border border-oxford-ink/15 bg-white">
                 <UserRound className="h-5 w-5" aria-hidden="true" />
